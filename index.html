@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Наше кольцо в Дубае</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root {
+      --bg: #0e1117;
+      --card: #151922;
+      --accent: #f4b65f;
+      --accent-soft: rgba(244, 182, 95, 0.12);
+      --text: #f7f7f7;
+      --muted: #9ca3af;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1f2937 0, var(--bg) 45%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px 40px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(15,23,42,0.95));
+      border-radius: 20px;
+      padding: 22px 18px 20px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.5);
+      border: 1px solid rgba(148,163,184,0.3);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.6);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin: 0 auto 10px; /* центрируем бейдж */
+    }
+
+    .hero-tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(244,182,95,0.8);
+    }
+
+    h1 {
+      font-size: 24px;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .hero-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .section {
+      margin-top: 18px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .section h2 {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .section p {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #e5e7eb;
+    }
+
+    /* ГАЛЕРЕЯ ФОТО 3 В РЯД */
+
+    .photos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 360px) {
+      .photos-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .photo {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #020617;
+      height: 90px;
+      cursor: pointer;
+      isolation: isolate;
+    }
+
+    .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .photo-label {
+      position: absolute;
+      left: 8px;
+      bottom: 6px;
+      font-size: 11px;
+      background: rgba(15,23,42,0.8);
+      padding: 2px 6px;
+      border-radius: 999px;
+      color: #e5e7eb;
+      z-index: 2;
+    }
+
+    /* Анимация по контуру */
+
+    .photo::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: conic-gradient(
+        from 0deg,
+        rgba(244,182,95,0.0),
+        rgba(244,182,95,0.65),
+        rgba(244,182,95,0.0),
+        rgba(148,163,184,0.4),
+        rgba(244,182,95,0.0)
+      );
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      opacity: 0.0;
+      transition: opacity 0.4s ease;
+      z-index: 1;
+      animation: border-spin 8s linear infinite;
+    }
+
+    .photo:hover::before {
+      opacity: 0.9;
+    }
+
+    .photo:hover img {
+      transform: scale(1.03);
+    }
+
+    @keyframes border-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* КАРТОЧКА КОЛЬЦА */
+
+    .ring-card {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.4);
+      margin-top: 6px;
+    }
+
+    .ring-photo {
+      width: 82px;
+      height: 82px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      padding: 6px;
+    }
+
+    .ring-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .ring-text {
+      flex: 1;
+      font-size: 13px;
+      color: #e5e7eb;
+    }
+
+    .pill {
+      display: inline-flex;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.35);
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* СПИСОК ПЛАНА */
+
+    .list {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #e5e7eb;
+    }
+
+    .list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .list-bullet {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-top: 6px;
+      background: var(--accent);
+    }
+
+    .list-text {
+      flex: 1;
+    }
+
+    /* ФИНАЛ */
+
+    .final {
+      margin-top: 22px;
+      text-align: center;
+    }
+
+    .final-main {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .final-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .heart {
+      font-size: 20px;
+      margin-top: 4px;
+    }
+
+    footer {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      opacity: 0.8;
+    }
+
+    /* ЛАЙТБОКС ДЛЯ УВЕЛИЧЕНИЯ ФОТО */
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.78);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 50;
+      padding: 16px;
+    }
+
+    .lightbox.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox-inner {
+      max-width: 480px;
+      width: 100%;
+      max-height: 90vh;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #020617;
+      border: 1px solid rgba(148,163,184,0.7);
+      box-shadow: 0 22px 60px rgba(0,0,0,0.85);
+      position: relative;
+    }
+
+    .lightbox-inner img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #020617;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-size: 22px;
+      line-height: 1;
+      color: #e5e7eb;
+      cursor: pointer;
+      text-shadow: 0 0 6px rgba(0,0,0,0.8);
+      padding: 4px 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="card">
+      <div class="hero-tag">
+        <span class="hero-tag-dot"></span>
+        <span>Ценный сайт с частичкой нашей любви</span>
+      </div>
+
+      <h1>Если ты читаешь это, значит, ты сказала мне «да».</h1>
+      <div class="hero-sub">
+        Любимая, бесконечное спасибо тебе за то, что выбрала меня. При вёрстке этого сайта пролита не одна слеза из-за осмысления нашей истории и осознания трогательности момента. Люблю тебя в каждом из них.
+      </div>
+
+      <!-- ШАГ 1 — МОМЕНТЫ -->
+      <div class="section">
+        <div class="section-title">Шаг 1</div>
+        <h2>Моменты, из которых вырос наш вечер 17.01.2026</h2>
+        <p>
+          Интересно, сколько ресурсов тратят корпорации, чтобы хранить всю нашу историю, но я искренне благодарен им за это.
+        </p>
+
+        <div class="photos-grid">
+          <!-- Заменишь src на свои фото -->
+          <div class="photo">
+            <!-- <img src="ring-photo" alt="Момент 1"> -->
+            <img src="photo1.jpg" alt="Момент 1">
+            <div class="photo-label">Ты</div>
+          </div>
+          <div class="photo">
+            <img src="ring-photo" alt="Момент 2">
+            <div class="photo-label">Мы</div>
+          </div>
+          <div class="photo">
+            <img src="ring-photo" alt="Момент 3">
+            <div class="photo-label">Смех</div>
+          </div>
+          <div class="photo">
+            <img src="ring-photo" alt="Момент 4">
+            <div class="photo-label">Пути</div>
+          </div>
+          <div class="photo">
+            <img src="ring-photo" alt="Момент 5">
+            <div class="photo-label">Мечты</div>
+          </div>
+          <div class="photo">
+            <img src="ring-photo" alt="Момент 6">
+            <div class="photo-label">Будни</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ШАГ 2 — КОЛЬЦО -->
+      <div class="section">
+        <div class="section-title">Шаг 2</div>
+        <h2>Как я представляю твоё кольцо</h2>
+        <p>Здесь примерно то кольцо Cartier, которое я вижу на тебе. Но финальный выбор всегда за тобой.</p>
+
+        <div class="ring-card">
+          <div class="ring-photo">
+            <!-- Заменить на фото выбранного кольца -->
+            <!-- <img src="ring.jpg" alt="Кольцо Cartier"> -->
+            Фото кольца<br>которое я<br>представляю
+          </div>
+          <div class="ring-text">
+            Тонкое, аккуратное, элегантное — такое же, как ты.  
+            Я хочу, чтобы ты сама сказала этому кольцу «да» в бутике Cartier в Дубае.
+            <div class="pill">Мы выберем его вместе</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ШАГ 3 — ПЛАН ДУБАЯ -->
+      <div class="section">
+        <div class="section-title">Шаг 3</div>
+        <h2>Наш маленький план Дубая</h2>
+        <div class="list">
+          <div class="list-item">
+            <div class="list-bullet"></div>
+            <div class="list-text">Прилететь вдвоём туда, где всё немного похоже на кино.</div>
+          </div>
+          <div class="list-item">
+            <div class="list-bullet"></div>
+            <div class="list-text">Зайти в Cartier, не спеша посмотреть, примерить и почувствовать «то самое» кольцо.</div>
+          </div>
+          <div class="list-item">
+            <div class="list-bullet"></div>
+            <div class="list-text">Выйти из бутика уже не просто парой, а людьми, которые сделали свой общий выбор.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ФИНАЛ -->
+      <div class="final">
+        <div class="final-main">Ариночка, я хочу прожить с тобой всю жизнь.</div>
+        <div class="final-sub">
+          Для меня важно не просто кольцо, а всё, что стоит за ним: ты, мы и наша общая история — от этого вечера до самого-самого дальше.
+        </div>
+        <div class="heart">♥</div>
+      </div>
+    </div>
+
+    <footer>
+      Наше маленькое «да» перед большой совместной жизнью
+    </footer>
+  </div>
+
+  <!-- Лайтбокс -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-inner">
+      <span class="lightbox-close" id="lightbox-close">×</span>
+      <img src="" alt="Наш момент" id="lightbox-img">
+    </div>
+  </div>
+
+  <script>
+    // Лёгкий скрипт для увеличения фото
+    (function () {
+      const photos = document.querySelectorAll('.photo img');
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightbox-img');
+      const lightboxClose = document.getElementById('lightbox-close');
+
+      photos.forEach(img => {
+        img.addEventListener('click', () => {
+          lightboxImg.src = img.src;
+          lightbox.classList.add('visible');
+        });
+      });
+
+      const close = () => lightbox.classList.remove('visible');
+
+      lightboxClose.addEventListener('click', close);
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) close();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') close();
+      });
+    })();
+  </script>
+</body>
+</html>
