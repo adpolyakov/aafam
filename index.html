@@ -103,27 +103,37 @@
       color: #e5e7eb;
     }
 
-    /* ГАЛЕРЕЯ ФОТО 3 В РЯД */
+    /* ГОРИЗОНТАЛЬНАЯ ПОЛКА С ФОТО */
 
-    .photos-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .photos-archive {
+      display: flex;
       gap: 8px;
       margin-top: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
     }
 
-    @media (max-width: 360px) {
-      .photos-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+    .photos-archive::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .photos-archive::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .photos-archive::-webkit-scrollbar-thumb {
+      background: rgba(148,163,184,0.5);
+      border-radius: 999px;
     }
 
     .photo {
       position: relative;
-      border-radius: 14px;
+      flex: 0 0 64px; /* ширина "папки" */
+      height: 96px;   /* высота "папки" */
+      border-radius: 10px;
       overflow: hidden;
       background: #020617;
-      height: 90px;
       cursor: pointer;
       isolation: isolate;
     }
@@ -134,18 +144,6 @@
       object-fit: cover;
       display: block;
       transition: transform 0.4s ease;
-    }
-
-    .photo-label {
-      position: absolute;
-      left: 8px;
-      bottom: 6px;
-      font-size: 11px;
-      background: rgba(15,23,42,0.8);
-      padding: 2px 6px;
-      border-radius: 999px;
-      color: #e5e7eb;
-      z-index: 2;
     }
 
     /* Анимация по контуру */
@@ -356,7 +354,7 @@
     <div class="card">
       <div class="hero-tag">
         <span class="hero-tag-dot"></span>
-        <span>Ценный сайт с частичкой нашей любви и началом чего-то нового</span>
+        <span>Сайт с частичкой нашей любви и началом чего-то нового</span>
       </div>
 
       <h1>Если ты читаешь это, значит, ты сказала мне «да»🤍</h1>
@@ -372,34 +370,8 @@
           Люблю тебя в каждом из них ∞
         </p>
 
-        <div class="photos-grid">
-          <!-- Заменишь src на свои фото -->
-          <div class="photo">
-            <!-- <img src="ring-photo" alt="Момент 1"> -->
-            <img src="photo1.jpg" alt="Момент 1">
-            <div class="photo-label">Ты</div>
-          </div>
-          <div class="photo">
-            <img src="ring-photo" alt="Момент 2">
-            <div class="photo-label">Мы</div>
-          </div>
-          <div class="photo">
-            <img src="ring-photo" alt="Момент 3">
-            <div class="photo-label">Смех</div>
-          </div>
-          <div class="photo">
-            <img src="ring-photo" alt="Момент 4">
-            <div class="photo-label">Пути</div>
-          </div>
-          <div class="photo">
-            <img src="ring-photo" alt="Момент 5">
-            <div class="photo-label">Мечты</div>
-          </div>
-          <div class="photo">
-            <img src="ring-photo" alt="Момент 6">
-            <div class="photo-label">Будни</div>
-          </div>
-        </div>
+        <!-- контейнер-полка, сюда JS подставит 10 случайных фото -->
+        <div class="photos-archive" id="photos-archive"></div>
       </div>
 
       <!-- ШАГ 2 — КОЛЬЦО -->
@@ -410,8 +382,8 @@
 
         <div class="ring-card">
           <div class="ring-photo">
-            <!-- Заменить на фото выбранного кольца -->
-            <!-- <img src="ring.jpg" alt="Кольцо Cartier"> -->
+            <!-- Если захочешь — подставишь реальное фото -->
+            <!-- <img src="img/ring.jpg" alt="Кольцо Cartier"> -->
             Фото кольца<br>которое я<br>представляю
           </div>
           <div class="ring-text">
@@ -466,19 +438,72 @@
   </div>
 
   <script>
-    // Лёгкий скрипт для увеличения фото
     (function () {
-      const photos = document.querySelectorAll('.photo img');
+      // Список всех фото в архиве.
+      // Положи файлы в папку img и допиши сюда, если их больше.
+      const photoFiles = [
+        'img/photo1.jpg',
+        'img/photo2.jpg',
+        'img/photo3.jpg',
+        'img/photo4.jpg',
+        'img/photo5.jpg',
+        'img/photo6.jpg',
+        'img/photo7.jpg',
+        'img/photo8.jpg',
+        'img/photo9.jpg',
+        'img/photo10.jpg',
+        'img/photo11.jpg',
+        'img/photo12.jpg',
+        'img/photo13.jpg',
+        'img/photo14.jpg',
+        'img/photo15.jpg',
+        'img/photo16.jpg',
+        'img/photo17.jpg',
+        'img/photo18.jpg',
+        'img/photo19.jpg',
+        'img/photo20.jpg'
+        // добавляй дальше по мере надобности
+      ];
+
+      const MAX_TO_SHOW = 10;
+
+      const container = document.getElementById('photos-archive');
       const lightbox = document.getElementById('lightbox');
       const lightboxImg = document.getElementById('lightbox-img');
       const lightboxClose = document.getElementById('lightbox-close');
 
-      photos.forEach(img => {
-        img.addEventListener('click', () => {
-          lightboxImg.src = img.src;
-          lightbox.classList.add('visible');
-        });
+      if (!container || photoFiles.length === 0) return;
+
+      // Перемешиваем и берём первые MAX_TO_SHOW
+      const shuffled = photoFiles
+        .slice()
+        .sort(() => Math.random() - 0.5)
+        .slice(0, Math.min(MAX_TO_SHOW, photoFiles.length));
+
+      // Рендерим "папки" с фотками
+      shuffled.forEach((src, index) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'photo';
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = 'Наш момент ' + (index + 1);
+
+        wrapper.appendChild(img);
+        container.appendChild(wrapper);
       });
+
+      // Навешиваем лайтбокс
+      const attachLightbox = () => {
+        const photos = container.querySelectorAll('.photo img');
+
+        photos.forEach(img => {
+          img.addEventListener('click', () => {
+            lightboxImg.src = img.src;
+            lightbox.classList.add('visible');
+          });
+        });
+      };
 
       const close = () => lightbox.classList.remove('visible');
 
@@ -490,6 +515,8 @@
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') close();
       });
+
+      attachLightbox();
     })();
   </script>
 </body>
