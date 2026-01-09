@@ -225,7 +225,39 @@
       to   { transform: rotate(360deg); }
     }
 
-    /* КАРТОЧКА КОЛЬЦА */
+
+    /* ВИДЕО (ШАГ 2) */
+
+    .media {
+      margin-top: 12px;
+    }
+
+    .step-video {
+      width: 100%;
+      display: block;
+      border-radius: 16px;
+      background: #020617;
+      border: 1px solid rgba(148,163,184,0.35);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.35);
+    }
+    
+    /* Видео как GIF (без видимого плеера) */
+    .gif-video {
+      aspect-ratio: 1 / 1;
+      max-height: 42svh;
+      object-fit: cover;
+    }
+
+    /* На некоторых браузерах iOS/Chrome могут мелькать элементы управления — прячем */
+    .gif-video::-webkit-media-controls,
+    .gif-video::-webkit-media-controls-enclosure,
+    .gif-video::-webkit-media-controls-panel,
+    .gif-video::-webkit-media-controls-play-button,
+    .gif-video::-webkit-media-controls-start-playback-button {
+      display: none !important;
+      -webkit-appearance: none;
+    }
+/* КАРТОЧКА КОЛЬЦА */
 
     .ring-card {
       display: flex;
@@ -441,6 +473,13 @@
             <h2>Каким я представляю твоё кольцо</h2>
             <p>Оно отлично передаёт ценность тебя и этого момента для моей жизни, твою красоту и изящность. 
           А 8 бриллиантов вместо одного — как символ нашей любви, которую мы запечатываем во множество крестражей, чтобы она жила вечно. Ведь с сегодняшнего дня это моя главная цель и фундаментальный атрибут моего счастья. </p>
+        <div class="media">
+          <video class="step-video gif-video" autoplay muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback>
+            <source src="media/IMG_5925_PRO_2160_square_x264.mp4" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+          </video>
+        </div>
+
             <div class="ring-card">
 <div class="ring-photo">
 <!-- Если захочешь — подставишь реальное фото -->
@@ -586,6 +625,39 @@
         if (e.key === "Escape") close();
       });
     })();
+  
+    // Видео в Шаг 2: автозапуск как GIF + пауза вне экрана
+    const gifVideo = document.querySelector('video.gif-video');
+    if (gifVideo) {
+      // иногда iOS Safari требует явной установки muted для автозапуска
+      gifVideo.muted = true;
+
+      const tryPlay = () => gifVideo.play().catch(() => {});
+      // попытка сразу
+      tryPlay();
+      // и ещё раз после первой отрисовки
+      window.addEventListener('load', tryPlay, { once: true });
+
+      // пауза/воспроизведение по видимости
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            tryPlay();
+          } else {
+            gifVideo.pause();
+          }
+        });
+      }, { threshold: 0.35 });
+
+      io.observe(gifVideo);
+
+      // если вдруг автозапуск не сработал — тап по видео переключает play/pause (без плеера)
+      gifVideo.addEventListener('click', () => {
+        if (gifVideo.paused) tryPlay();
+        else gifVideo.pause();
+      });
+    }
+
   </script>
 </body>
 </html>
