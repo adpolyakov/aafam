@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>17.01.2026</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e1117">
 
   <style>
     :root {
@@ -13,6 +14,11 @@
       --accent-soft: rgba(244, 182, 95, 0.12);
       --text: #f7f7f7;
       --muted: #9ca3af;
+
+      --maxw: 480px;
+      --screen-pad-x: 16px;
+      --screen-pad-top: calc(env(safe-area-inset-top) + 18px);
+      --screen-pad-bottom: calc(env(safe-area-inset-bottom) + 22px);
     }
 
     * {
@@ -22,28 +28,64 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
+    html, body {
+      height: 100%;
+    }
+
     body {
       background: radial-gradient(circle at top, #1f2937 0, var(--bg) 45%);
       color: var(--text);
+      overflow: hidden; /* скроллим внутри .snap */
+    }
+
+    /* Контейнер со снап-скроллом */
+    .snap {
+      height: 100svh;        /* корректно для iOS */
+      height: 100vh;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Один экран = один блок */
+    .screen {
+      min-height: 100svh;
       min-height: 100vh;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
       display: flex;
       justify-content: center;
-      padding: 24px 16px 40px;
+      padding: var(--screen-pad-top) var(--screen-pad-x) var(--screen-pad-bottom);
     }
 
     .page {
       width: 100%;
-      max-width: 480px;
+      max-width: var(--maxw);
+      display: flex;
     }
 
     .card {
+      width: 100%;
       background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(15,23,42,0.95));
       border-radius: 20px;
-      padding: 22px 18px 20px;
+      padding: 20px 18px 18px;
       box-shadow: 0 18px 40px rgba(0,0,0,0.5);
       border: 1px solid rgba(148,163,184,0.3);
       backdrop-filter: blur(18px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
+
+    /* Если вдруг какой-то блок чуть не помещается — он аккуратно скроллится внутри карточки */
+    .card-scroll {
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-right: 4px;
+    }
+    .card-scroll::-webkit-scrollbar { width: 0; height: 0; }
 
     .hero-tag {
       display: inline-flex;
@@ -57,7 +99,7 @@
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: var(--muted);
-      margin: 0 auto 10px; /* центрируем бейдж */
+      width: fit-content;
     }
 
     .hero-tag-dot {
@@ -69,73 +111,64 @@
     }
 
     h1 {
-      font-size: 24px;
-      line-height: 1.25;
-      margin-bottom: 8px;
+      font-size: clamp(20px, 3.6vw, 24px);
+      line-height: 1.2;
+      margin-top: 4px;
     }
 
     .hero-sub {
       font-size: 14px;
+      line-height: 1.45;
       color: var(--muted);
-      margin-bottom: 18px;
-    }
-
-    .section {
-      margin-top: 18px;
     }
 
     .section-title {
-      font-size: 13px;
+      font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.14em;
       color: var(--muted);
-      margin-bottom: 8px;
     }
 
-    .section h2 {
-      font-size: 18px;
-      margin-bottom: 6px;
+    h2 {
+      font-size: clamp(16px, 3.2vw, 18px);
+      line-height: 1.25;
     }
 
-    .section p {
+    p {
       font-size: 14px;
       line-height: 1.5;
       color: #e5e7eb;
     }
 
-    /* ГОРИЗОНТАЛЬНАЯ ПОЛКА С ФОТО */
+    /* ФОТО-ЛЕНТА (архив в одну строку) */
 
-    .photos-archive {
+    .photos-strip {
       display: flex;
-      gap: 8px;
-      margin-top: 10px;
+      gap: 10px;
       overflow-x: auto;
-      padding-bottom: 4px;
+      padding: 4px 2px 10px;
+      scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
+      mask-image: linear-gradient(to right, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
     }
 
-    .photos-archive::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    .photos-archive::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .photos-archive::-webkit-scrollbar-thumb {
-      background: rgba(148,163,184,0.5);
-      border-radius: 999px;
-    }
+    .photos-strip::-webkit-scrollbar { height: 0; }
 
     .photo {
       position: relative;
-      flex: 0 0 64px; /* ширина "папки" */
-      height: 96px;   /* высота "папки" */
-      border-radius: 10px;
+      flex: 0 0 auto;
+      width: 92px;
+      height: 116px;
+      border-radius: 16px;
       overflow: hidden;
       background: #020617;
       cursor: pointer;
       isolation: isolate;
+      scroll-snap-align: start;
+    }
+
+    @media (max-width: 360px) {
+      .photo { width: 84px; height: 108px; }
     }
 
     .photo img {
@@ -146,7 +179,18 @@
       transition: transform 0.4s ease;
     }
 
-    /* Анимация по контуру */
+    .photo-label {
+      position: absolute;
+      left: 8px;
+      bottom: 7px;
+      font-size: 11px;
+      background: rgba(15,23,42,0.82);
+      padding: 2px 6px;
+      border-radius: 999px;
+      color: #e5e7eb;
+      z-index: 2;
+      backdrop-filter: blur(8px);
+    }
 
     .photo::before {
       content: "";
@@ -173,13 +217,8 @@
       animation: border-spin 8s linear infinite;
     }
 
-    .photo:hover::before {
-      opacity: 0.9;
-    }
-
-    .photo:hover img {
-      transform: scale(1.03);
-    }
+    .photo:hover::before { opacity: 0.9; }
+    .photo:hover img { transform: scale(1.03); }
 
     @keyframes border-spin {
       from { transform: rotate(0deg); }
@@ -195,7 +234,6 @@
       border-radius: 16px;
       background: rgba(15,23,42,0.9);
       border: 1px solid rgba(148,163,184,0.4);
-      margin-top: 6px;
     }
 
     .ring-photo {
@@ -211,6 +249,7 @@
       color: var(--muted);
       text-align: center;
       padding: 6px;
+      flex: 0 0 auto;
     }
 
     .ring-photo img {
@@ -223,6 +262,7 @@
     .ring-text {
       flex: 1;
       font-size: 13px;
+      line-height: 1.45;
       color: #e5e7eb;
     }
 
@@ -233,13 +273,13 @@
       border: 1px solid rgba(148,163,184,0.35);
       font-size: 11px;
       color: var(--muted);
-      margin-top: 6px;
+      margin-top: 8px;
     }
 
     /* СПИСОК ПЛАНА */
 
     .list {
-      margin-top: 6px;
+      margin-top: 2px;
       font-size: 13px;
       color: #e5e7eb;
     }
@@ -247,16 +287,17 @@
     .list-item {
       display: flex;
       align-items: flex-start;
-      gap: 6px;
-      margin-top: 4px;
+      gap: 8px;
+      margin-top: 8px;
     }
 
     .list-bullet {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      margin-top: 6px;
+      margin-top: 7px;
       background: var(--accent);
+      flex: 0 0 auto;
     }
 
     .list-text {
@@ -266,24 +307,25 @@
     /* ФИНАЛ */
 
     .final {
-      margin-top: 22px;
       text-align: center;
+      padding-top: 6px;
     }
 
     .final-main {
-      font-size: 18px;
-      margin-bottom: 6px;
+      font-size: clamp(16px, 3.2vw, 18px);
+      margin-bottom: 8px;
     }
 
     .final-sub {
       font-size: 13px;
+      line-height: 1.5;
       color: var(--muted);
       margin-bottom: 10px;
     }
 
     .heart {
       font-size: 20px;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     footer {
@@ -294,7 +336,7 @@
       opacity: 0.8;
     }
 
-    /* ЛАЙТБОКС ДЛЯ УВЕЛИЧЕНИЯ ФОТО */
+    /* ЛАЙТБОКС */
 
     .lightbox {
       position: fixed;
@@ -316,7 +358,7 @@
     }
 
     .lightbox-inner {
-      max-width: 480px;
+      max-width: var(--maxw);
       width: 100%;
       max-height: 90vh;
       border-radius: 18px;
@@ -345,89 +387,124 @@
       cursor: pointer;
       text-shadow: 0 0 6px rgba(0,0,0,0.8);
       padding: 4px 6px;
+      user-select: none;
     }
   </style>
 </head>
 
 <body>
-  <div class="page">
-    <div class="card">
-      <div class="hero-tag">
-        <span class="hero-tag-dot"></span>
-        <span>Сайт с частичкой нашей любви и началом чего-то нового</span>
-      </div>
+  <div class="snap" id="snap">
 
-      <h1>Если ты это читаешь, значит, я услышал долгожданное «да»🤍</h1>
-      <div class="hero-sub">
+    <!-- 1) ВВЕДЕНИЕ -->
+    <section class="screen">
+      <div class="page">
+        <div class="card">
+          <div class="hero-tag">
+            <span class="hero-tag-dot"></span>
+            <span>Сайт с частичкой нашей любви и началом чего-то нового</span>
+          </div>
+
+          <div class="card-scroll">
+            <h1>Если ты это читаешь, значит, я услышал долгожданное «да»🤍</h1>
+            <div class="hero-sub">
         Любимая, бесконечное спасибо за то, что выбрала меня. При вёрстке сайта пролита не одна слеза из-за трогательных воспоминаний из прошлого, осознания уникальности момента в начтоящем и предвкушения нашей будущей семейной жизни, которая непременно пополнит любимыми кадрами ту коллекцию, которую я подготовил ниже.
       </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      <!-- ШАГ 1 — МОМЕНТЫ -->
-      <div class="section">
-        <div class="section-title">Шаг 1</div>
-        <h2>Моменты, которые привели нас к этому вечеру</h2>
-        <p>
+    <!-- 2) ШАГ 1 -->
+    <section class="screen">
+      <div class="page">
+        <div class="card">
+          <div>
+            <div class="section-title">Шаг 1</div>
+            <h2>Моменты, которые привели нас к этому вечеру</h2>
+            <p>
           Люблю тебя в каждом из них❣️
         </p>
-
-        <!-- контейнер-полка, сюда JS подставит 10 случайных фото -->
-        <div class="photos-archive" id="photos-archive"></div>
-      </div>
-
-      <!-- ШАГ 2 — КОЛЬЦО -->
-      <div class="section">
-        <div class="section-title">Шаг 2</div>
-        <h2>Каким я представляю твоё кольцо</h2>
-        <p>Оно отлично передаёт ценность тебя и этого момента для моей жизни, твою красоту и изящность. 
-          А 8 бриллиантов вместо одного — как символ нашей любви, которую мы запечатываем во множество крестражей, чтобы она жила вечно. Ведь с сегодняшнего дня это моя главная цель и фундаментальный атрибут моего счастья. </p>
-
-        <div class="ring-card">
-          <div class="ring-photo">
-            <!-- Если захочешь — подставишь реальное фото -->
-            <!-- <img src="img/ring.jpg" alt="Кольцо Cartier"> -->
-            Фото кольца<br>которое я<br>представляю
           </div>
-          <div class="ring-text">
+
+          <!-- Лента фото (48 кадров, в порядке нумерации) -->
+          <div class="photos-strip" id="photos-strip" aria-label="Фотографии"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3) ШАГ 2 -->
+    <section class="screen">
+      <div class="page">
+        <div class="card">
+          <div class="card-scroll">
+            <div class="section-title">Шаг 2</div>
+            <h2>Каким я представляю твоё кольцо</h2>
+            <p>Оно отлично передаёт ценность тебя и этого момента для моей жизни, твою красоту и изящность. 
+          А 8 бриллиантов вместо одного — как символ нашей любви, которую мы запечатываем во множество крестражей, чтобы она жила вечно. Ведь с сегодняшнего дня это моя главная цель и фундаментальный атрибут моего счастья. </p>
+            <div class="ring-card">
+<div class="ring-photo">
+<!-- Если захочешь — подставишь реальное фото -->
+<!-- <img src="img/ring.jpg" alt="Кольцо Cartier"> -->
+            Фото кольца<br/>которое я<br/>представляю
+          </div>
+<div class="ring-text">
             Тонкое, аккуратное, элегантное — такое же, как ты.  
             Я хочу, чтобы ты сама сказала этому кольцу «да» в бутике Cartier в Дубае.
             <div class="pill">Мы выберем его вместе</div>
+</div>
+</div>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- ШАГ 3 — ПЛАН ДУБАЯ -->
-      <div class="section">
-        <div class="section-title">Шаг 3</div>
-        <h2>Наш маленький план Дубая</h2>
-        <div class="list">
-          <div class="list-item">
-            <div class="list-bullet"></div>
-            <div class="list-text">Прилететь вдвоём туда, где всё немного похоже на кино.</div>
-          </div>
-          <div class="list-item">
-            <div class="list-bullet"></div>
-            <div class="list-text">Зайти в Cartier, не спеша посмотреть, примерить и почувствовать «то самое» кольцо.</div>
-          </div>
-          <div class="list-item">
-            <div class="list-bullet"></div>
-            <div class="list-text">Выйти из бутика уже не просто парой, а людьми, которые сделали свой общий выбор.</div>
+    <!-- 4) ШАГ 3 -->
+    <section class="screen">
+      <div class="page">
+        <div class="card">
+          <div class="card-scroll">
+            <div class="section-title">Шаг 3</div>
+            <h2>Наш маленький план Дубая</h2>
+            <div class="list">
+<div class="list-item">
+<div class="list-bullet"></div>
+<div class="list-text">Прилететь вдвоём туда, где всё немного похоже на кино.</div>
+</div>
+<div class="list-item">
+<div class="list-bullet"></div>
+<div class="list-text">Зайти в Cartier, не спеша посмотреть, примерить и почувствовать «то самое» кольцо.</div>
+</div>
+<div class="list-item">
+<div class="list-bullet"></div>
+<div class="list-text">Выйти из бутика уже не просто парой, а людьми, которые сделали свой общий выбор.</div>
+</div>
+</div>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- ФИНАЛ -->
-      <div class="final">
-        <div class="final-main">Ариночка, я хочу прожить с тобой всю жизнь.</div>
-        <div class="final-sub">
+    <!-- 5) ВЫВОД -->
+    <section class="screen">
+      <div class="page">
+        <div class="card">
+          <div class="card-scroll">
+            <div class="final">
+              <div class="final-main">Ариночка, я хочу прожить с тобой всю жизнь.</div>
+              <div class="final-sub">
           Для меня важно не просто кольцо, а всё, что стоит за ним: ты, мы и наша общая история — от этого вечера до самого-самого дальше.
         </div>
-        <div class="heart">♥</div>
-      </div>
-    </div>
+              <div class="heart">♥</div>
+            </div>
 
-    <footer>
+            <footer>
       Наше маленькое «да» перед большой совместной жизнью
     </footer>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <!-- Лайтбокс -->
@@ -440,106 +517,74 @@
 
   <script>
     (function () {
-      // Список всех фото в архиве.
-      // Положи файлы в папку img и допиши сюда, если их больше.
-      const photoFiles = [
-        'img/photo1.jpg',
-        'img/photo2.jpg',
-        'img/photo3.jpg',
-        'img/photo4.jpg',
-        'img/photo5.jpg',
-        'img/photo6.jpg',
-        'img/photo7.jpg',
-        'img/photo8.jpg',
-        'img/photo9.jpg',
-        'img/photo10.jpg',
-        'img/photo11.jpg',
-        'img/photo12.jpg',
-        'img/photo13.jpg',
-        'img/photo14.jpg',
-        'img/photo15.jpg',
-        'img/photo16.jpg',
-        'img/photo17.jpg',
-        'img/photo18.jpg',
-        'img/photo19.jpg',
-        'img/photo20.jpg',
-        'img/photo21.jpg',
-        'img/photo22.jpg',
-        'img/photo23.jpg',
-        'img/photo24.jpg',
-        'img/photo25.jpg',
-        'img/photo26.jpg',
-        'img/photo27.jpg',
-        'img/photo28.jpg',
-        'img/photo29.jpg',
-        'img/photo30.jpg',
-        'img/photo31.jpg',
-        'img/photo32.jpg',
-        'img/photo33.jpg',
-        'img/photo34.jpg',
-        'img/photo35.jpg',
-        'img/photo36.jpg',
-        'img/photo37.jpg',
-        'img/photo38.jpg',
-        'img/photo39.jpg',
-        'img/photo40.jpg',
-        'img/photo41.jpg',
-        'img/photo42.jpg'
-        // добавляй дальше по мере надобности
-      ];
+      // ====== НАСТРОЙКИ ФОТО ======
+      // Важно: GitHub Pages НЕ умеет сам "прочитать папку".
+      // Поэтому имена файлов формируем по правилу.
+      //
+      // Если у тебя фото называются, например:
+      // img/001.jpg ... img/048.jpg  -> PHOTO_PAD = 3
+      // img/01.jpg  ... img/48.jpg   -> PHOTO_PAD = 2
+      // img/1.jpg   ... img/48.jpg   -> PHOTO_PAD = 0
+      const PHOTO_COUNT = 48;
+      const PHOTO_EXT = "jpg";
+      const PHOTO_PAD = 3;      // <-- при необходимости поменяй
+      const PHOTO_BASE = "img"; // папка рядом с index.html
 
-      const MAX_TO_SHOW = 10;
-
-      const container = document.getElementById('photos-archive');
-      const lightbox = document.getElementById('lightbox');
-      const lightboxImg = document.getElementById('lightbox-img');
-      const lightboxClose = document.getElementById('lightbox-close');
-
-      if (!container || photoFiles.length === 0) return;
-
-      // Перемешиваем и берём первые MAX_TO_SHOW
-      const shuffled = photoFiles
-        .slice()
-        .sort(() => Math.random() - 0.5)
-        .slice(0, Math.min(MAX_TO_SHOW, photoFiles.length));
-
-      // Рендерим "папки" с фотками
-      shuffled.forEach((src, index) => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'photo';
-
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = 'Наш момент ' + (index + 1);
-
-        wrapper.appendChild(img);
-        container.appendChild(wrapper);
-      });
-
-      // Навешиваем лайтбокс
-      const attachLightbox = () => {
-        const photos = container.querySelectorAll('.photo img');
-
-        photos.forEach(img => {
-          img.addEventListener('click', () => {
-            lightboxImg.src = img.src;
-            lightbox.classList.add('visible');
-          });
-        });
+      const makeName = (i) => {
+        const n = (PHOTO_PAD > 0) ? String(i).padStart(PHOTO_PAD, "0") : String(i);
+        return `${PHOTO_BASE}/${n}.${PHOTO_EXT}`;
       };
 
-      const close = () => lightbox.classList.remove('visible');
+      // ====== РЕНДЕР ФОТО-ЛЕНТЫ ======
+      const strip = document.getElementById("photos-strip");
 
-      lightboxClose.addEventListener('click', close);
-      lightbox.addEventListener('click', (e) => {
+      for (let i = 1; i <= PHOTO_COUNT; i++) {
+        const wrap = document.createElement("div");
+        wrap.className = "photo";
+
+        const img = document.createElement("img");
+        img.src = makeName(i);
+        img.alt = `Момент ${i}`;
+        img.loading = "lazy";
+
+        const label = document.createElement("div");
+        label.className = "photo-label";
+        label.textContent = String(i).padStart(2, "0");
+
+        wrap.appendChild(img);
+        wrap.appendChild(label);
+        strip.appendChild(wrap);
+      }
+
+      // ====== ЛАЙТБОКС ======
+      const lightbox = document.getElementById("lightbox");
+      const lightboxImg = document.getElementById("lightbox-img");
+      const lightboxClose = document.getElementById("lightbox-close");
+
+      const open = (src) => {
+        lightboxImg.src = src;
+        lightbox.classList.add("visible");
+      };
+
+      const close = () => {
+        lightbox.classList.remove("visible");
+        // чтобы на мобиле не "мигало" старое фото при следующем открытии
+        setTimeout(() => (lightboxImg.src = ""), 120);
+      };
+
+      strip.addEventListener("click", (e) => {
+        const img = e.target.closest(".photo")?.querySelector("img");
+        if (img && img.src) open(img.src);
+      });
+
+      lightboxClose.addEventListener("click", close);
+      lightbox.addEventListener("click", (e) => {
         if (e.target === lightbox) close();
       });
 
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') close();
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") close();
       });
-
-      attachLightbox();
     })();
   </script>
 </body>
