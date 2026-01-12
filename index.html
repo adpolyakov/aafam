@@ -1,960 +1,435 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>17.01.2026</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
-    :root {
-      --bg: #0e1117;
-      --card: #151922;
-      --accent: #f4b65f;
-      --accent-soft: rgba(244, 182, 95, 0.12);
-      --text: #f7f7f7;
-      --muted: #9ca3af;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    body {
-      background: radial-gradient(circle at top, #1f2937 0, var(--bg) 45%);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      padding: 24px 16px 40px;
-    }
-
-    .page {
-      width: 100%;
-      max-width: 480px;
-    }
-
-    .card {
-      background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(15,23,42,0.95));
-      border-radius: 20px;
-      padding: 22px 18px 20px;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.5);
-      border: 1px solid rgba(148,163,184,0.3);
-      backdrop-filter: blur(18px);
-    }
-
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(148,163,184,0.6);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--muted);
-      margin: 0 auto 10px; /* центрируем бейдж */
-    }
-
-    .hero-tag-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 10px rgba(244,182,95,0.8);
-    }
-
-    h1 {
-      font-size: 24px;
-      line-height: 1.25;
-      margin-bottom: 8px;
-    }
-
-    .hero-sub {
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 18px;
-    }
-
-    
-
-    /* Intro image (Lotte) */
-    .intro-media{
-      width: 100%;
-      margin: 14px auto 18px;
-      border-radius: 22px;
-      overflow: hidden;
-      border: 1px solid rgba(148,163,184,0.35);
-      background: rgba(2,6,23,0.55);
-      box-shadow:
-        0 18px 45px rgba(0,0,0,0.45),
-        inset 0 0 0 1px rgba(255,255,255,0.03);
-    }
-    .intro-media img{
-      display: block;
-      width: 100%;
-      height: auto;
-      max-height: min(40vh, 340px);
-      object-fit: contain;
-      object-position: center;
-    }
-.section {
-      margin-top: 18px;
-    }
-
-    .section-title {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .section h2 {
-      font-size: 18px;
-      margin-bottom: 6px;
-    }
-
-    .section p {
-      font-size: 14px;
-      line-height: 1.5;
-      color: #e5e7eb;
-    }
-
-    /* ГОРИЗОНТАЛЬНАЯ ПОЛКА С ФОТО */
-
-    .photos-archive {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .photos-archive::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    .photos-archive::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .photos-archive::-webkit-scrollbar-thumb {
-      background: rgba(148,163,184,0.5);
-      border-radius: 999px;
-    }
-
-    .photo {
-      position: relative;
-      flex: 0 0 64px; /* ширина "папки" */
-      height: 96px;   /* высота "папки" */
-      border-radius: 10px;
-      overflow: hidden;
-      background: #020617;
-      cursor: pointer;
-      isolation: isolate;
-    }
-
-    .photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.4s ease;
-    }
-
-    /* Анимация по контуру */
-
-    .photo::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      padding: 1px;
-      background: conic-gradient(
-        from 0deg,
-        rgba(244,182,95,0.0),
-        rgba(244,182,95,0.65),
-        rgba(244,182,95,0.0),
-        rgba(148,163,184,0.4),
-        rgba(244,182,95,0.0)
-      );
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-              mask-composite: exclude;
-      opacity: 0.0;
-      transition: opacity 0.4s ease;
-      z-index: 1;
-      animation: border-spin 8s linear infinite;
-    }
-
-    .photo:hover::before {
-      opacity: 0.9;
-    }
-
-    .photo:hover img {
-      transform: scale(1.03);
-    }
-
-    @keyframes border-spin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-
-    /* КАРТОЧКА КОЛЬЦА */
-
-    .ring-card {
-      display: flex;
-      gap: 12px;
-      padding: 12px;
-      border-radius: 16px;
-      background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(148,163,184,0.4);
-      margin-top: 6px;
-    }
-
-    .ring-photo {
-      width: 82px;
-      height: 82px;
-      border-radius: 16px;
-      overflow: hidden;
-      background: #020617;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      color: var(--muted);
-      text-align: center;
-      padding: 6px;
-    }
-
-    .ring-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .ring-text {
-      flex: 1;
-      font-size: 13px;
-      color: #e5e7eb;
-    }
-
-    .pill {
-      display: inline-flex;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.35);
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 6px;
-    }
-
-    /* СПИСОК ПЛАНА */
-
-    .list {
-      margin-top: 6px;
-      font-size: 13px;
-      color: #e5e7eb;
-    }
-
-    .list-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .list-bullet {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      margin-top: 6px;
-      background: var(--accent);
-    }
-
-    .list-text {
-      flex: 1;
-    }
-
-    /* ФИНАЛ */
-
-    .final {
-      margin-top: 22px;
-      text-align: center;
-    }
-
-    .final-main {
-      font-size: 18px;
-      margin-bottom: 6px;
-    }
-
-    .final-sub {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    .heart {
-      font-size: 20px;
-      margin-top: 4px;
-    }
-
-    footer {
-      margin-top: 10px;
-      text-align: center;
-      font-size: 11px;
-      color: var(--muted);
-      opacity: 0.8;
-    }
-
-    /* ЛАЙТБОКС ДЛЯ УВЕЛИЧЕНИЯ ФОТО */
-
-    .lightbox {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.78);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-      z-index: 50;
-      padding: 16px;
-    }
-
-    .lightbox.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .lightbox-inner {
-      max-width: 480px;
-      width: 100%;
-      max-height: 90vh;
-      border-radius: 18px;
-      overflow: hidden;
-      background: #020617;
-      border: 1px solid rgba(148,163,184,0.7);
-      box-shadow: 0 22px 60px rgba(0,0,0,0.85);
-      position: relative;
-    }
-
-    .lightbox-inner img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: #020617;
-    }
-
-    .lightbox-close {
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      font-size: 22px;
-      line-height: 1;
-      color: #e5e7eb;
-      cursor: pointer;
-      text-shadow: 0 0 6px rgba(0,0,0,0.8);
-      padding: 4px 6px;
-    }
-  </style>
-
-<style>
-
-    :root {
-      --bg: #0e1117;
-      --card: #151922;
-      --accent: #f4b65f;
-      --accent-soft: rgba(244, 182, 95, 0.12);
-      --text: #f7f7f7;
-      --muted: #9ca3af;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    body {
-      background: radial-gradient(circle at top, #1f2937 0, var(--bg) 45%);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      padding: 24px 16px 40px;
-    }
-
-    .page {
-      width: 100%;
-      max-width: 480px;
-    }
-
-    .card {
-      background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(15,23,42,0.95));
-      border-radius: 20px;
-      padding: 22px 18px 20px;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.5);
-      border: 1px solid rgba(148,163,184,0.3);
-      backdrop-filter: blur(18px);
-    }
-
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(148,163,184,0.6);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--muted);
-      margin: 0 auto 10px; /* центрируем бейдж */
-    }
-
-    .hero-tag-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 10px rgba(244,182,95,0.8);
-    }
-
-    h1 {
-      font-size: 24px;
-      line-height: 1.25;
-      margin-bottom: 8px;
-    }
-
-    .hero-sub {
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 18px;
-    }
-
-    
-
-    /* Intro image (Lotte) */
-    .intro-media{
-      width: 100%;
-      margin: 14px auto 18px;
-      border-radius: 22px;
-      overflow: hidden;
-      border: 1px solid rgba(148,163,184,0.35);
-      background: rgba(2,6,23,0.55);
-      box-shadow:
-        0 18px 45px rgba(0,0,0,0.45),
-        inset 0 0 0 1px rgba(255,255,255,0.03);
-    }
-    .intro-media img{
-      display: block;
-      width: 100%;
-      height: auto;
-      max-height: min(40vh, 340px);
-      object-fit: contain;
-      object-position: center;
-    }
-.section {
-      margin-top: 18px;
-    }
-
-    .section-title {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .section h2 {
-      font-size: 18px;
-      margin-bottom: 6px;
-    }
-
-    .section p {
-      font-size: 14px;
-      line-height: 1.5;
-      color: #e5e7eb;
-    }
-
-    /* ГОРИЗОНТАЛЬНАЯ ПОЛКА С ФОТО */
-
-    .photos-archive {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .photos-archive::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    .photos-archive::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .photos-archive::-webkit-scrollbar-thumb {
-      background: rgba(148,163,184,0.5);
-      border-radius: 999px;
-    }
-
-    .photo {
-      position: relative;
-      flex: 0 0 64px; /* ширина "папки" */
-      height: 96px;   /* высота "папки" */
-      border-radius: 10px;
-      overflow: hidden;
-      background: #020617;
-      cursor: pointer;
-      isolation: isolate;
-    }
-
-    .photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.4s ease;
-    }
-
-    /* Анимация по контуру */
-
-    .photo::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      padding: 1px;
-      background: conic-gradient(
-        from 0deg,
-        rgba(244,182,95,0.0),
-        rgba(244,182,95,0.65),
-        rgba(244,182,95,0.0),
-        rgba(148,163,184,0.4),
-        rgba(244,182,95,0.0)
-      );
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-              mask-composite: exclude;
-      opacity: 0.0;
-      transition: opacity 0.4s ease;
-      z-index: 1;
-      animation: border-spin 8s linear infinite;
-    }
-
-    .photo:hover::before {
-      opacity: 0.9;
-    }
-
-    .photo:hover img {
-      transform: scale(1.03);
-    }
-
-    @keyframes border-spin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-
-    /* КАРТОЧКА КОЛЬЦА */
-
-    .ring-card {
-      display: flex;
-      gap: 12px;
-      padding: 12px;
-      border-radius: 16px;
-      background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(148,163,184,0.4);
-      margin-top: 6px;
-    }
-
-    .ring-photo {
-      width: 82px;
-      height: 82px;
-      border-radius: 16px;
-      overflow: hidden;
-      background: #020617;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      color: var(--muted);
-      text-align: center;
-      padding: 6px;
-    }
-
-    .ring-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .ring-text {
-      flex: 1;
-      font-size: 13px;
-      color: #e5e7eb;
-    }
-
-    .pill {
-      display: inline-flex;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.35);
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 6px;
-    }
-
-    /* СПИСОК ПЛАНА */
-
-    .list {
-      margin-top: 6px;
-      font-size: 13px;
-      color: #e5e7eb;
-    }
-
-    .list-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .list-bullet {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      margin-top: 6px;
-      background: var(--accent);
-    }
-
-    .list-text {
-      flex: 1;
-    }
-
-    /* ФИНАЛ */
-
-    .final {
-      margin-top: 22px;
-      text-align: center;
-    }
-
-    .final-main {
-      font-size: 18px;
-      margin-bottom: 6px;
-    }
-
-    .final-sub {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    .heart {
-      font-size: 20px;
-      margin-top: 4px;
-    }
-
-    footer {
-      margin-top: 10px;
-      text-align: center;
-      font-size: 11px;
-      color: var(--muted);
-      opacity: 0.8;
-    }
-
-    /* ЛАЙТБОКС ДЛЯ УВЕЛИЧЕНИЯ ФОТО */
-
-    .lightbox {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.78);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-      z-index: 50;
-      padding: 16px;
-    }
-
-    .lightbox.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .lightbox-inner {
-      max-width: 480px;
-      width: 100%;
-      max-height: 90vh;
-      border-radius: 18px;
-      overflow: hidden;
-      background: #020617;
-      border: 1px solid rgba(148,163,184,0.7);
-      box-shadow: 0 22px 60px rgba(0,0,0,0.85);
-      position: relative;
-    }
-
-    .lightbox-inner img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: #020617;
-    }
-
-    .lightbox-close {
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      font-size: 22px;
-      line-height: 1;
-      color: #e5e7eb;
-      cursor: pointer;
-      text-shadow: 0 0 6px rgba(0,0,0,0.8);
-      padding: 4px 6px;
+    :root{
+      --bg:#0e1117;
+      --card:#151922;
+      --accent:#f4b65f;
+      --accent-soft:rgba(244,182,95,.12);
+      --text:#f7f7f7;
+      --muted:#9ca3af;
+      --stroke:rgba(148,163,184,.30);
+      --stroke-strong:rgba(148,163,184,.55);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    html,body{height:100%}
+    body{
+      background:radial-gradient(circle at top,#1f2937 0,var(--bg) 45%);
+      color:var(--text);
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      scroll-snap-type:y mandatory;
+    }
+
+    /* каждая секция — один экран */
+    .screen{
+      min-height:100svh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px 16px 40px;
+      scroll-snap-align:start;
+      scroll-snap-stop:always;
+    }
+
+    .page{width:100%;max-width:480px;}
+
+    .card{
+      background:linear-gradient(145deg, rgba(255,255,255,0.04), rgba(15,23,42,0.95));
+      border-radius:20px;
+      padding:22px 18px 20px;
+      box-shadow:0 18px 40px rgba(0,0,0,.50);
+      border:1px solid var(--stroke);
+      backdrop-filter:blur(18px);
+    }
+
+    .hero-tag{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:4px 10px;border-radius:999px;
+      background:rgba(15,23,42,.90);
+      border:1px solid var(--stroke-strong);
+      font-size:11px;text-transform:uppercase;letter-spacing:.12em;
+      color:var(--muted);
+      margin:0 auto 10px;
+    }
+    .hero-tag-dot{
+      width:6px;height:6px;border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 10px rgba(244,182,95,.80);
+    }
+
+    h1{font-size:24px;line-height:1.25;margin-bottom:8px}
+    h2{font-size:18px;margin-bottom:6px}
+    p{font-size:14px;line-height:1.5;color:#e5e7eb}
+
+    .section-title{
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    /* Шаг 1 — фотолента (одна строка) */
+    .photo-strip{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      overflow-x:auto;
+      padding-bottom:6px;
+      scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;
+    }
+    .photo-strip::-webkit-scrollbar{height:6px}
+    .photo-strip::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:999px}
+
+    .thumb{
+      flex:0 0 auto;
+      width:120px;
+      height:120px;
+      border-radius:16px;
+      overflow:hidden;
+      background:#020617;
+      border:1px solid rgba(148,163,184,.25);
+      position:relative;
+      cursor:pointer;
+      scroll-snap-align:start;
+    }
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transition:transform .35s ease;
+    }
+    .thumb:hover img{transform:scale(1.03)}
+    .thumb::after{
+      content:"";
+      position:absolute;inset:0;
+      border-radius:inherit;
+      box-shadow:inset 0 0 0 1px rgba(244,182,95,.0);
+      transition:box-shadow .35s ease;
+      pointer-events:none;
+    }
+    .thumb:hover::after{box-shadow:inset 0 0 0 1px rgba(244,182,95,.55)}
+
+    /* Шаг 2 — видео как гифка */
+    .gifbox{
+      margin-top:12px;
+      border-radius:18px;
+      overflow:hidden;
+      background:#020617;
+      border:1px solid rgba(148,163,184,.30);
+      box-shadow:0 16px 40px rgba(0,0,0,.45);
+    }
+    .gifbox video{
+      width:100%;
+      height:auto;
+      display:block;
+    }
+
+    /* Шаг 3 — картинка полностью, без пустых полей */
+    .imagebox{
+      margin-top:12px;
+      border-radius:18px;
+      overflow:hidden;
+      background:#020617;
+      border:1px solid rgba(148,163,184,.30);
+      box-shadow:0 16px 40px rgba(0,0,0,.45);
+    }
+    .imagebox img{
+      width:100%;
+      height:auto;            /* ключевое: контейнер подстраивается под реальный формат */
+      display:block;          /* убираем «зазор» снизу у inline-img */
+      object-fit:contain;     /* на всякий случай, но при height:auto почти не влияет */
+    }
+
+    /* список */
+    .list{margin-top:10px;font-size:13px;color:#e5e7eb}
+    .list-item{display:flex;align-items:flex-start;gap:8px;margin-top:6px}
+    .list-bullet{width:7px;height:7px;border-radius:50%;margin-top:7px;background:var(--accent)}
+    .list-text{flex:1}
+
+    .final{text-align:center}
+
+      .final-crest{
+        width:min(240px, 65vw);
+        height:auto;
+        margin:10px auto 14px;
+        display:block;
+        filter: drop-shadow(0 14px 28px rgba(0,0,0,.55));
+      }
+      @media (max-height: 720px){
+        .final-crest{ width:min(200px, 58vw); margin:8px auto 12px; }
+      }
+    .final-main{font-size:18px;margin-bottom:6px}
+    .final-sub{font-size:13px;color:var(--muted);margin-bottom:10px}
+    .heart{font-size:20px;margin-top:4px}
+
+    footer{
+      margin-top:10px;
+      text-align:center;
+      font-size:11px;
+      color:var(--muted);
+      opacity:.8;
+    }
+
+    /* лайтбокс */
+    .lightbox{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,.78);
+      display:flex;align-items:center;justify-content:center;
+      opacity:0;pointer-events:none;
+      transition:opacity .25s ease;
+      z-index:50;padding:16px;
+    }
+    .lightbox.visible{opacity:1;pointer-events:auto}
+    .lightbox-inner{
+      max-width:520px;width:100%;
+      max-height:90vh;
+      border-radius:18px;
+      overflow:hidden;
+      background:#020617;
+      border:1px solid rgba(148,163,184,.70);
+      box-shadow:0 22px 60px rgba(0,0,0,.85);
+      position:relative;
+    }
+    .lightbox-inner img{
+      display:block;width:100%;height:100%;
+      object-fit:contain;background:#020617;
+    }
+    .lightbox-close{
+      position:absolute;top:8px;right:10px;
+      font-size:22px;line-height:1;
+      color:#e5e7eb;cursor:pointer;
+      text-shadow:0 0 6px rgba(0,0,0,.8);
+      padding:4px 6px;
     }
   
 
-/* === Full-screen snap (works in Safari/Telegram/desktop) === */
-html, body { height: 100%; }
-body {
-  margin: 0;
-  overflow: hidden; /* scrolling happens in .snap */
-}
-
-.snap {
-  height: 100svh;
-  height: 100vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: y mandatory;
-  overscroll-behavior-y: contain;
-  scroll-behavior: smooth;
-  padding: 0;
-}
-
-.screen {
-  min-height: 100svh;
-  min-height: 100vh;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 28px 14px;
-  box-sizing: border-box;
-}
-
-/* Keep your existing "page" background, but don't rely on it for scrolling */
-.page { min-height: auto; padding: 0; }
-
-/* Card fits each screen */
-.card {
-  width: min(560px, 100%);
-  max-height: calc(100svh - 56px);
-  max-height: calc(100vh - 56px);
-  overflow: hidden;
-}
-
-/* If content is too tall on very small screens, allow only the card to scroll internally */
-@media (max-height: 690px) {
-  .card { overflow: auto; }
-}
-
-/* Fixed footer note across screens */
-.footer-note {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-  text-align: center;
-  font-size: 13px;
-  color: rgba(255,255,255,0.55);
-  pointer-events: none;
-  padding: 0 14px;
-  box-sizing: border-box;
-}
-
-/* === Dancing hearts -> AA (no circle) === */
-.love-mark{
-  margin-top: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
+/* --- /* Dancing hearts (no circle + visible animation) */
+.love-dance{
+  margin: 18px auto 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:auto;
+  height:auto;
+  padding:0;
+  border:none;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  backdrop-filter:none;
 }
 
 .love-svg{
+  width: 92px;
+  height: 92px;
   overflow: visible;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,.35));
 }
 
-.love-svg .h{
-  fill: rgba(255,255,255,0.92);
-  filter: drop-shadow(0 8px 18px rgba(0,0,0,0.35));
-  transform-origin: center;
+.love-svg .phase.hearts{ opacity: 1; animation: phaseHearts 4.8s infinite ease-in-out; }
+.love-svg .phase.aas{ opacity: 0; animation: phaseAA 4.8s infinite ease-in-out; }
+
+/* SVG transforms need these on iOS */
+.love-svg .h1, .love-svg .h2, .love-svg .a1, .love-svg .a2{
   transform-box: fill-box;
+  transform-origin: center;
 }
 
-.love-svg .aa{
-  fill: rgba(255,255,255,0.92);
-  font-family: ui-serif, Georgia, "Times New Roman", serif;
-  font-weight: 700;
-  font-size: 48px;
-  letter-spacing: 2px;
-  filter: drop-shadow(0 10px 22px rgba(0,0,0,0.35));
+.love-svg .h1{ animation: floatHL 1.55s infinite ease-in-out; }
+.love-svg .h2{ animation: floatHR 1.55s infinite ease-in-out; }
+.love-svg .a1{ animation: floatAL 1.55s infinite ease-in-out; }
+.love-svg .a2{ animation: floatAR 1.55s infinite ease-in-out; }
+
+@keyframes phaseHearts{
+  0%, 52% { opacity: 1; transform: scale(1); }
+  58%, 100% { opacity: 0; transform: scale(.92); }
+}
+@keyframes phaseAA{
+  0%, 50% { opacity: 0; transform: scale(.92); }
+  58%, 88% { opacity: 1; transform: scale(1); }
+  94%, 100% { opacity: 0; transform: scale(.92); }
 }
 
-/* Timeline: hearts dance (0-45), morph/crossfade (45-55), AA (55-85), fade back (85-100) */
-.love-svg .hearts{
-  animation: heartsOpacity 3.6s infinite linear;
+@keyframes floatHL{
+  0%   { transform: translate(-16px,  2px) rotate(-18deg) scale(1.00); }
+  25%  { transform: translate( -6px, -9px) rotate( -6deg) scale(1.10); }
+  50%  { transform: translate(  4px,  4px) rotate( 10deg) scale(1.06); }
+  75%  { transform: translate( -9px, 11px) rotate( 18deg) scale(1.08); }
+  100% { transform: translate(-16px,  2px) rotate(-18deg) scale(1.00); }
 }
-.love-svg .letters{
-  opacity: 0;
-  animation: lettersOpacity 3.6s infinite linear;
+@keyframes floatHR{
+  0%   { transform: translate( 16px,  2px) rotate( 18deg) scale(1.00); }
+  25%  { transform: translate(  6px, -9px) rotate(  6deg) scale(1.10); }
+  50%  { transform: translate( -4px,  4px) rotate(-10deg) scale(1.06); }
+  75%  { transform: translate(  9px, 11px) rotate(-18deg) scale(1.08); }
+  100% { transform: translate( 16px,  2px) rotate( 18deg) scale(1.00); }
 }
-
-.love-svg .h1{
-  animation: heartDance1 3.6s infinite ease-in-out;
+@keyframes floatAL{
+  0%   { transform: translate(-10px,  6px) rotate(-6deg) scale(.98); }
+  50%  { transform: translate( -6px, -2px) rotate( 3deg) scale(1.04); }
+  100% { transform: translate(-10px,  6px) rotate(-6deg) scale(.98); }
 }
-.love-svg .h2{
-  animation: heartDance2 3.6s infinite ease-in-out;
-}
-
-@keyframes heartsOpacity{
-  0%, 42% { opacity: 1; }
-  50% { opacity: 0; }
-  92% { opacity: 0; }
-  100% { opacity: 1; }
-}
-@keyframes lettersOpacity{
-  0%, 50% { opacity: 0; }
-  58%, 85% { opacity: 1; }
-  100% { opacity: 0; }
-}
-@keyframes heartDance1{
-  0%   { transform: translate(-10px, 0px) rotate(-8deg) scale(1); }
-  15%  { transform: translate(-18px, -2px) rotate(-14deg) scale(1.04); }
-  30%  { transform: translate(-10px, 1px) rotate(-6deg) scale(0.98); }
-  42%  { transform: translate(-2px, 0px) rotate(-2deg) scale(1.02); }
-  50%  { transform: translate(0px, 0px) rotate(0deg) scale(0.86); }
-  60%  { transform: translate(0px, 0px) rotate(0deg) scale(0.86); }
-  100% { transform: translate(-10px, 0px) rotate(-8deg) scale(1); }
-}
-@keyframes heartDance2{
-  0%   { transform: translate(10px, 0px) rotate(8deg) scale(1); }
-  15%  { transform: translate(18px, -2px) rotate(14deg) scale(1.04); }
-  30%  { transform: translate(10px, 1px) rotate(6deg) scale(0.98); }
-  42%  { transform: translate(2px, 0px) rotate(2deg) scale(1.02); }
-  50%  { transform: translate(0px, 0px) rotate(0deg) scale(0.86); }
-  60%  { transform: translate(0px, 0px) rotate(0deg) scale(0.86); }
-  100% { transform: translate(10px, 0px) rotate(8deg) scale(1); }
+@keyframes floatAR{
+  0%   { transform: translate( 10px,  6px) rotate( 6deg) scale(.98); }
+  50%  { transform: translate(  6px, -2px) rotate(-3deg) scale(1.04); }
+  100% { transform: translate( 10px,  6px) rotate( 6deg) scale(.98); }
 }
 
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce){
-  .love-svg .hearts, .love-svg .letters, .love-svg .h1, .love-svg .h2 { animation: none !important; }
-  .love-svg .letters { opacity: 0; }
-  .love-svg .hearts { opacity: 1; }
+  .love-svg *{ animation: none !important; }
+  .love-svg .phase.hearts{ opacity: 1 !important; transform: none !important; }
+  .love-svg .phase.aas{ opacity: 0 !important; }
 }
+/* End dancing hearts */
+/* When AA is visible, slightly “meet” in the middle */
+@keyframes floatAL{
+  0%,46%{ transform: translate(-14px, 2px) rotate(-8deg) scale(0.92); opacity:0; }
+  55%{ transform: translate(-4px, 0px) rotate(-3deg) scale(1); opacity:1; }
+  75%{ transform: translate(-6px, -2px) rotate(-5deg) scale(1.02); opacity:1; }
+  100%{ transform: translate(-4px, 0px) rotate(-3deg) scale(1); opacity:1; }
+}
+@keyframes floatAR{
+  0%,46%{ transform: translate(14px, 2px) rotate(8deg) scale(0.92); opacity:0; }
+  55%{ transform: translate(4px, 0px) rotate(3deg) scale(1); opacity:1; }
+  75%{ transform: translate(6px, -2px) rotate(5deg) scale(1.02); opacity:1; }
+  100%{ transform: translate(4px, 0px) rotate(3deg) scale(1); opacity:1; }
+}
+
+/* Respect user preference */
+@media (prefers-reduced-motion: reduce){
+  .love-svg .hearts, .love-svg .aas, .love-svg .h1, .love-svg .h2, .love-svg .a1, .love-svg .a2{
+    animation: none !important;
+  }
+  .love-svg .aas{ opacity: 0; }
+  .love-svg .hearts{ opacity: 1; }
+}
+
+    .intro-image{
+      width: 100%;
+      height: auto;
+      max-height: clamp(160px, 28vh, 260px);
+      object-fit: contain;
+      border-radius: 18px;
+      margin: 14px 0 10px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.12);
+    }
+
+
+    /* Ensure inserted images use full width without side gutters */
+    .card-media img, .media img, .step-media img, .figure img{
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+
+    .love-dance{
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      outline: none !important;
+      -webkit-tap-highlight-color: transparent;
+    }
 
 </style>
 </head>
+
 <body>
-  <div class="snap" id="snap">
-    <section class="screen" id="intro">
+
+  <!-- 1) Введение -->
+  <section class="screen">
+    <div class="page">
       <div class="card">
         <div class="hero-tag">
-        <span class="hero-tag-dot"></span>
-        <span>Сайт с частичкой нашей любви и началом чего-то нового</span>
+          <span class="hero-tag-dot"></span>
+          <span>Ценный сайт с частичкой нашей любви и началом чего-то нового</span>
+        </div>
+
+        <img class="intro-image" src="img/lotte.png?v=3" alt="Мы в Дубае" loading="eager" />
+
+        <h1>Если ты читаешь это, значит, ты сказала мне «да»🤍</h1>
+        <p>
+          Любимая, бесконечное спасибо тебе за то, что выбрала меня.
+          При вёрстке этого сайта пролита не одна слеза из‑за осмысления нашей истории и осознания трогательности момента.
+        </p>
       </div>
 
-      
-          <div class="intro-media" aria-hidden="true">
-            <img src="img/lotte.png" alt="Lotte" loading="lazy" decoding="async">
-          </div>
-<h1>Если ты это читаешь, значит, я услышал долгожданное «да»🤍</h1>
-      <div class="hero-sub">
-        Любимая, бесконечное спасибо за то, что выбрала меня. При вёрстке сайта пролита не одна слеза из-за трогательных воспоминаний из прошлого, осознания уникальности момента в начтоящем и предвкушения нашей будущей семейной жизни, которая непременно пополнит любимыми кадрами ту коллекцию, которую я подготовил ниже.
-      </div>
+      <footer>Листай вниз</footer>
+    </div>
+  </section>
 
-      
-      </div>
-    </section>
-
-    <section class="screen" id="step1">
+  <!-- 2) Шаг 1 -->
+  <section class="screen">
+    <div class="page">
       <div class="card">
-        <!-- ШАГ 1 — МОМЕНТЫ -->
-      <div class="section">
         <div class="section-title">Шаг 1</div>
         <h2>Моменты, которые привели нас к этому вечеру</h2>
-        <p>
-          Люблю тебя в каждом из них❣️
+        <p>Люблю тебя в каждом из них ∞</p>
+
+        <div class="photo-strip" id="photo-strip" aria-label="Фотолента"></div>
+
+        <p style="margin-top:10px;color:var(--muted);font-size:12px;">
+          Нажми на фото, чтобы увеличить.
         </p>
-
-        <!-- контейнер-полка, сюда JS подставит 10 случайных фото -->
-        <div class="photos-archive" id="photos-archive"></div>
       </div>
+    </div>
+  </section>
 
-      
-      </div>
-    </section>
-
-    <section class="screen" id="step2">
+  <!-- 3) Шаг 2 -->
+  <section class="screen">
+    <div class="page">
       <div class="card">
-        <!-- ШАГ 2 — КОЛЬЦО -->
-      <div class="section">
         <div class="section-title">Шаг 2</div>
         <h2>Каким я представляю твоё кольцо</h2>
-        <p>Оно отлично передаёт ценность тебя и этого момента для моей жизни, твою красоту и изящность. 
-          А 8 бриллиантов вместо одного — как символ нашей любви, которую мы запечатываем во множество крестражей, чтобы она жила вечно. Ведь с сегодняшнего дня это моя главная цель и фундаментальный атрибут моего счастья. </p>
+        <p>
+          Оно отлично передаёт ценность тебя и этого момента для моей жизни, твою красоту и изящность.
+          А 8 бриллиантов вместо одного — как символ нашей любви, которую мы запечатлели во множество крохотных, но ярких огней.
+        </p>
 
-        <div class="ring-card">
-          <div class="ring-photo">
-            <!-- Если захочешь — подставишь реальное фото -->
-            <!-- <img src="img/ring.jpg" alt="Кольцо Cartier"> -->
-            Фото кольца<br>которое я<br>представляю
-          </div>
-          <div class="ring-text">
-            Тонкое, аккуратное, элегантное — такое же, как ты.  
-            Я хочу, чтобы ты сама сказала этому кольцу «да» в бутике Cartier в Дубае.
-            <div class="pill">Мы выберем его вместе</div>
-          </div>
+        <div class="gifbox" style="margin-top:12px;">
+          <video class="gif" muted autoplay loop playsinline webkit-playsinline preload="none"
+               data-src="media/IMG_5945_sharper_fast_optimized.mp4?v=2"
+               aria-label="Демо кольца"
+               disablepictureinpicture
+               controlslist="nodownload noplaybackrate noremoteplayback"></video>
         </div>
-      </div>
 
-      
+        <p style="margin-top:10px;color:var(--muted);font-size:12px;">
+          Если видео не стартует — просто тапни по карточке (в некоторых браузерах это требуется).
+        </p>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="screen" id="step3">
+  <!-- 4) Шаг 3 -->
+  <section class="screen">
+    <div class="page">
       <div class="card">
-        <!-- ШАГ 3 — ПЛАН ДУБАЯ -->
-      <div class="section">
         <div class="section-title">Шаг 3</div>
         <h2>Наш маленький план Дубая</h2>
+
+        <!-- ВАЖНО: тут картинка полностью видна и блок подстраивается под формат -->
+        <div class="imagebox">
+          <img src="img/dubai.png" alt="Дубай — наш момент" loading="eager" decoding="async">
+        </div>
+
         <div class="list">
           <div class="list-item">
             <div class="list-bullet"></div>
@@ -970,187 +445,265 @@ body {
           </div>
         </div>
       </div>
+    </div>
+  </section>
 
-      
-      </div>
-    </section>
-
-    <section class="screen" id="final">
-      <div class="card">
-        <!-- ФИНАЛ -->
-      <div class="final">
-        <div class="final-main">Ариночка, я хочу прожить с тобой всю жизнь.</div>
-        <div class="final-sub">
-          Для меня важно не просто кольцо, а всё, что стоит за ним: ты, мы и наша общая история — от этого вечера до самого-самого дальше.
-        </div>
+  <!-- 5) Вывод -->
+  <section class="screen">
+    <div class="page">
+      <div class="card final">
         
-    <div class="love-mark" aria-label="Два сердца превращаются в AA" role="img">
-      <svg class="love-svg" viewBox="0 0 240 80" width="96" height="32" aria-hidden="true" focusable="false">
-        <g class="hearts">
-          <path class="h h1" d="M60 26c0-10 8-18 18-18 7 0 13 4 16 10 3-6 9-10 16-10 10 0 18 8 18 18 0 21-34 36-34 36S60 47 60 26z"/>
-          <path class="h h2" d="M128 26c0-10 8-18 18-18 7 0 13 4 16 10 3-6 9-10 16-10 10 0 18 8 18 18 0 21-34 36-34 36s-34-15-34-36z"/>
-        </g>
-        <g class="letters">
-          <text x="86" y="55" class="aa">A</text>
-          <text x="128" y="55" class="aa">A</text>
-        </g>
-      </svg>
-    </div>
-    
-      </div>
-    </div>
+        <img class="final-crest" src="img/AAfam.png" alt="AA Family" loading="lazy" decoding="async" />
+<div class="final-main">Ариночка, я хочу прожить с тобой всю жизнь.</div>
+        <div class="final-sub">
+          Для меня важно не просто кольцо, а всё, что стоит за ним: ты, мы и наша общая история — от этого вечера до самого‑самого дальше.
+        </div>
+        <div class="love-dance" role="img" aria-label="Два сердца превращаются в две буквы «А» и обратно">
+          <svg class="love-svg" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="1.6" result="blur"/>
+                <feMerge>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+              <linearGradient id="silver" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="rgba(255,255,255,0.95)"/>
+                <stop offset="1" stop-color="rgba(200,200,200,0.85)"/>
+              </linearGradient>
+            </defs>
 
-    <footer>
-      Наше маленькое «да» перед большой совместной жизнью
-    </footer>
-  </div>
+            <!-- PHASE 1: hearts -->
+            <g class="phase hearts" filter="url(#softGlow)">
+              <path class="h h1" fill="url(#silver)" d="M26 33
+                C20 27 18 22 18 18
+                C18 12 22 8 28 8
+                C32 8 36 10 38 13
+                C40 10 44 8 48 8
+                C54 8 58 12 58 18
+                C58 22 56 27 50 33
+                C45 38 40 42 38 44
+                C36 42 31 38 26 33 Z"/>
+              <path class="h h2" fill="url(#silver)" d="M62 33
+                C56 27 54 22 54 18
+                C54 12 58 8 64 8
+                C68 8 72 10 74 13
+                C76 10 80 8 84 8
+                C90 8 94 12 94 18
+                C94 22 92 27 86 33
+                C81 38 76 42 74 44
+                C72 42 67 38 62 33 Z"/>
+            </g>
+
+            <!-- PHASE 2: AA -->
+            <g class="phase aas" filter="url(#softGlow)">
+              <path class="a a1" fill="none" stroke="url(#silver)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"
+                d="M30 46 L40 14 L50 46 M34.5 34 H45.5"/>
+              <path class="a a2" fill="none" stroke="url(#silver)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"
+                d="M70 46 L80 14 L90 46 M74.5 34 H85.5"/>
+            </g>
+          </svg>
+        </div>
+</div>
+
+      <footer>Наше маленькое «да» перед большой совместной жизнью</footer>
+    </div>
+  </section>
 
   <!-- Лайтбокс -->
-  <div class="lightbox" id="lightbox">
+  <div class="lightbox" id="lightbox" aria-hidden="true">
     <div class="lightbox-inner">
       <span class="lightbox-close" id="lightbox-close">×</span>
       <img src="" alt="Наш момент" id="lightbox-img">
     </div>
   </div>
 
-  
-      </div>
-    </section>
-  </div>
+  <script>
+    // === Шаг 1: фото в одну строку, показываем 10 случайных ===
+    (function(){
+      // Переименуй под свои файлы — главное, чтобы пути были верные.
+      const allPhotos = Array.from({length: 48}, (_, i) => `img/photo${i+1}.jpg`);
+      const TAKE = 10;
 
-  <div class="footer-note">Наше маленькое «да» перед большой совместной жизнью</div>
+      // выбираем без повторов
+      const picked = [];
+      const pool = allPhotos.slice();
+      while (picked.length < Math.min(TAKE, pool.length)) {
+        const idx = Math.floor(Math.random() * pool.length);
+        picked.push(pool.splice(idx, 1)[0]);
+      }
 
-<script>
+      const strip = document.getElementById('photo-strip');
+      picked.forEach((src) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'thumb';
+        btn.setAttribute('aria-label', 'Открыть фото');
 
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = 'Наш момент';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+
+        btn.appendChild(img);
+        strip.appendChild(btn);
+      });
+    })();
+
+    // === Лайтбокс для фото ===
     (function () {
-      // Список всех фото в архиве.
-      // Положи файлы в папку img и допиши сюда, если их больше.
-      const photoFiles = [
-        'img/photo1.jpg',
-        'img/photo2.jpg',
-        'img/photo3.jpg',
-        'img/photo4.jpg',
-        'img/photo5.jpg',
-        'img/photo6.jpg',
-        'img/photo7.jpg',
-        'img/photo8.jpg',
-        'img/photo9.jpg',
-        'img/photo10.jpg',
-        'img/photo11.jpg',
-        'img/photo12.jpg',
-        'img/photo13.jpg',
-        'img/photo14.jpg',
-        'img/photo15.jpg',
-        'img/photo16.jpg',
-        'img/photo17.jpg',
-        'img/photo18.jpg',
-        'img/photo19.jpg',
-        'img/photo20.jpg',
-        'img/photo21.jpg',
-        'img/photo22.jpg',
-        'img/photo23.jpg',
-        'img/photo24.jpg',
-        'img/photo25.jpg',
-        'img/photo26.jpg',
-        'img/photo27.jpg',
-        'img/photo28.jpg',
-        'img/photo29.jpg',
-        'img/photo30.jpg',
-        'img/photo31.jpg',
-        'img/photo32.jpg',
-        'img/photo33.jpg',
-        'img/photo34.jpg',
-        'img/photo35.jpg',
-        'img/photo36.jpg',
-        'img/photo37.jpg',
-        'img/photo38.jpg',
-        'img/photo39.jpg',
-        'img/photo40.jpg',
-        'img/photo41.jpg',
-        'img/photo42.jpg'
-        // добавляй дальше по мере надобности
-      ];
-
-      const MAX_TO_SHOW = 10;
-
-      const container = document.getElementById('photos-archive');
+      const strip = document.getElementById('photo-strip');
       const lightbox = document.getElementById('lightbox');
       const lightboxImg = document.getElementById('lightbox-img');
       const lightboxClose = document.getElementById('lightbox-close');
 
-      if (!container || photoFiles.length === 0) return;
-
-      // Перемешиваем и берём первые MAX_TO_SHOW
-      const shuffled = photoFiles
-        .slice()
-        .sort(() => Math.random() - 0.5)
-        .slice(0, Math.min(MAX_TO_SHOW, photoFiles.length));
-
-      // Рендерим "папки" с фотками
-      shuffled.forEach((src, index) => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'photo';
-
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = 'Наш момент ' + (index + 1);
-
-        wrapper.appendChild(img);
-        container.appendChild(wrapper);
+      strip.addEventListener('click', (e) => {
+        const btn = e.target.closest('.thumb');
+        if (!btn) return;
+        const img = btn.querySelector('img');
+        if (!img || !img.src) return;
+        lightboxImg.src = img.src;
+        lightbox.classList.add('visible');
+        lightbox.setAttribute('aria-hidden', 'false');
       });
 
-      // Навешиваем лайтбокс
-      const attachLightbox = () => {
-        const photos = container.querySelectorAll('.photo img');
-
-        photos.forEach(img => {
-          img.addEventListener('click', () => {
-            lightboxImg.src = img.src;
-            lightbox.classList.add('visible');
-          });
-        });
+      const close = () => {
+        lightbox.classList.remove('visible');
+        lightbox.setAttribute('aria-hidden', 'true');
+        lightboxImg.src = '';
       };
 
-      const close = () => lightbox.classList.remove('visible');
-
       lightboxClose.addEventListener('click', close);
-      lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox) close();
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') close();
-      });
-
-      attachLightbox();
+      lightbox.addEventListener('click', (e) => { if (e.target === lightbox) close(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
     })();
-  
 
-/* Ensure snap "доводчик" is reliable even when momentum scrolling ends between panels */
-(function() {
-  const scroller = document.getElementById('snap');
-  if (!scroller) return;
+    // === Видео как гифка: пытаемся запустить принудительно ===
+    (function(){
+      document.querySelectorAll('video.gif').forEach((v) => {
+        const tryPlay = () => v.play().catch(()=>{});
+        // сразу
+        tryPlay();
+        // и при любом первом касании/скролле — для iOS/встроенных браузеров
+        const once = () => { tryPlay(); window.removeEventListener('touchstart', once); window.removeEventListener('click', once); };
+        window.addEventListener('touchstart', once, {passive:true});
+        window.addEventListener('click', once, {passive:true});
+      });
+    })();
+  </script>
 
-  let t = null;
-  scroller.addEventListener('scroll', () => {
-    // debounce
-    if (t) clearTimeout(t);
-    t = setTimeout(() => {
-      const screens = Array.from(scroller.querySelectorAll('.screen'));
-      const top = scroller.scrollTop;
-      // Find nearest screen by distance to its offsetTop
-      let best = null;
-      let bestDist = Infinity;
-      for (const s of screens) {
-        const d = Math.abs(s.offsetTop - top);
-        if (d < bestDist) { bestDist = d; best = s; }
+<script>
+(() => {
+  const videos = Array.from(document.querySelectorAll('video.gif[data-src]'));
+  if (!videos.length) return;
+
+  const loadVideo = (v) => {
+    if (v.dataset.loaded) return;
+    v.src = v.dataset.src;
+    v.dataset.loaded = '1';
+    v.load();
+  };
+
+  const tryPlay = (v) => {
+    const p = v.play();
+    if (p && typeof p.catch === 'function') p.catch(() => {});
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      const v = entry.target;
+      if (entry.isIntersecting) {
+        loadVideo(v);
+        tryPlay(v);
+      } else {
+        v.pause();
       }
-      if (best && bestDist > 4) {
-        best.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 90);
-  }, { passive: true });
+    }
+  }, { threshold: 0.25 });
+
+  videos.forEach(v => observer.observe(v));
+
+  // iOS fallback: first interaction usually "unlocks" autoplay
+  const unlock = () => {
+    videos.forEach(v => { loadVideo(v); tryPlay(v); });
+  };
+  window.addEventListener('touchstart', unlock, { passive: true, once: true });
+  window.addEventListener('click', unlock, { passive: true, once: true });
 })();
+
+
+  (function(){
+    // --- scroll "dovodchik": gently snaps to the nearest screen when the user stops scrolling
+    const snaps = Array.from(document.querySelectorAll('.snap'));
+    if(!snaps.length) return;
+
+    let t = null;
+    let isAuto = false;
+
+    function nearestSnap(){
+      const vh = window.innerHeight || 1;
+      let best = snaps[0], bestScore = Infinity;
+      for (const s of snaps){
+        const r = s.getBoundingClientRect();
+        const score = Math.abs(r.top); // distance from top
+        if (score < bestScore){
+          bestScore = score;
+          best = s;
+        }
+      }
+      return best;
+    }
+
+    function snapNow(){
+      if (isAuto) return;
+      const target = nearestSnap();
+      if (!target) return;
+      const r = target.getBoundingClientRect();
+      // If we're already close enough, don't fight the user
+      if (Math.abs(r.top) < 12) return;
+      isAuto = true;
+      target.scrollIntoView({behavior:'smooth', block:'start'});
+      // release lock after animation
+      window.setTimeout(()=>{ isAuto = false; }, 420);
+    }
+
+    window.addEventListener('scroll', ()=>{
+      if (t) window.clearTimeout(t);
+      t = window.setTimeout(snapNow, 140);
+    }, {passive:true});
+
+    // also snap after touch/mouse wheel ends (some webviews don't fire a clean scroll end)
+    ['touchend','mouseup','keyup'].forEach(ev=>{
+      window.addEventListener(ev, ()=>{
+        if (t) window.clearTimeout(t);
+        t = window.setTimeout(snapNow, 60);
+      }, {passive:true});
+    });
+
+    // keep current snap on resize/address-bar changes
+    window.addEventListener('resize', ()=>{
+      if (t) window.clearTimeout(t);
+      t = window.setTimeout(()=>{
+        const target = nearestSnap();
+        if (target) target.scrollIntoView({behavior:'auto', block:'start'});
+      }, 120);
+    });
+  })();
+
+
+
+  (function(){
+    const svg = document.querySelector('.love-dance svg');
+    if(!svg) return;
+    // restart CSS animations (some webviews "freeze" animations on initial paint)
+    requestAnimationFrame(()=>{
+      const clone = svg.cloneNode(true);
+      svg.parentNode.replaceChild(clone, svg);
+    });
+  })();
+
 </script>
 </body>
 </html>
