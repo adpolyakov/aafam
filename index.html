@@ -157,6 +157,17 @@
     .list-text{flex:1}
 
     .final{text-align:center}
+
+      .final-crest{
+        width:min(240px, 65vw);
+        height:auto;
+        margin:10px auto 14px;
+        display:block;
+        filter: drop-shadow(0 14px 28px rgba(0,0,0,.55));
+      }
+      @media (max-height: 720px){
+        .final-crest{ width:min(200px, 58vw); margin:8px auto 12px; }
+      }
     .final-main{font-size:18px;margin-bottom:6px}
     .final-sub{font-size:13px;color:var(--muted);margin-bottom:10px}
     .heart{font-size:20px;margin-top:4px}
@@ -302,7 +313,9 @@
   <section class="screen">
     <div class="page">
       <div class="card final">
-        <div class="final-main">Ариночка, я хочу прожить с тобой всю жизнь.</div>
+        
+        <img class="final-crest" src="img/AAfam.png" alt="AA Family" loading="lazy" decoding="async" />
+<div class="final-main">Ариночка, я хочу прожить с тобой всю жизнь.</div>
         <div class="final-sub">
           Для меня важно не просто кольцо, а всё, что стоит за ним: ты, мы и наша общая история — от этого вечера до самого‑самого дальше.
         </div>
