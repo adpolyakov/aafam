@@ -254,15 +254,11 @@
         </p>
 
         <div class="gifbox" style="margin-top:12px;">
-          <video
-            class="gif"
-            src="media/IMG_5925_PRO_2160_square_x264.mp4"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="auto"
-          ></video>
+          <video class="gif" muted autoplay loop playsinline webkit-playsinline preload="none"
+               data-src="media/IMG_5945_sharper_fast.mp4"
+               aria-label="Демо кольца"
+               disablepictureinpicture
+               controlslist="nodownload noplaybackrate noremoteplayback"></video>
         </div>
 
         <p style="margin-top:10px;color:var(--muted);font-size:12px;">
@@ -400,5 +396,44 @@
     })();
   </script>
 
+<script>
+(() => {
+  const videos = Array.from(document.querySelectorAll('video.gif[data-src]'));
+  if (!videos.length) return;
+
+  const loadVideo = (v) => {
+    if (v.dataset.loaded) return;
+    v.src = v.dataset.src;
+    v.dataset.loaded = '1';
+    v.load();
+  };
+
+  const tryPlay = (v) => {
+    const p = v.play();
+    if (p && typeof p.catch === 'function') p.catch(() => {});
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      const v = entry.target;
+      if (entry.isIntersecting) {
+        loadVideo(v);
+        tryPlay(v);
+      } else {
+        v.pause();
+      }
+    }
+  }, { threshold: 0.25 });
+
+  videos.forEach(v => observer.observe(v));
+
+  // iOS fallback: first interaction usually "unlocks" autoplay
+  const unlock = () => {
+    videos.forEach(v => { loadVideo(v); tryPlay(v); });
+  };
+  window.addEventListener('touchstart', unlock, { passive: true, once: true });
+  window.addEventListener('click', unlock, { passive: true, once: true });
+})();
+</script>
 </body>
 </html>
