@@ -213,66 +213,84 @@
     }
   
 
-/* --- Dancing hearts ↔︎ AA mark (final screen) --- */
+/* --- /* Dancing hearts (no circle + visible animation) */
 .love-dance{
-  width: 64px;
-  height: 64px;
-  margin: 14px auto 0;
-  display: grid;
-  place-items: center;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.04);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
-  backdrop-filter: blur(8px);
+  margin: 18px auto 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:auto;
+  height:auto;
+  padding:0;
+  border:none;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  backdrop-filter:none;
 }
 
 .love-svg{
-  width: 52px;
-  height: 52px;
-  display:block;
+  width: 92px;
+  height: 92px;
+  overflow: visible;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,.35));
 }
 
-.love-svg .phase{
-  transform-origin: 60px 30px;
+.love-svg .phase.hearts{ opacity: 1; animation: phaseHearts 4.8s infinite ease-in-out; }
+.love-svg .phase.aas{ opacity: 0; animation: phaseAA 4.8s infinite ease-in-out; }
+
+/* SVG transforms need these on iOS */
+.love-svg .h1, .love-svg .h2, .love-svg .a1, .love-svg .a2{
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
-.love-svg .hearts{
-  animation: phaseHearts 2.8s ease-in-out infinite;
-}
-.love-svg .aas{
-  animation: phaseAAs 2.8s ease-in-out infinite;
-}
-
-.love-svg .h1{ transform-origin: 38px 28px; animation: floatL 2.8s ease-in-out infinite; }
-.love-svg .h2{ transform-origin: 74px 28px; animation: floatR 2.8s ease-in-out infinite; }
-
-.love-svg .a1{ transform-origin: 40px 30px; animation: floatAL 2.8s ease-in-out infinite; }
-.love-svg .a2{ transform-origin: 80px 30px; animation: floatAR 2.8s ease-in-out infinite; }
+.love-svg .h1{ animation: floatHL 1.55s infinite ease-in-out; }
+.love-svg .h2{ animation: floatHR 1.55s infinite ease-in-out; }
+.love-svg .a1{ animation: floatAL 1.55s infinite ease-in-out; }
+.love-svg .a2{ animation: floatAR 1.55s infinite ease-in-out; }
 
 @keyframes phaseHearts{
-  0%, 42% { opacity: 1; transform: scale(1); }
-  48% { opacity: 0; transform: scale(0.92); }
-  100% { opacity: 0; transform: scale(0.92); }
+  0%, 52% { opacity: 1; transform: scale(1); }
+  58%, 100% { opacity: 0; transform: scale(.92); }
 }
-@keyframes phaseAAs{
-  0%, 46% { opacity: 0; transform: scale(0.92); }
-  54% { opacity: 1; transform: scale(1); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-@keyframes floatL{
-  0%,100%{ transform: translate(-6px, 0px) rotate(-10deg) scale(1); }
-  25%{ transform: translate(-10px, -3px) rotate(-16deg) scale(1.04); }
-  50%{ transform: translate(-6px, 1px) rotate(-6deg) scale(0.98); }
-  75%{ transform: translate(-8px, -2px) rotate(-14deg) scale(1.02); }
-}
-@keyframes floatR{
-  0%,100%{ transform: translate(6px, 0px) rotate(10deg) scale(1); }
-  25%{ transform: translate(10px, -3px) rotate(16deg) scale(1.04); }
-  50%{ transform: translate(6px, 1px) rotate(6deg) scale(0.98); }
-  75%{ transform: translate(8px, -2px) rotate(14deg) scale(1.02); }
+@keyframes phaseAA{
+  0%, 50% { opacity: 0; transform: scale(.92); }
+  58%, 88% { opacity: 1; transform: scale(1); }
+  94%, 100% { opacity: 0; transform: scale(.92); }
 }
 
+@keyframes floatHL{
+  0%   { transform: translate(-16px,  2px) rotate(-18deg) scale(1.00); }
+  25%  { transform: translate( -6px, -9px) rotate( -6deg) scale(1.10); }
+  50%  { transform: translate(  4px,  4px) rotate( 10deg) scale(1.06); }
+  75%  { transform: translate( -9px, 11px) rotate( 18deg) scale(1.08); }
+  100% { transform: translate(-16px,  2px) rotate(-18deg) scale(1.00); }
+}
+@keyframes floatHR{
+  0%   { transform: translate( 16px,  2px) rotate( 18deg) scale(1.00); }
+  25%  { transform: translate(  6px, -9px) rotate(  6deg) scale(1.10); }
+  50%  { transform: translate( -4px,  4px) rotate(-10deg) scale(1.06); }
+  75%  { transform: translate(  9px, 11px) rotate(-18deg) scale(1.08); }
+  100% { transform: translate( 16px,  2px) rotate( 18deg) scale(1.00); }
+}
+@keyframes floatAL{
+  0%   { transform: translate(-10px,  6px) rotate(-6deg) scale(.98); }
+  50%  { transform: translate( -6px, -2px) rotate( 3deg) scale(1.04); }
+  100% { transform: translate(-10px,  6px) rotate(-6deg) scale(.98); }
+}
+@keyframes floatAR{
+  0%   { transform: translate( 10px,  6px) rotate( 6deg) scale(.98); }
+  50%  { transform: translate(  6px, -2px) rotate(-3deg) scale(1.04); }
+  100% { transform: translate( 10px,  6px) rotate( 6deg) scale(.98); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .love-svg *{ animation: none !important; }
+  .love-svg .phase.hearts{ opacity: 1 !important; transform: none !important; }
+  .love-svg .phase.aas{ opacity: 0 !important; }
+}
+/* End dancing hearts */
 /* When AA is visible, slightly “meet” in the middle */
 @keyframes floatAL{
   0%,46%{ transform: translate(-14px, 2px) rotate(-8deg) scale(0.92); opacity:0; }
