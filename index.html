@@ -22,14 +22,32 @@
     body{
       background:radial-gradient(circle at top,#1f2937 0,var(--bg) 45%);
       color:var(--text);
-      overflow-y:auto;
+      overflow:hidden;
       -webkit-overflow-scrolling:touch;
-      scroll-snap-type:y mandatory;
+      
     }
 
-    /* каждая секция — один экран */
+    
+    :root{ --vh: 1vh; }
+
+    /* основной скролл-контейнер (работает стабильнее, чем snap на body) */
+    .scroll-container{
+      height: 100vh;
+      height: 100svh;
+      height: calc(var(--vh) * 100);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: y mandatory;
+      overscroll-behavior: contain;
+      scroll-behavior: smooth;
+    }
+
+    /* скрываем скроллбар на desktop */
+    .scroll-container::-webkit-scrollbar{ width:0; height:0; }
+
+/* каждая секция — один экран */
     .screen{
-      min-height:100svh;
+      min-height: calc(var(--vh) * 100);
       display:flex;
       align-items:center;
       justify-content:center;
@@ -346,6 +364,7 @@
 </head>
 
 <body>
+  <main id="scroll" class="scroll-container">
 
   <!-- 1) Введение -->
   <section class="screen">
@@ -357,7 +376,7 @@
         </div>
 
         <div class="intro-photo-wrap">
-          <img class="intro-photo" src="img/lotte.png?v=20260113" alt="Lotte — наш вечер" loading="eager">
+          <img decoding="async" class="intro-photo" src="./img/lotte.png?v=20260113121524" alt="Lotte — наш вечер" loading="eager" onerror="(function(img){img.onerror=null;var c='?v=20260113121524';var tries=['./img/lotte.PNG'+c,'./img/Lotte.png'+c,'./img/LOTTE.png'+c];for(var i=0;i<tries.length;i++){var t=new Image();t.src=tries[i];t.onload=(function(u){return function(){img.src=u;}})(tries[i]);}})(this)">
         </div>
 
         <h1>Если ты читаешь это, значит, ты сказала мне «да»🤍</h1>
@@ -683,5 +702,47 @@
   });
 })();
 </script>
+  </main>
+
+<script>
+(function(){
+  function setVh(){
+    var vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', vh + 'px');
+  }
+  setVh();
+  window.addEventListener('resize', setVh);
+  window.addEventListener('orientationchange', setVh);
+
+  // Иногда Telegram/desktop сбрасывают snap при инерционном скролле — подталкиваем к ближайшей секции
+  var scroller = document.getElementById('scroll');
+  if(!scroller) return;
+  var ticking = false;
+  function snapToClosest(){
+    var screens = Array.prototype.slice.call(document.querySelectorAll('.screen'));
+    if(!screens.length) return;
+    var top = scroller.scrollTop;
+    var closest = screens[0];
+    var best = Infinity;
+    for(var i=0;i<screens.length;i++){
+      var s = screens[i];
+      var d = Math.abs(s.offsetTop - top);
+      if(d < best){ best = d; closest = s; }
+    }
+    // мягко доводим к началу
+    scroller.scrollTo({ top: closest.offsetTop, behavior: 'smooth' });
+  }
+  scroller.addEventListener('scroll', function(){
+    if(ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(function(){
+      ticking = false;
+      clearTimeout(scroller.__snapTimer);
+      scroller.__snapTimer = setTimeout(snapToClosest, 140);
+    });
+  }, {passive:true});
+})();
+</script>
+
 </body>
 </html>
