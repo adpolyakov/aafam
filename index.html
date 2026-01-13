@@ -95,31 +95,55 @@
     }
 
     /* Шаг 1 — фотолента (одна строка) */
-    .photo-strip{
-      margin-top:12px;
-      display:flex;
-      gap:10px;
-      overflow-x:auto;
-      padding-bottom:6px;
-      scroll-snap-type:x mandatory;
-      -webkit-overflow-scrolling:touch;
-    }
-    .photo-strip::-webkit-scrollbar{height:6px}
+    /* Галерея (Шаг 1) — вертикальная прокрутка внутри блока */
+.photo-strip{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  padding:10px;
+  height:min(58vh,560px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  border-radius:20px;
+  background:linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.10));
+  border:1px solid rgba(255,255,255,.10);
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  touch-action:pan-y;
+}
+
+/* Скроллбар (везде, где поддерживается) */
+.photo-strip{ scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.18) transparent; }
+.photo-strip::-webkit-scrollbar{ width:10px; }
+.photo-strip::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.16); border-radius:999px; border:2px solid transparent; background-clip:content-box; }
+.photo-strip::-webkit-scrollbar-track{ background:transparent; }
+.photo-strip::-webkit-scrollbar{height:6px}
     .photo-strip::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:999px}
 
     .thumb{
-      flex:0 0 auto;
-      width:120px;
-      height:120px;
-      border-radius:16px;
-      overflow:hidden;
-      background:#020617;
-      border:1px solid rgba(148,163,184,.25);
-      position:relative;
-      cursor:pointer;
-      scroll-snap-align:start;
-    }
-    .thumb img{
+  width:100%;
+  aspect-ratio:4 / 5;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:0 10px 28px rgba(0,0,0,.32);
+  cursor:pointer;
+  position:relative;
+  background:#0b1220;
+  padding:0;
+  display:block;
+  transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  filter:saturate(1.03) contrast(1.02);
+}
+.thumb:active{ transform:scale(.99); }
+.thumb:hover{ transform:translateY(-2px); border-color:rgba(255,255,255,.24); box-shadow:0 14px 36px rgba(0,0,0,.38); }
+.thumb img{
       width:100%;
       height:100%;
       object-fit:cover;
@@ -376,7 +400,7 @@
         </div>
 
         <div class="intro-photo-wrap">
-          <img decoding="async" class="intro-photo" src="./img/lotte.png?v=20260113121524" alt="Lotte — наш вечер" loading="eager" onerror="(function(img){img.onerror=null;var c='?v=20260113121524';var tries=['./img/lotte.png'+c,'./img/Lotte.png'+c,'./img/LOTTE.png'+c];for(var i=0;i<tries.length;i++){var t=new Image();t.src=tries[i];t.onload=(function(u){return function(){img.src=u;}})(tries[i]);}})(this)">
+          <img decoding="async" class="intro-photo" src="./img/lotte.png?v=20260113121524" alt="Lotte — наш вечер" loading="eager" onerror="(function(img){img.onerror=null;var c='?v=20260113121524';var tries=['./img/lotte.PNG'+c,'./img/Lotte.png'+c,'./img/LOTTE.png'+c];for(var i=0;i<tries.length;i++){var t=new Image();t.src=tries[i];t.onload=(function(u){return function(){img.src=u;}})(tries[i]);}})(this)">
         </div>
 
         <h1>Если ты читаешь это, значит, ты сказала мне «да»🤍</h1>
@@ -535,39 +559,44 @@
   </div>
 
   <script>
-    // === Шаг 1: фото в одну строку, показываем 10 случайных ===
-    (function(){
-      // Переименуй под свои файлы — главное, чтобы пути были верные.
-      const allPhotos = Array.from({length: 48}, (_, i) => `img/photo${i+1}.jpg`);
-      const TAKE = 10;
+    // === Шаг 1: галерея (строго по порядку 01 → ...) ===
+(() => {
+  const stripEl = document.getElementById('photo-strip');
+  if (!stripEl) return;
 
-      // выбираем без повторов
-      const picked = [];
-      const pool = allPhotos.slice();
-      while (picked.length < Math.min(TAKE, pool.length)) {
-        const idx = Math.floor(Math.random() * pool.length);
-        picked.push(pool.splice(idx, 1)[0]);
-      }
+  // Поменяй число, если добавишь/уберёшь фото. Лишние (отсутствующие) — автоматически скрываются.
+  const GALLERY_COUNT = 60;
 
-      const strip = document.getElementById('photo-strip');
-      picked.forEach((src) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'thumb';
-        btn.setAttribute('aria-label', 'Открыть фото');
+  const pad2 = (n) => String(n).padStart(2, '0');
 
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = 'Наш момент';
-        img.loading = 'lazy';
-        img.decoding = 'async';
+  for (let i = 1; i <= GALLERY_COUNT; i++) {
+    const n = pad2(i);
 
-        btn.appendChild(img);
-        strip.appendChild(btn);
-      });
-    })();
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'thumb';
+    btn.setAttribute('aria-label', `Фото ${n}`);
 
-    // === Лайтбокс для фото ===
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.src = `img/${n}.jpg`;
+    img.alt = `Фото ${n}`;
+
+    // Если файла нет — убираем карточку, чтобы не было «битых» картинок.
+    img.addEventListener('error', () => btn.remove());
+
+    btn.appendChild(img);
+    stripEl.appendChild(btn);
+  }
+
+  // Прокрутка внутри галереи (не листает страницу, пока курсор/палец на галерее)
+  stripEl.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    stripEl.scrollTop += e.deltaY;
+  }, { passive: false });
+})();
+// === Лайтбокс для фото ===
     (function () {
       const strip = document.getElementById('photo-strip');
       const lightbox = document.getElementById('lightbox');
