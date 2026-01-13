@@ -2,11 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>17.01.2026</title>
 
   <style>
@@ -22,27 +18,15 @@
     }
 
     *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-html,body{margin:0; padding:0; height:100%; overflow:hidden;}
+    html,body{height:100%}
+    body{
+      background:radial-gradient(circle at top,#1f2937 0,var(--bg) 45%);
+      color:var(--text);
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      scroll-snap-type:y mandatory;
+    }
 
-/* основной скролл-контейнер — чтобы snap стабильно работал в Safari/Telegram/ПК */
-.snap{
-  height:100vh;
-  height:100svh;
-  height:100dvh;
-  overflow-y:auto;
-  overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
-  scroll-snap-type:y mandatory;
-  scroll-behavior:smooth;
-  overscroll-behavior-y:contain;
-}
-
-body{
-  background:radial-gradient(1200px 700px at 50% 10%, rgba(255,255,255,.10), rgba(0,0,0,0)) ,
-             radial-gradient(900px 700px at 20% 80%, rgba(255,198,120,.08), rgba(0,0,0,0)),
-             #070A14;
-  color:#fff;
-}
     /* каждая секция — один экран */
     .screen{
       min-height:100svh;
@@ -175,14 +159,14 @@ body{
     .final{text-align:center}
 
       .final-crest{
-        width:min(312px, 72vw);
+        width:min(240px, 65vw);
         height:auto;
         margin:10px auto 14px;
         display:block;
         filter: drop-shadow(0 14px 28px rgba(0,0,0,.55));
       }
       @media (max-height: 720px){
-        .final-crest{ width:min(260px, 64vw); margin:8px auto 12px; }
+        .final-crest{ width:min(200px, 58vw); margin:8px auto 12px; }
       }
     .final-main{font-size:18px;margin-bottom:6px}
     .final-sub{font-size:13px;color:var(--muted);margin-bottom:10px}
@@ -229,94 +213,139 @@ body{
     }
   
 
-/* Dancing hearts -> AA monogram (без круга, работает в Safari/Telegram/PC) */
-.love-wrap{margin-top:18px; display:flex; justify-content:center;}
+/* --- /* Dancing hearts (no circle + visible animation) */
 .love-dance{
-  width: 96px;
-  height: 64px;
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
+  margin: 18px auto 0;
   display:flex;
   align-items:center;
   justify-content:center;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
+  width:auto;
+  height:auto;
+  padding:0;
+  border:none;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  backdrop-filter:none;
 }
-.love-dance:focus{outline:none;}
-.love-dance svg{width:100%; height:100%; display:block; overflow:visible;}
 
-.love-dance .hearts{animation: heartsPhase 4.2s infinite ease-in-out;}
-.love-dance .aas{animation: aaPhase 4.2s infinite ease-in-out;}
+.love-svg{
+  width: 92px;
+  height: 92px;
+  overflow: visible;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,.35));
+}
 
-/* SVG transforms: стабильность на iOS */
-.love-dance .h1,.love-dance .h2,.love-dance .a1,.love-dance .a2{
+.love-svg .phase.hearts{ opacity: 1; animation: phaseHearts 4.8s infinite ease-in-out; }
+.love-svg .phase.aas{ opacity: 0; animation: phaseAA 4.8s infinite ease-in-out; }
+
+/* SVG transforms need these on iOS */
+.love-svg .h1, .love-svg .h2, .love-svg .a1, .love-svg .a2{
   transform-box: fill-box;
   transform-origin: center;
 }
 
-.love-dance .h1{animation: heart1Move 1.4s ease-in-out infinite;}
-.love-dance .h2{animation: heart2Move 1.4s ease-in-out infinite;}
-.love-dance .a1{animation: aLeftMove 1.4s ease-in-out infinite;}
-.love-dance .a2{animation: aRightMove 1.4s ease-in-out infinite;}
+.love-svg .h1{ animation: floatHL 1.55s infinite ease-in-out; }
+.love-svg .h2{ animation: floatHR 1.55s infinite ease-in-out; }
+.love-svg .a1{ animation: floatAL 1.55s infinite ease-in-out; }
+.love-svg .a2{ animation: floatAR 1.55s infinite ease-in-out; }
 
-@keyframes heartsPhase{
-  0%,45%{opacity:1; filter:drop-shadow(0 0 6px rgba(255,255,255,.32));}
-  55%,100%{opacity:0; filter:drop-shadow(0 0 0 rgba(0,0,0,0));}
+@keyframes phaseHearts{
+  0%, 52% { opacity: 1; transform: scale(1); }
+  58%, 100% { opacity: 0; transform: scale(.92); }
 }
-@keyframes aaPhase{
-  0%,45%{opacity:0; transform:translateY(2px) scale(.98); filter:drop-shadow(0 0 0 rgba(0,0,0,0));}
-  55%,100%{opacity:1; transform:translateY(0) scale(1); filter:drop-shadow(0 0 7px rgba(255,255,255,.28));}
+@keyframes phaseAA{
+  0%, 50% { opacity: 0; transform: scale(.92); }
+  58%, 88% { opacity: 1; transform: scale(1); }
+  94%, 100% { opacity: 0; transform: scale(.92); }
 }
 
-@keyframes heart1Move{0%,100%{transform:translate(-10px,0) rotate(-10deg) scale(1);}50%{transform:translate(-2px,-7px) rotate(8deg) scale(1.06);}}
-@keyframes heart2Move{0%,100%{transform:translate(10px,0) rotate(10deg) scale(1);}50%{transform:translate(2px,-7px) rotate(-8deg) scale(1.06);}}
-@keyframes aLeftMove{0%,100%{transform:translate(-7px,2px) rotate(-6deg) scale(1);}50%{transform:translate(-2px,-2px) rotate(6deg) scale(1.02);}}
-@keyframes aRightMove{0%,100%{transform:translate(7px,2px) rotate(6deg) scale(1);}50%{transform:translate(2px,-2px) rotate(-6deg) scale(1.02);}}
+@keyframes floatHL{
+  0%   { transform: translate(-16px,  2px) rotate(-18deg) scale(1.00); }
+  25%  { transform: translate( -6px, -9px) rotate( -6deg) scale(1.10); }
+  50%  { transform: translate(  4px,  4px) rotate( 10deg) scale(1.06); }
+  75%  { transform: translate( -9px, 11px) rotate( 18deg) scale(1.08); }
+  100% { transform: translate(-16px,  2px) rotate(-18deg) scale(1.00); }
+}
+@keyframes floatHR{
+  0%   { transform: translate( 16px,  2px) rotate( 18deg) scale(1.00); }
+  25%  { transform: translate(  6px, -9px) rotate(  6deg) scale(1.10); }
+  50%  { transform: translate( -4px,  4px) rotate(-10deg) scale(1.06); }
+  75%  { transform: translate(  9px, 11px) rotate(-18deg) scale(1.08); }
+  100% { transform: translate( 16px,  2px) rotate( 18deg) scale(1.00); }
+}
+@keyframes floatAL{
+  0%   { transform: translate(-10px,  6px) rotate(-6deg) scale(.98); }
+  50%  { transform: translate( -6px, -2px) rotate( 3deg) scale(1.04); }
+  100% { transform: translate(-10px,  6px) rotate(-6deg) scale(.98); }
+}
+@keyframes floatAR{
+  0%   { transform: translate( 10px,  6px) rotate( 6deg) scale(.98); }
+  50%  { transform: translate(  6px, -2px) rotate(-3deg) scale(1.04); }
+  100% { transform: translate( 10px,  6px) rotate( 6deg) scale(.98); }
+}
 
 @media (prefers-reduced-motion: reduce){
-  .love-dance .h1,.love-dance .h2,.love-dance .a1,.love-dance .a2,
-  .love-dance .hearts,.love-dance .aas{animation:none!important;}
-  .love-dance .hearts{opacity:1;}
-  .love-dance .aas{opacity:0;}
+  .love-svg *{ animation: none !important; }
+  .love-svg .phase.hearts{ opacity: 1 !important; transform: none !important; }
+  .love-svg .phase.aas{ opacity: 0 !important; }
+}
+/* End dancing hearts */
+/* When AA is visible, slightly “meet” in the middle */
+@keyframes floatAL{
+  0%,46%{ transform: translate(-14px, 2px) rotate(-8deg) scale(0.92); opacity:0; }
+  55%{ transform: translate(-4px, 0px) rotate(-3deg) scale(1); opacity:1; }
+  75%{ transform: translate(-6px, -2px) rotate(-5deg) scale(1.02); opacity:1; }
+  100%{ transform: translate(-4px, 0px) rotate(-3deg) scale(1); opacity:1; }
+}
+@keyframes floatAR{
+  0%,46%{ transform: translate(14px, 2px) rotate(8deg) scale(0.92); opacity:0; }
+  55%{ transform: translate(4px, 0px) rotate(3deg) scale(1); opacity:1; }
+  75%{ transform: translate(6px, -2px) rotate(5deg) scale(1.02); opacity:1; }
+  100%{ transform: translate(4px, 0px) rotate(3deg) scale(1); opacity:1; }
 }
 
-    .intro-image{
-      width: 100%;
-      height: auto;
-      max-height: clamp(160px, 28vh, 260px);
-      object-fit: contain;
-      border-radius: 18px;
-      margin: 14px 0 10px;
-      box-shadow: 0 18px 40px rgba(0,0,0,.35);
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.12);
-    }
+/* Respect user preference */
+@media (prefers-reduced-motion: reduce){
+  .love-svg .hearts, .love-svg .aas, .love-svg .h1, .love-svg .h2, .love-svg .a1, .love-svg .a2{
+    animation: none !important;
+  }
+  .love-svg .aas{ opacity: 0; }
+  .love-svg .hearts{ opacity: 1; }
+}
 
 
-    /* Ensure inserted images use full width without side gutters */
-    .card-media img, .media img, .step-media img, .figure img{
-      width: 100%;
-      height: auto;
-      display: block;
-      object-fit: contain;
-    }
+/* Intro photo (Lotte) */
+.intro-photo-wrap{
+  margin: 14px 0 6px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.22);
+}
+.intro-photo{
+  display:block;
+  width:100%;
+  height:auto;
+}
 
+/* Make sure final content stays centered everywhere */
+.final-action{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
 
-    .love-dance{
-      background: transparent !important;
-      border: 0 !important;
-      box-shadow: none !important;
-      outline: none !important;
-      -webkit-tap-highlight-color: transparent;
-    }
-
+/* Crest size bump (~30%) */
+.crest{
+  width: min(260px, 62vw);
+  height: auto;
+}
 </style>
 </head>
 
 <body>
-  <div class="snap" id="snapRoot">
 
   <!-- 1) Введение -->
   <section class="screen">
@@ -327,7 +356,9 @@ body{
           <span>Ценный сайт с частичкой нашей любви и началом чего-то нового</span>
         </div>
 
-        <img id="lotteImg" class="intro-image" src="img/lotte.png?v=5" alt="Lotte" loading="eager" />
+        <div class="intro-photo-wrap">
+          <img class="intro-photo" src="img/lotte.png?v=20260113" alt="Lotte — наш вечер" loading="eager">
+        </div>
 
         <h1>Если ты читаешь это, значит, ты сказала мне «да»🤍</h1>
         <p>
@@ -370,7 +401,7 @@ body{
 
         <div class="gifbox" style="margin-top:12px;">
           <video class="gif" muted autoplay loop playsinline webkit-playsinline preload="none"
-               data-src="media/IMG_5945_sharper_fast_optimized.mp4?v=2"
+               data-src="media/IMG_5945_sharper_fast_optimized.mp4?v=20260113"
                aria-label="Демо кольца"
                disablepictureinpicture
                controlslist="nodownload noplaybackrate noremoteplayback"></video>
@@ -392,7 +423,7 @@ body{
 
         <!-- ВАЖНО: тут картинка полностью видна и блок подстраивается под формат -->
         <div class="imagebox">
-          <img src="img/dubai.png" alt="Дубай — наш момент" loading="eager" decoding="async">
+          <img src="img/dubai.png?v=20260113" alt="Дубай — наш момент" loading="eager" decoding="async">
         </div>
 
         <div class="list">
@@ -418,7 +449,7 @@ body{
     <div class="page">
       <div class="card final">
         
-        <img class="final-crest" src="img/AAfam.png" alt="AA Family" loading="lazy" decoding="async" />
+        <img class="final-crest" src="img/AAfam.png?v=20260113" alt="AA Family" loading="lazy" decoding="async" />
 <div class="final-main">Ариночка, я хочу прожить с тобой всю жизнь.</div>
         <div class="final-sub">
           Для меня важно не просто кольцо, а всё, что стоит за ним: ты, мы и наша общая история — от этого вечера до самого‑самого дальше.
@@ -483,7 +514,6 @@ body{
       <img src="" alt="Наш момент" id="lightbox-img">
     </div>
   </div>
-  </div>
 
   <script>
     // === Шаг 1: фото в одну строку, показываем 10 случайных ===
@@ -546,18 +576,6 @@ body{
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
     })();
 
-    // === Lotte image fallback (if the file was uploaded with a Cyrillic name in repo) ===
-    (function(){
-      const img = document.getElementById('lotteImg');
-      if(!img) return;
-      img.addEventListener('error', () => {
-        if (img.dataset.fallbackTried) return;
-        img.dataset.fallbackTried = '1';
-        // 'лотте.png' URL-encoded
-        img.src = 'img/%D0%BB%D0%BE%D1%82%D1%82%D0%B5.png?v=5';
-      });
-    })();
-
     // === Видео как гифка: пытаемся запустить принудительно ===
     (function(){
       document.querySelectorAll('video.gif').forEach((v) => {
@@ -612,74 +630,58 @@ body{
 })();
 
 
-  (function(){
-    // --- scroll "dovodchik": snap to the nearest full screen when user stops scrolling
-    const scroller = document.getElementById('snapRoot');
-    if(!scroller) return;
-    const screens = Array.from(scroller.querySelectorAll('.screen'));
-    if(!screens.length) return;
-
-    let t = null;
-    let isAuto = false;
-
-    const nearestScreen = () => {
-      const y = scroller.scrollTop;
-      let best = screens[0];
-      let bestDist = Infinity;
-      for (const s of screens){
-        const top = s.offsetTop;
-        const dist = Math.abs(top - y);
-        if (dist < bestDist){ bestDist = dist; best = s; }
-      }
-      return best;
+// --- Asset resolver (case / cache safe) ---
+(function () {
+  const V = "20260113";
+  const pickFirstExisting = (el, candidates) => {
+    let i = 0;
+    const tryNext = () => {
+      if (i >= candidates.length) return;
+      const url = candidates[i++];
+      const img = new Image();
+      img.onload = () => { el.src = url + (url.includes("?") ? "" : ("?v=" + V)); };
+      img.onerror = tryNext;
+      img.src = url + (url.includes("?") ? "" : ("?v=" + V));
     };
+    tryNext();
+  };
 
-    const snapNow = (behavior='smooth') => {
-      if (isAuto) return;
-      const target = nearestScreen();
-      if (!target) return;
-      const y = scroller.scrollTop;
-      const dy = Math.abs(target.offsetTop - y);
-      if (dy < 14) return; // already aligned
-      isAuto = true;
-      scroller.scrollTo({ top: target.offsetTop, behavior });
-      window.setTimeout(()=>{ isAuto = false; }, behavior === 'smooth' ? 420 : 0);
-    };
+  // Lotte intro image
+  const lotte = document.querySelector(".intro-photo");
+  if (lotte) {
+    lotte.addEventListener("error", () => {
+      pickFirstExisting(lotte, ["img/lotte.png", "img/Lotte.png", "img/LOTTE.png", "img/lotte.PNG"]);
+    }, { once: true });
+  }
 
-    const onScroll = () => {
-      if (t) clearTimeout(t);
-      t = setTimeout(()=>snapNow('smooth'), 140);
-    };
+  // Crest
+  const crest = document.querySelector("img.crest");
+  if (crest) {
+    crest.addEventListener("error", () => {
+      pickFirstExisting(crest, ["img/AAfam.png", "img/aafam.png", "img/AAFam.png"]);
+    }, { once: true });
+  }
 
-    scroller.addEventListener('scroll', onScroll, {passive:true});
+  // Dubai
+  const dubai = document.querySelector('img[src*="dubai"]');
+  if (dubai) {
+    dubai.addEventListener("error", () => {
+      pickFirstExisting(dubai, ["img/dubai.png", "img/Dubai.png", "img/dubai.JPG", "img/dubai.jpg"]);
+    }, { once: true });
+  }
 
-    // Some webviews are "jumpy" — also try to snap after touch end / wheel end
-    ['touchend','mouseup','keyup'].forEach(ev=>{
-      window.addEventListener(ev, ()=>{
-        if (t) clearTimeout(t);
-        t = setTimeout(()=>snapNow('smooth'), 80);
-      }, {passive:true});
-    });
-
-    // Keep the current screen aligned on resize/address-bar changes
-    window.addEventListener('resize', ()=>{
-      if (t) clearTimeout(t);
-      t = setTimeout(()=>snapNow('auto'), 120);
-    });
-  })();
-
-
-
-  (function(){
-    const svg = document.querySelector('.love-dance svg');
-    if(!svg) return;
-    // restart CSS animations (some webviews "freeze" animations on initial paint)
-    requestAnimationFrame(()=>{
-      const clone = svg.cloneNode(true);
-      svg.parentNode.replaceChild(clone, svg);
-    });
-  })();
-
+  // Force reload video source in some in-app browsers that keep stale cache
+  const vids = document.querySelectorAll("video source");
+  vids.forEach(s => {
+    if (s.src) {
+      const u = new URL(s.src, location.href);
+      u.searchParams.set("v", V);
+      s.src = u.toString();
+      const v = s.closest("video");
+      if (v) { try { v.load(); } catch(e){} }
+    }
+  });
+})();
 </script>
 </body>
 </html>
