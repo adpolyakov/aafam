@@ -808,15 +808,14 @@
 
 
   <script>
-    // === Шаг 1: галерея (строго по порядку 01 → ...) ===
-
-// === Шаг 1: галерея (по порядку 01.jpg, 02.jpg...) — грузим только видимые ===
+    // === Шаг 1: галерея (строго по порядку 01..47) — БЕЗ прогона "существует/нет" ===
 (() => {
   const stripEl = document.getElementById('photo-strip');
   if (!stripEl) return;
 
-  const VERSION = "20260113";   // поменяй, если нужно пробить кэш
-  const COUNT_GUESS = 140;      // верхняя граница
+  const VERSION = "20260113";         // поменяй, если нужно пробить кэш
+  const GALLERY_COUNT = 47;           // у тебя сейчас 47 фото
+  const EXTS = ["jpg","JPG","jpeg","JPEG","png","PNG","webp","WEBP"]; // на всякий случай
   const pad2 = (n) => String(n).padStart(2, '0');
 
   // Wheel/touch внутри галереи (не листает экран)
@@ -852,7 +851,7 @@
   let items = [];   // ordered urls
   let current = 0;
 
-  // tiny prefetch cache
+  // prefetch neighbors for native feel
   const prefetched = new Set();
   const prefetch = (idx) => {
     if (!items.length) return;
@@ -871,10 +870,8 @@
     vImg.src = url;
     vCounter.textContent = (current + 1) + " / " + items.length;
 
-    // prefetch neighbors for native feel
     prefetch(current + 1);
     prefetch(current - 1);
-    // and one extra ahead when opening
     prefetch(current + 2);
     prefetch(current - 2);
   };
@@ -932,8 +929,8 @@
     if (dx < 0) step(1); else step(-1);
   }, { passive: true });
 
-  // Create cards WITHOUT src (only data-src)
-  const makeCard = (url, idx) => {
+  // Card: without src; try multiple extensions on-demand
+  const makeCard = (baseUrl, idx) => {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'thumb';
@@ -948,11 +945,34 @@
     img.alt = 'Фото ' + pad2(idx + 1);
     img.loading = 'lazy';
     img.decoding = 'async';
-    img.setAttribute('data-src', url);
+    img.setAttribute('data-base', baseUrl); // without extension
+    img.setAttribute('data-idx', String(idx));
     btn.appendChild(img);
 
     btn.addEventListener('click', () => openViewer(idx));
     return btn;
+  };
+
+  const trySetSrc = async (imgEl) => {
+    const base = imgEl.getAttribute('data-base');
+    if (!base) return false;
+
+    for (const ext of EXTS) {
+      const url = base + "." + ext;
+      const ok = await new Promise((resolve) => {
+        const im = new Image();
+        im.onload = () => resolve(true);
+        im.onerror = () => resolve(false);
+        im.src = url + "?v=" + VERSION;
+      });
+      if (ok) {
+        imgEl.src = url + "?v=" + VERSION;
+        const idx = Number(imgEl.getAttribute('data-idx') || "0");
+        items[idx] = url;
+        return true;
+      }
+    }
+    return false;
   };
 
   // Lazy loader inside scroll container
@@ -960,12 +980,17 @@
     for (const en of entries) {
       if (!en.isIntersecting) continue;
       const card = en.target;
-      const img = card.querySelector('img[data-src]');
+      const img = card.querySelector('img[data-base]');
       if (!img) { io.unobserve(card); continue; }
+      if (img.src) { io.unobserve(card); continue; }
 
-      const url = img.getAttribute('data-src');
-      img.src = url + "?v=" + VERSION;
-      img.removeAttribute('data-src');
+      const base = img.getAttribute('data-base');
+      const assumed = base + ".jpg";
+      img.src = assumed + "?v=" + VERSION;
+
+      img.addEventListener('error', async () => {
+        await trySetSrc(img);
+      }, { once: true });
 
       img.addEventListener('load', () => {
         const sk = card.querySelector('.thumb-skel');
@@ -976,42 +1001,19 @@
     }
   }, { root: stripEl, rootMargin: "900px 0px" });
 
-  // Existence probe (sequential, gentle)
-  const exists = (url) => new Promise((resolve) => {
-    const im = new Image();
-    im.onload = () => resolve(true);
-    im.onerror = () => resolve(false);
-    im.src = url + "?v=" + VERSION;
-  });
-
-  const build = async () => {
-    const found = [];
-    let misses = 0;
-
-    for (let i = 1; i <= COUNT_GUESS; i++) {
-      const url = "img/" + pad2(i) + ".jpg";
-      const ok = await exists(url);
-      if (ok) {
-        found.push(url);
-        misses = 0;
-      } else {
-        misses++;
-        if (misses >= 8) break;
-      }
-    }
-
-    items = found;
-
+  const build = () => {
+    items = Array.from({ length: GALLERY_COUNT }, (_, i) => "img/" + pad2(i + 1) + ".jpg");
     stripEl.innerHTML = '';
-    found.forEach((url, idx) => {
-      const card = makeCard(url, idx);
+
+    for (let i = 1; i <= GALLERY_COUNT; i++) {
+      const base = "img/" + pad2(i); // without extension
+      const card = makeCard(base, i - 1);
       stripEl.appendChild(card);
       io.observe(card);
-    });
+    }
   };
 
-  // Delay gallery init so the first screen loads instantly
-  setTimeout(build, 650);
+  setTimeout(build, 450);
 })();
 
 // === Видео как гифка: пытаемся запустить принудительно ===
