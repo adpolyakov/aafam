@@ -515,7 +515,118 @@
   .aa-letters::after{ display:none; }
 }
 
+
+/* ===== Step 1: iPhone-like gallery behavior (no overlays / no overlap) ===== */
+.photo-strip .thumb{
+  box-shadow: 0 10px 26px rgba(0,0,0,.28) !important;
+  transform: none !important;
+}
+.photo-strip .thumb:hover,
+.photo-strip .thumb:active{
+  transform: none !important;
+}
+.photo-strip .thumb img{
+  transform: none !important;
+  transition: none !important;
+}
+.photo-strip .thumb::after{ display:none !important; }
+
+/* skeleton while lazy-loading */
+.thumb-skel{
+  position:absolute;
+  inset:0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+  background-size: 200% 100%;
+  animation: skel 1.2s ease-in-out infinite;
+}
+@keyframes skel{
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== Viewer (native-like: swipe + prefetch neighbors) ===== */
+.viewer{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+}
+.viewer.is-open{ display:block; }
+.viewer-backdrop{
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,0.78);
+}
+.viewer-stage{
+  position:absolute;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 16px;
+}
+.viewer-img{
+  max-width: min(92vw, 520px);
+  max-height: 82vh;
+  border-radius: 18px;
+  background: #020617;
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 22px 60px rgba(0,0,0,0.85);
+  object-fit: contain;
+  touch-action: pan-y;
+}
+.viewer-close{
+  position:absolute;
+  top: 14px;
+  right: 16px;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(15,23,42,0.55);
+  color: rgba(255,255,255,0.92);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+.viewer-nav{
+  position:absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 64px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(15,23,42,0.42);
+  color: rgba(255,255,255,0.92);
+  font-size: 34px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.viewer-nav.prev{ left: 10px; }
+.viewer-nav.next{ right: 10px; }
+.viewer-counter{
+  position:absolute;
+  bottom: calc(16px + env(safe-area-inset-bottom,0px));
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: rgba(255,255,255,0.70);
+  background: rgba(15,23,42,0.42);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+@media (hover:none){
+  .viewer-nav{ display:none; }
+}
+
 </style>
+
+<link rel="preload" as="image" href="img/lotte.png">
+
 </head>
 
 <body>
@@ -531,7 +642,7 @@
         </div>
 
         <div class="intro-photo-wrap">
-          <img decoding="async" class="intro-photo" src="./img/lotte.png?v=20260113121524" alt="Lotte — наш вечер" loading="eager" onerror="(function(img){img.onerror=null;var c='?v=20260113121524';var tries=['./img/lotte.PNG'+c,'./img/Lotte.png'+c,'./img/LOTTE.png'+c];for(var i=0;i<tries.length;i++){var t=new Image();t.src=tries[i];t.onload=(function(u){return function(){img.src=u;}})(tries[i]);}})(this)">
+          <img fetchpriority="high" loading="eager" decoding="sync" decoding="async" class="intro-photo" src="./img/lotte.png?v=20260113121524" alt="Lotte — наш вечер" loading="eager" onerror="(function(img){img.onerror=null;var c='?v=20260113121524';var tries=['./img/lotte.PNG'+c,'./img/Lotte.png'+c,'./img/LOTTE.png'+c];for(var i=0;i<tries.length;i++){var t=new Image();t.src=tries[i];t.onload=(function(u){return function(){img.src=u;}})(tries[i]);}})(this)">
         </div>
 
         <h1>Если ты читаешь это, значит, ты сказала мне «да»🤍</h1>
@@ -556,7 +667,7 @@
         <div class="photo-strip" id="photo-strip" aria-label="Фотолента"></div>
 
         <p style="margin-top:10px;color:var(--muted);font-size:12px;">
-          Нажми на фото, чтобы увеличить.
+          Нажми на фото, чтобы открыть. Дальше можно листать свайпом вправо/влево.
         </p>
       </div>
     </div>
@@ -682,80 +793,228 @@
   </section>
 
   <!-- Лайтбокс -->
-  <div class="lightbox" id="lightbox" aria-hidden="true">
-    <div class="lightbox-inner">
-      <span class="lightbox-close" id="lightbox-close">×</span>
-      <img src="" alt="Наш момент" id="lightbox-img">
-    </div>
+  
+<!-- Viewer -->
+<div class="viewer" id="viewer" aria-hidden="true">
+  <div class="viewer-backdrop" data-close="1"></div>
+  <div class="viewer-stage" role="dialog" aria-modal="true" aria-label="Просмотр фото">
+    <button class="viewer-close" id="viewer-close" aria-label="Закрыть">×</button>
+    <button class="viewer-nav prev" id="viewer-prev" aria-label="Предыдущее">‹</button>
+    <img class="viewer-img" id="viewer-img" alt="Фото">
+    <button class="viewer-nav next" id="viewer-next" aria-label="Следующее">›</button>
+    <div class="viewer-counter" id="viewer-counter"></div>
   </div>
+</div>
+
 
   <script>
     // === Шаг 1: галерея (строго по порядку 01 → ...) ===
+
+// === Шаг 1: галерея (по порядку 01.jpg, 02.jpg...) — грузим только видимые ===
 (() => {
   const stripEl = document.getElementById('photo-strip');
   if (!stripEl) return;
 
-  // Поменяй число, если добавишь/уберёшь фото. Лишние (отсутствующие) — автоматически скрываются.
-  const GALLERY_COUNT = 60;
-
+  const VERSION = "20260113";   // поменяй, если нужно пробить кэш
+  const COUNT_GUESS = 140;      // верхняя граница
   const pad2 = (n) => String(n).padStart(2, '0');
 
-  for (let i = 1; i <= GALLERY_COUNT; i++) {
-    const n = pad2(i);
-
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'thumb';
-    btn.setAttribute('aria-label', `Фото ${n}`);
-
-    const img = document.createElement('img');
-    img.loading = 'lazy';
-    img.decoding = 'async';
-    img.src = `img/${n}.jpg`;
-    img.alt = `Фото ${n}`;
-
-    // Если файла нет — убираем карточку, чтобы не было «битых» картинок.
-    img.addEventListener('error', () => btn.remove());
-
-    btn.appendChild(img);
-    stripEl.appendChild(btn);
-  }
-
-  // Прокрутка внутри галереи (не листает страницу, пока курсор/палец на галерее)
+  // Wheel/touch внутри галереи (не листает экран)
+  const canScroll = () => stripEl.scrollHeight > stripEl.clientHeight + 1;
   stripEl.addEventListener('wheel', (e) => {
+    if (!canScroll()) return;
     e.preventDefault();
     stripEl.scrollTop += e.deltaY;
   }, { passive: false });
+
+  let touchY = 0;
+  stripEl.addEventListener('touchstart', (e) => {
+    if (e.touches && e.touches.length) touchY = e.touches[0].clientY;
+  }, { passive: true });
+  stripEl.addEventListener('touchmove', (e) => {
+    if (!canScroll()) return;
+    if (!e.touches || !e.touches.length) return;
+    const y = e.touches[0].clientY;
+    const dy = touchY - y;
+    touchY = y;
+    stripEl.scrollTop += dy;
+    e.preventDefault();
+  }, { passive: false });
+
+  // Viewer
+  const viewer = document.getElementById('viewer');
+  const vImg = document.getElementById('viewer-img');
+  const vClose = document.getElementById('viewer-close');
+  const vPrev = document.getElementById('viewer-prev');
+  const vNext = document.getElementById('viewer-next');
+  const vCounter = document.getElementById('viewer-counter');
+
+  let items = [];   // ordered urls
+  let current = 0;
+
+  // tiny prefetch cache
+  const prefetched = new Set();
+  const prefetch = (idx) => {
+    if (!items.length) return;
+    const i = (idx + items.length) % items.length;
+    const url = items[i] + "?v=" + VERSION;
+    if (prefetched.has(url)) return;
+    prefetched.add(url);
+    const im = new Image();
+    im.decoding = "async";
+    im.src = url;
+  };
+
+  const updateViewer = () => {
+    if (!items.length) return;
+    const url = items[current] + "?v=" + VERSION;
+    vImg.src = url;
+    vCounter.textContent = (current + 1) + " / " + items.length;
+
+    // prefetch neighbors for native feel
+    prefetch(current + 1);
+    prefetch(current - 1);
+    // and one extra ahead when opening
+    prefetch(current + 2);
+    prefetch(current - 2);
+  };
+
+  const openViewer = (idx) => {
+    if (!items.length) return;
+    current = Math.max(0, Math.min(items.length - 1, idx));
+    viewer.classList.add('is-open');
+    viewer.setAttribute('aria-hidden', 'false');
+    updateViewer();
+  };
+
+  const closeViewer = () => {
+    viewer.classList.remove('is-open');
+    viewer.setAttribute('aria-hidden', 'true');
+    vImg.src = "";
+  };
+
+  const step = (delta) => {
+    if (!items.length) return;
+    current = (current + delta + items.length) % items.length;
+    updateViewer();
+  };
+
+  vClose && vClose.addEventListener('click', closeViewer);
+  viewer && viewer.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t && t.getAttribute && t.getAttribute('data-close') === '1') closeViewer();
+  });
+  vPrev && vPrev.addEventListener('click', () => step(-1));
+  vNext && vNext.addEventListener('click', () => step(1));
+
+  document.addEventListener('keydown', (e) => {
+    if (!viewer.classList.contains('is-open')) return;
+    if (e.key === 'Escape') closeViewer();
+    if (e.key === 'ArrowLeft') step(-1);
+    if (e.key === 'ArrowRight') step(1);
+  });
+
+  // Swipe on viewer image
+  let sx = 0, sy = 0;
+  vImg && vImg.addEventListener('touchstart', (e) => {
+    if (!e.touches || !e.touches.length) return;
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+  }, { passive: true });
+
+  vImg && vImg.addEventListener('touchend', (e) => {
+    const t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : null;
+    if (!t) return;
+    const dx = t.clientX - sx;
+    const dy = t.clientY - sy;
+    sx = 0; sy = 0;
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+    if (dx < 0) step(1); else step(-1);
+  }, { passive: true });
+
+  // Create cards WITHOUT src (only data-src)
+  const makeCard = (url, idx) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'thumb';
+    btn.setAttribute('aria-label', 'Фото ' + pad2(idx + 1));
+    btn.style.position = 'relative';
+
+    const sk = document.createElement('div');
+    sk.className = 'thumb-skel';
+    btn.appendChild(sk);
+
+    const img = document.createElement('img');
+    img.alt = 'Фото ' + pad2(idx + 1);
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.setAttribute('data-src', url);
+    btn.appendChild(img);
+
+    btn.addEventListener('click', () => openViewer(idx));
+    return btn;
+  };
+
+  // Lazy loader inside scroll container
+  const io = new IntersectionObserver((entries) => {
+    for (const en of entries) {
+      if (!en.isIntersecting) continue;
+      const card = en.target;
+      const img = card.querySelector('img[data-src]');
+      if (!img) { io.unobserve(card); continue; }
+
+      const url = img.getAttribute('data-src');
+      img.src = url + "?v=" + VERSION;
+      img.removeAttribute('data-src');
+
+      img.addEventListener('load', () => {
+        const sk = card.querySelector('.thumb-skel');
+        if (sk) sk.remove();
+      }, { once: true });
+
+      io.unobserve(card);
+    }
+  }, { root: stripEl, rootMargin: "900px 0px" });
+
+  // Existence probe (sequential, gentle)
+  const exists = (url) => new Promise((resolve) => {
+    const im = new Image();
+    im.onload = () => resolve(true);
+    im.onerror = () => resolve(false);
+    im.src = url + "?v=" + VERSION;
+  });
+
+  const build = async () => {
+    const found = [];
+    let misses = 0;
+
+    for (let i = 1; i <= COUNT_GUESS; i++) {
+      const url = "img/" + pad2(i) + ".jpg";
+      const ok = await exists(url);
+      if (ok) {
+        found.push(url);
+        misses = 0;
+      } else {
+        misses++;
+        if (misses >= 8) break;
+      }
+    }
+
+    items = found;
+
+    stripEl.innerHTML = '';
+    found.forEach((url, idx) => {
+      const card = makeCard(url, idx);
+      stripEl.appendChild(card);
+      io.observe(card);
+    });
+  };
+
+  // Delay gallery init so the first screen loads instantly
+  setTimeout(build, 650);
 })();
-// === Лайтбокс для фото ===
-    (function () {
-      const strip = document.getElementById('photo-strip');
-      const lightbox = document.getElementById('lightbox');
-      const lightboxImg = document.getElementById('lightbox-img');
-      const lightboxClose = document.getElementById('lightbox-close');
 
-      strip.addEventListener('click', (e) => {
-        const btn = e.target.closest('.thumb');
-        if (!btn) return;
-        const img = btn.querySelector('img');
-        if (!img || !img.src) return;
-        lightboxImg.src = img.src;
-        lightbox.classList.add('visible');
-        lightbox.setAttribute('aria-hidden', 'false');
-      });
-
-      const close = () => {
-        lightbox.classList.remove('visible');
-        lightbox.setAttribute('aria-hidden', 'true');
-        lightboxImg.src = '';
-      };
-
-      lightboxClose.addEventListener('click', close);
-      lightbox.addEventListener('click', (e) => { if (e.target === lightbox) close(); });
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-    })();
-
-    // === Видео как гифка: пытаемся запустить принудительно ===
+// === Видео как гифка: пытаемся запустить принудительно ===
     (function(){
       document.querySelectorAll('video.gif').forEach((v) => {
         const tryPlay = () => v.play().catch(()=>{});
