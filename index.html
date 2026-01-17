@@ -684,7 +684,7 @@
 }
 </style>
 
-<link rel="preload" as="image" href="img/lotte.png">
+<link rel="preload" as="image" href="img/lotte.jpg">
 
 </head>
 
@@ -701,7 +701,11 @@
         </div>
 
         <div class="intro-photo-wrap">
-          <img fetchpriority="high" loading="eager" decoding="sync" decoding="async" class="intro-photo" src="./img/lotte.png?v=20260113121524" alt="Lotte — наш вечер" loading="eager" onerror="(function(img){img.onerror=null;var c='?v=20260113121524';var tries=['./img/lotte.PNG'+c,'./img/Lotte.png'+c,'./img/LOTTE.png'+c];for(var i=0;i<tries.length;i++){var t=new Image();t.src=tries[i];t.onload=(function(u){return function(){img.src=u;}})(tries[i]);}})(this)">
+          <picture>
+            <source srcset="./img/lotte.jpg?v=20260113121524" type="image/jpeg">
+            <img class="intro-photo" src="./img/lotte.jpg?v=20260113121524" alt="Lotte — наш вечер" loading="eager" decoding="async" fetchpriority="high" onerror="this.onerror=null; this.src='./img/lotte.jpg?v=20260113121524';">
+          </picture>
+          <div class="intro-photo-caption">Lotte — наш вечер</div>
         </div>
 
         <h1>Если ты читаешь это, значит, ты сказала мне «да»🤍</h1>
@@ -767,7 +771,7 @@
 
         <!-- ВАЖНО: тут картинка полностью видна и блок подстраивается под формат -->
         <div class="imagebox">
-          <img src="img/dubai.png?v=20260113" alt="Дубай — наш момент" loading="eager" decoding="async">
+          <img src="img/dubai.jpg?v=20260113" alt="Дубай — наш момент" loading="eager" decoding="async">
         </div>
 
         <div class="list">
@@ -793,7 +797,7 @@
     <div class="page">
       <div class="card final">
         
-        <img class="final-crest" src="img/AAfam.png?v=20260113" alt="AA Family" loading="lazy" decoding="async" />
+        <img class="final-crest" src="img/AAfam.jpg?v=20260113" alt="AA Family" loading="lazy" decoding="async" />
 <div class="final-main">Ариночка, я хочу прожить с тобой всю жизнь.</div>
         <div class="final-sub">
           Для меня важно не просто кольцо, а всё, что стоит за ним: ты, мы и наша общая история — от этого вечера до самого‑самого дальше.
@@ -872,7 +876,7 @@
   const stripEl = document.getElementById('photo-strip');
   if (!stripEl) return;
 
-  const VERSION = "20260113";         // поменяй, если нужно пробить кэш
+  const VERSION = "20260117";         // поменяй, если нужно пробить кэш
   const GALLERY_COUNT = 47;           // у тебя сейчас 47 фото
   const EXTS = ["jpg","JPG","jpeg","JPEG","png","PNG","webp","WEBP"]; // на всякий случай
   const pad2 = (n) => String(n).padStart(2, '0');
@@ -990,10 +994,12 @@
 
   // Card: without src; try multiple extensions on-demand
   const makeCard = (baseUrl, idx) => {
+    const id = pad2(idx + 1);
+
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'thumb';
-    btn.setAttribute('aria-label', 'Фото ' + pad2(idx + 1));
+    btn.setAttribute('aria-label', 'Фото ' + id);
     btn.style.position = 'relative';
 
     const sk = document.createElement('div');
@@ -1001,13 +1007,17 @@
     btn.appendChild(sk);
 
     const img = document.createElement('img');
-    img.alt = 'Фото ' + pad2(idx + 1);
+    img.alt = 'Фото ' + id;
     img.loading = 'lazy';
     img.decoding = 'async';
-    img.setAttribute('data-base', baseUrl); // without extension
-    img.setAttribute('data-idx', String(idx));
-    btn.appendChild(img);
 
+    // baseUrl = img/01 (без расширения)
+    img.setAttribute('data-base', baseUrl);
+    // thumbnails всегда лежат в thumbs/01.jpg
+    img.setAttribute('data-thumb', 'thumbs/' + id + '.jpg');
+    img.setAttribute('data-idx', String(idx));
+
+    btn.appendChild(img);
     btn.addEventListener('click', () => openViewer(idx));
     return btn;
   };
@@ -1032,9 +1042,7 @@
       }
     }
     return false;
-  };
-
-  // Lazy loader inside scroll container
+  };  // Lazy loader inside scroll container
   const io = new IntersectionObserver((entries) => {
     for (const en of entries) {
       if (!en.isIntersecting) continue;
@@ -1043,13 +1051,24 @@
       if (!img) { io.unobserve(card); continue; }
       if (img.src) { io.unobserve(card); continue; }
 
+      const thumb = img.getAttribute('data-thumb');
       const base = img.getAttribute('data-base');
-      const assumed = base + ".jpg";
-      img.src = assumed + "?v=" + VERSION;
 
-      img.addEventListener('error', async () => {
-        await trySetSrc(img);
-      }, { once: true });
+      // 1) Сначала пытаемся загрузить thumbnail (быстро)
+      if (thumb) {
+        img.src = thumb + '?v=' + VERSION;
+        img.addEventListener('error', async () => {
+          // 2) Если thumbnail почему-то не найден — падаем на оригинал
+          const assumed = base + '.jpg';
+          img.src = assumed + '?v=' + VERSION;
+          img.addEventListener('error', async () => { await trySetSrc(img); }, { once: true });
+        }, { once: true });
+      } else {
+        // если thumb атрибута нет — грузим оригинал как раньше
+        const assumed = base + '.jpg';
+        img.src = assumed + '?v=' + VERSION;
+        img.addEventListener('error', async () => { await trySetSrc(img); }, { once: true });
+      }
 
       img.addEventListener('load', () => {
         const sk = card.querySelector('.thumb-skel');
@@ -1058,7 +1077,7 @@
 
       io.unobserve(card);
     }
-  }, { root: stripEl, rootMargin: "900px 0px" });
+  }, { root: stripEl, rootMargin: '300px 0px' });
 
   const build = () => {
     items = Array.from({ length: GALLERY_COUNT }, (_, i) => "img/" + pad2(i + 1) + ".jpg");
@@ -1149,7 +1168,7 @@
   const lotte = document.querySelector(".intro-photo");
   if (lotte) {
     lotte.addEventListener("error", () => {
-      pickFirstExisting(lotte, ["img/lotte.png", "img/Lotte.png", "img/LOTTE.png", "img/lotte.PNG"]);
+      pickFirstExisting(lotte, ["img/lotte.jpg", "img/Lotte.png", "img/LOTTE.png", "img/lotte.PNG"]);
     }, { once: true });
   }
 
@@ -1157,7 +1176,7 @@
   const crest = document.querySelector("img.crest");
   if (crest) {
     crest.addEventListener("error", () => {
-      pickFirstExisting(crest, ["img/AAfam.png", "img/aafam.png", "img/AAFam.png"]);
+      pickFirstExisting(crest, ["img/AAfam.jpg", "img/aafam.png", "img/AAFam.png"]);
     }, { once: true });
   }
 
@@ -1165,7 +1184,7 @@
   const dubai = document.querySelector('img[src*="dubai"]');
   if (dubai) {
     dubai.addEventListener("error", () => {
-      pickFirstExisting(dubai, ["img/dubai.png", "img/Dubai.png", "img/dubai.JPG", "img/dubai.jpg"]);
+      pickFirstExisting(dubai, ["img/dubai.jpg", "img/Dubai.png", "img/dubai.JPG", "img/dubai.jpg"]);
     }, { once: true });
   }
 
