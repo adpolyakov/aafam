@@ -3,828 +3,789 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0f18" />
-  <title>AA — Для Арины</title>
+  <title>AA Family</title>
 
-  <!-- Priority preloads (быстрое первое впечатление) -->
-  <link rel="preload" as="image" href="img/lotte.png" fetchpriority="high">
-  <link rel="preload" as="image" href="img/album.png" fetchpriority="high">
-  <!-- первые две страницы альбома (подготовить к моменту перехода в Шаг 1) -->
-  <link rel="preload" as="image" href="img/01.jpg" fetchpriority="high">
-  <link rel="preload" as="image" href="img/02.jpg" fetchpriority="high">
+  <!-- Быстрый старт: грузим только то, что нужно в первые секунды -->
+  <link rel="preload" as="image" href="./img/lotte.jpg" fetchpriority="high">
+  <link rel="preload" as="image" href="./img/album.png" fetchpriority="high">
+  <link rel="preload" as="image" href="./thumbs/01.jpg">
+  <link rel="preload" as="image" href="./thumbs/02.jpg">
 
   <style>
     :root{
-      --bg:#0b0f18;
-      --card:#101827;
-      --stroke:rgba(255,255,255,.10);
-      --stroke2:rgba(255,255,255,.14);
-      --txt:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.68);
+      --bg0:#070b13;
+      --bg1:#0b1220;
+      --card:#0e1727cc;
+      --stroke:rgba(255,255,255,.12);
+      --stroke2:rgba(255,255,255,.09);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.70);
       --muted2:rgba(255,255,255,.52);
-      --accent:#f7c46b;
-      --radius:26px;
+      --gold:rgba(244,195,92,.95);
+      --radius:28px;
+      --radius2:22px;
+      --shadow:0 30px 80px rgba(0,0,0,.55);
+      --maxw:760px;
     }
 
     *{box-sizing:border-box}
-    html,body{height:100%;}
+    html,body{height:100%; margin:0;}
     body{
-      margin:0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 900px at 40% -10%, rgba(255,255,255,.08), transparent 60%),
-                  radial-gradient(900px 700px at 100% 30%, rgba(255,170,90,.10), transparent 55%),
-                  var(--bg);
-      color:var(--txt);
-      overflow:hidden; /* scrolling inside .snap */
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 50% 15%, rgba(255,255,255,.06), transparent 60%),
+        radial-gradient(900px 650px at 15% 70%, rgba(111,162,255,.10), transparent 55%),
+        radial-gradient(900px 650px at 85% 75%, rgba(244,195,92,.08), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow:hidden; /* скроллим внутри .app */
     }
 
-    /* Snap-scroller */
-    .snap{
-      height:100svh;
-      height:100dvh;
+    /* Снап-скролл */
+    .app{
+      height:100vh;
       overflow-y:auto;
+      overscroll-behavior-y:contain;
       scroll-snap-type:y mandatory;
-      -webkit-overflow-scrolling: touch;
-      scroll-behavior:smooth;
+      -webkit-overflow-scrolling:touch;
     }
-    .panel{
-      min-height:100svh;
-      min-height:100dvh;
+    .screen{
+      min-height:100vh;
       scroll-snap-align:start;
       scroll-snap-stop:always;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding: 22px 16px;
+      padding:22px 14px;
     }
 
-    .frame{width:min(520px, 100%);}    
-
-    .kicker{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding: 10px 14px;
-      border-radius:999px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.04);
-      color: rgba(255,255,255,.72);
-      font-size: 12px;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-      backdrop-filter: blur(10px);
-    }
-    .dot{width:7px;height:7px;border-radius:999px;background:var(--accent); box-shadow:0 0 0 6px rgba(247,196,107,.15)}
+    .page{width:min(var(--maxw), 100%);}
 
     .card{
-      border-radius: var(--radius);
-      border:1px solid var(--stroke);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      box-shadow: 0 40px 120px rgba(0,0,0,.55);
-      padding: 18px 16px;
-      backdrop-filter: blur(18px);
-    }
-
-    h1,h2{margin:0;}
-    h1{font-size: 26px; line-height: 1.15;}
-    h2{font-size: 22px; line-height: 1.2;}
-    p{margin:0; color:var(--muted); line-height:1.45;}
-
-    .media{
-      border-radius: 22px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-      overflow:hidden;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
-    }
-    .media img, .media video{display:block; width:100%; height:auto;}
-
-    .subhint{margin-top:14px; text-align:center; color:var(--muted2); font-size: 12px;}
-
-    /* Step 1: Album cover (no 47 thumbs requests) */
-    .albumStage{margin-top:14px;}
-    .albumCoverWrap{
-      border-radius: 24px;
-      border:1px solid rgba(255,255,255,.12);
-      background: radial-gradient(120% 90% at 20% 20%, rgba(255,255,255,.07), rgba(0,0,0,.08) 55%),
-                  rgba(0,0,0,.12);
-      overflow:hidden;
-      box-shadow: 0 24px 70px rgba(0,0,0,.55);
       position:relative;
+      border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      overflow:hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(800px 420px at 50% 0%, rgba(255,255,255,.07), transparent 60%),
+        radial-gradient(420px 260px at 16% 25%, rgba(111,162,255,.10), transparent 60%),
+        radial-gradient(420px 260px at 84% 25%, rgba(244,195,92,.10), transparent 60%);
+      pointer-events:none;
     }
 
-    .albumBtn{
+    .inner{position:relative; padding:24px 22px 18px;}
+
+    .chip{
+      display:inline-flex; gap:10px; align-items:center;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.04);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      color:rgba(255,255,255,.78);
+      margin-bottom:14px;
+    }
+    .chip .dot{width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 18px rgba(244,195,92,.45)}
+
+    h1{margin:10px 0 10px; font-size:28px; line-height:1.15;}
+    h2{margin:10px 0 6px; font-size:24px; line-height:1.18;}
+    p{margin:8px 0 0; color:var(--muted); line-height:1.52;}
+
+    .hint{margin-top:14px; font-size:12px; color:var(--muted2); text-align:center;}
+
+    footer{
+      margin-top:14px;
+      text-align:center;
+      color:rgba(255,255,255,.30);
+      font-size:12px;
+      letter-spacing:.02em;
+    }
+
+    /* Медиа-блоки */
+    .media{
+      margin-top:16px;
+      border-radius:24px;
+      border:1px solid var(--stroke2);
+      background:rgba(0,0,0,.18);
+      overflow:hidden;
+    }
+
+    .media img, .media video{
       display:block;
-      width:100%;
-      border:0;
-      padding:0;
-      background:transparent;
-      cursor:pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .albumImg{
       width:100%;
       height:auto;
-      display:block;
-      transform: translateZ(0);
     }
 
-    .albumOverlay{
-      position:fixed;
-      inset:0;
-      background: rgba(5,8,14,.72);
-      backdrop-filter: blur(14px);
-      z-index: 9999;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: 18px 14px calc(18px + env(safe-area-inset-bottom));
-    }
-    .albumOverlay[aria-hidden="false"]{display:flex;}
+    /* Intro: lotte */
+    .lotte-title{margin-top:12px; font-size:16px; color:rgba(255,255,255,.78)}
 
-    .albumChrome{
-      width:min(900px, 100%);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin: 0 auto 10px;
-    }
-    .badge{
-      font-size: 12px;
-      color: rgba(255,255,255,.75);
-      background: rgba(0,0,0,.35);
-      border:1px solid rgba(255,255,255,.14);
-      padding: 8px 10px;
-      border-radius: 999px;
-      backdrop-filter: blur(8px);
-    }
-    .closeBtn{
-      border: 1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.35);
-      color: rgba(255,255,255,.92);
-      border-radius: 999px;
-      padding: 10px 12px;
-      font-size: 14px;
+    /* Альбом */
+    .album-wrap{margin-top:16px; display:flex; justify-content:center;}
+    .album-btn{
+      width:min(360px, 100%);
+      border:1px solid var(--stroke2);
+      background:rgba(0,0,0,.18);
+      border-radius:24px;
+      overflow:hidden;
       cursor:pointer;
-      backdrop-filter: blur(8px);
+      box-shadow:0 22px 60px rgba(0,0,0,.40);
+      transform: translateZ(0);
+      transition: transform .25s ease, filter .25s ease;
       -webkit-tap-highlight-color: transparent;
     }
+    .album-btn:active{transform: scale(.985)}
+    .album-btn img{width:100%; height:auto; display:block;}
+    .album-caption{margin-top:12px; text-align:center; color:var(--muted2); font-size:12px}
 
-    /* Book */
-    .bookWrap{width:min(900px, 100%);}
+    /* Модалка альбома */
+    .modal{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display:none;
+      z-index:50;
+    }
+    .modal.open{display:flex; align-items:center; justify-content:center;}
+
+    .book-shell{
+      width:min(980px, 92vw);
+      height:min(700px, 86vh);
+      position:relative;
+      transform: translateZ(0);
+    }
     .book{
-      position:relative;
-      width:100%;
-      aspect-ratio: 10 / 7; /* wide spread */
-      border-radius: 22px;
-      border:1px solid rgba(255,255,255,.14);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      box-shadow: 0 50px 140px rgba(0,0,0,.65);
+      width:100%; height:100%;
+      border-radius:28px;
+      border:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      box-shadow:0 30px 90px rgba(0,0,0,.70);
       overflow:hidden;
-      transform: translateZ(0);
-      touch-action: none; /* we manage swipe */
+      display:flex;
+      align-items:stretch;
     }
-
-    /* subtle vignette */
-    .book:before{
+    .page-half{
+      flex:1;
+      position:relative;
+      background:rgba(0,0,0,.22);
+    }
+    .page-half::before{
       content:"";
-      position:absolute;
-      inset:0;
-      pointer-events:none;
+      position:absolute; inset:0;
       background:
-        radial-gradient(120% 90% at 50% 10%, rgba(255,255,255,.08), transparent 55%),
-        radial-gradient(120% 90% at 50% 90%, rgba(0,0,0,.35), transparent 60%),
-        linear-gradient(90deg, rgba(0,0,0,.18), transparent 12%, transparent 88%, rgba(0,0,0,.18));
-      mix-blend-mode: normal;
+        radial-gradient(700px 400px at 50% 0%, rgba(255,255,255,.06), transparent 60%),
+        radial-gradient(300px 200px at 30% 20%, rgba(111,162,255,.08), transparent 60%),
+        radial-gradient(300px 200px at 70% 20%, rgba(244,195,92,.08), transparent 60%);
+      pointer-events:none;
+    }
+    .spine{
+      width:22px;
+      background:linear-gradient(90deg, rgba(0,0,0,.45), rgba(255,255,255,.08), rgba(0,0,0,.45));
+      border-left:1px solid rgba(255,255,255,.08);
+      border-right:1px solid rgba(255,255,255,.08);
     }
 
-    .spread{
-      position:absolute;
-      inset:0;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-    }
-
-    .page{
-      position:relative;
+    .page-img{
+      position:absolute; inset:14px;
+      border-radius:22px;
       overflow:hidden;
-      background: rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
     }
-
-    .page.left{border-right:1px solid rgba(255,255,255,.08)}
-
-    .page img{
-      width:100%;
-      height:100%;
-      object-fit: cover;
+    .page-img img{
+      width:100%; height:100%;
+      object-fit:cover;
       display:block;
       transform: translateZ(0);
     }
 
-    /* center seam highlight */
-    .seam{
-      position:absolute;
-      left:50%;
-      top:0;
-      width:2px;
-      height:100%;
-      transform: translateX(-1px);
-      background: linear-gradient(180deg, transparent, rgba(255,255,255,.10) 22%, rgba(255,255,255,.06) 70%, transparent);
-      pointer-events:none;
-    }
-
-    /* Sheet flip (two-page) */
-    .sheet{
-      position:absolute;
-      inset:0;
-      transform-style: preserve-3d;
-      transform-origin: 50% 50%;
-      pointer-events:none;
-      display:none;
-    }
-    .sheet.show{display:block;}
-
-    .sheetFace{
-      position:absolute;
-      inset:0;
-      backface-visibility:hidden;
-    }
-
-    .sheetFront{transform: rotateY(0deg)}
-    .sheetBack{transform: rotateY(180deg)}
-
-    .sheetSpread{
-      position:absolute;
-      inset:0;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-    }
-    .sheetSpread .half{overflow:hidden; background: rgba(0,0,0,.22);}
-    .sheetSpread .half img{width:100%; height:100%; object-fit:cover; display:block;}
-
-    .sheetShadow{
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      background: radial-gradient(140% 90% at 50% 50%, rgba(0,0,0,.0), rgba(0,0,0,.35));
-      opacity:.0;
-      transition: opacity 260ms ease;
-    }
-
-    .book.turning .sheetShadow{opacity:.55}
-
-    @keyframes flipNext{
-      0%{transform: perspective(1400px) rotateY(0deg) scale(1)}
-      45%{transform: perspective(1400px) rotateY(-75deg) scale(.995)}
-      100%{transform: perspective(1400px) rotateY(-180deg) scale(1)}
-    }
-
-    @keyframes flipPrev{
-      0%{transform: perspective(1400px) rotateY(-180deg) scale(1)}
-      55%{transform: perspective(1400px) rotateY(-95deg) scale(.995)}
-      100%{transform: perspective(1400px) rotateY(0deg) scale(1)}
-    }
-
-    .sheet.next{animation: flipNext 520ms cubic-bezier(.2,.9,.2,1) forwards;}
-    .sheet.prev{animation: flipPrev 520ms cubic-bezier(.2,.9,.2,1) forwards;}
-
-    /* Nav */
-    .nav{
-      position:absolute;
-      inset:0;
+    /* Плавная «дорогая» отдача на свайп */
+    .drag-layer{
+      position:absolute; inset:0;
       display:flex;
-      align-items:center;
-      justify-content:space-between;
-      pointer-events:none;
+      align-items:stretch;
+      will-change: transform;
+      transition: transform .28s cubic-bezier(.2,.8,.2,1);
     }
-    .navBtn{
+
+    .modal-ui{
+      position:absolute;
+      top:10px; left:10px; right:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      pointer-events:none;
+      z-index:2;
+    }
+    .modal-btn{
       pointer-events:auto;
-      width:46px;
-      height:46px;
-      border-radius: 999px;
       border:1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.25);
-      color: rgba(255,255,255,.92);
-      display:grid;
-      place-items:center;
+      background:rgba(255,255,255,.06);
+      color:rgba(255,255,255,.88);
+      border-radius:999px;
+      padding:10px 12px;
+      font-size:12px;
       cursor:pointer;
       backdrop-filter: blur(8px);
-      margin: 0 10px;
+      -webkit-backdrop-filter: blur(8px);
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
       -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-hint{color:rgba(255,255,255,.55); font-size:12px; text-align:center;}
+
+    .fade-in{animation: fadeIn .45s ease both;}
+    @keyframes fadeIn{from{opacity:0; transform: translateY(10px)} to{opacity:1; transform:none}}
+
+    /* Открытие альбома */
+    .open-anim{
+      animation: openBook .62s cubic-bezier(.2,.8,.2,1) both;
+      transform-origin: 50% 70%;
+    }
+    @keyframes openBook{
+      from{opacity:0; transform: perspective(1200px) rotateX(8deg) scale(.96)}
+      to{opacity:1; transform: perspective(1200px) rotateX(0deg) scale(1)}
+    }
+
+    /* Видео */
+    .media-square{aspect-ratio:1/1;}
+    .media-square video{width:100%; height:100%; object-fit:cover;}
+
+    /* Дубай картинка */
+    .media-contain{background:rgba(0,0,0,.18)}
+    .media-contain img{width:100%; height:auto; display:block;}
+
+    /* Финал */
+    .crest{
+      margin:6px auto 14px;
+      width:min(280px, 70%);
+      height:auto;
+      display:block;
+      filter: drop-shadow(0 22px 40px rgba(0,0,0,.55));
+    }
+
+    /* Сердца ↔ AA (чисто CSS/SVG, без «круга», работает везде) */
+    .mark{
+      margin:16px auto 0;
+      width:112px;
+      height:48px;
+      position:relative;
       user-select:none;
+      -webkit-user-select:none;
+      touch-action:none;
     }
-    .navBtn:active{transform: scale(.96)}
+    .mark svg{position:absolute; inset:0; width:100%; height:100%;}
 
-    .openHint{
-      margin-top: 10px;
-      text-align:center;
-      color: rgba(255,255,255,.70);
-      font-size: 12px;
+    .mark .hearts{opacity:1; animation: heartsDance 2.6s ease-in-out infinite;}
+    .mark .aa{opacity:0; animation: aaReveal 2.6s ease-in-out infinite;}
+
+    @keyframes heartsDance{
+      0%{transform:translateX(0) scale(1); opacity:1}
+      22%{transform:translateX(0) scale(1.04); opacity:1}
+      38%{transform:translateX(0) scale(.98); opacity:1}
+      52%{transform:translateX(0) scale(.90); opacity:.0}
+      100%{transform:translateX(0) scale(1); opacity:1}
+    }
+    @keyframes aaReveal{
+      0%,45%{opacity:0; transform: translateY(2px) scale(.96)}
+      56%{opacity:1; transform: translateY(0) scale(1)}
+      78%{opacity:1; transform: translateY(0) scale(1)}
+      100%{opacity:0; transform: translateY(2px) scale(.96)}
     }
 
-    /* Body lock for overlay (iOS-safe) */
-    body.lock{position:fixed; width:100%; overflow:hidden;}
-
-    /* Outro hearts animation stays as-is (from previous file) */
+    /* Мелкие правки под очень узкие экраны */
+    @media (max-width:420px){
+      .inner{padding:22px 18px 16px}
+      h1{font-size:26px}
+      h2{font-size:22px}
+      .book-shell{height:min(640px, 86vh)}
+      .spine{width:16px}
+      .page-img{inset:12px}
+    }
   </style>
 </head>
+
 <body>
+  <div class="app" id="app">
 
-  <div class="snap" id="snap">
+    <!-- 1) Введение -->
+    <section class="screen" data-section="intro">
+      <div class="page">
+        <div class="card fade-in">
+          <div class="inner">
+            <div class="chip"><span class="dot"></span>ценный сайт с частичкой нашей любви и началом чего‑то нового</div>
 
-    <!-- Intro -->
-    <section class="panel" id="intro">
-      <div class="frame">
-        <div class="kicker"><span class="dot"></span> Ценный сайт с частичкой нашей любви</div>
-        <div class="card">
-          <div class="media" style="margin-top:2px">
-            <img src="img/lotte.png" alt="Lotte" loading="eager" decoding="async" fetchpriority="high" />
+            <div class="lotte-title">Lotte — наш вечер</div>
+            <div class="media" style="margin-top:10px">
+              <!-- Важно: расширение .jpg (как у тебя в папке) -->
+              <img id="imgLotte" src="./img/lotte.jpg" alt="Lotte" decoding="async" fetchpriority="high">
+            </div>
+
+            <h1>Если ты читаешь это, значит, ты сказала мне «да»🤍</h1>
+            <p>
+              Любимая, бесконечное спасибо тебе за то, что выбрала меня. При вёрстке этого сайта пролита не одна слеза из‑за осмысления нашей истории и осознания трогательности момента.
+            </p>
+
+            <div class="hint">Листай вниз ↓</div>
           </div>
-          <h1 style="margin-top:14px">Если ты читаешь это, значит, ты сказала мне «да» 🤍</h1>
-          <p style="margin-top:10px">Любимая, бесконечное спасибо тебе за то, что выбрала меня. Здесь — несколько важных шагов и воспоминаний.</p>
-          <div class="subhint">Листай вниз</div>
         </div>
+        <footer>Наше маленькое «да» перед большой совместной жизнью</footer>
       </div>
     </section>
 
-    <!-- Step 1: Album cover (hidden gallery) -->
-    <section class="panel" id="step1">
-      <div class="frame">
-        <div class="kicker"><span class="dot"></span> Шаг 1</div>
+    <!-- 2) Шаг 1 (обложка альбома + книга по клику) -->
+    <section class="screen" data-section="step1">
+      <div class="page">
         <div class="card">
-          <h2>Моменты, которые привели нас к этому вечеру</h2>
-          <p style="margin-top:6px">Люблю тебя в каждом из них ∞</p>
+          <div class="inner">
+            <div class="chip"><span class="dot"></span>шаг 1</div>
+            <h2>Моменты, которые привели нас к этому вечеру</h2>
+            <p>Люблю тебя в каждом из них ∞</p>
 
-          <div class="albumStage">
-            <div class="albumCoverWrap">
-              <button class="albumBtn" id="albumOpen" type="button" aria-label="Открыть семейный альбом">
-                <img class="albumImg" src="img/album.png" alt="Семейный альбом" loading="eager" decoding="async" />
+            <div class="album-wrap">
+              <button class="album-btn" id="openAlbum" aria-label="Открыть альбом">
+                <!-- album.png остаётся png (он маленький и норм для обложки) -->
+                <img src="./img/album.png" alt="Альбом" decoding="async" fetchpriority="high">
               </button>
             </div>
-            <div class="openHint">Нажми на альбом — и он откроется ✨</div>
+            <div class="album-caption">Нажми на альбом — и он откроется</div>
           </div>
         </div>
+        <footer>Наше маленькое «да» перед большой совместной жизнью</footer>
       </div>
     </section>
 
-    <!-- Step 2: ring video -->
-    <section class="panel" id="step2">
-      <div class="frame">
-        <div class="kicker"><span class="dot"></span> Шаг 2</div>
+    <!-- 3) Шаг 2 (видео как гифка) -->
+    <section class="screen" data-section="step2">
+      <div class="page">
         <div class="card">
-          <h2>Каким я представляю твоё кольцо</h2>
-          <p style="margin-top:8px">Тонкое, аккуратное, элегантное — и очень твоё.</p>
-          <div class="media" style="margin-top:14px">
-            <video
-              autoplay
-              muted
-              loop
-              playsinline
-              preload="metadata"
-              style="width:100%; height:auto; display:block"
-            >
-              <source src="media/IMG_5945_sharper_fast_optimized.mp4" type="video/mp4" />
-            </video>
+          <div class="inner">
+            <div class="chip"><span class="dot"></span>шаг 2</div>
+            <h2>Каким я представляю твоё кольцо</h2>
+            <p>
+              Тонкое, аккуратное, элегантное — такое же, как ты. А 8 бриллиантов вместо одного — как символ нашей любви.
+            </p>
+
+            <div class="media media-square" style="margin-top:16px">
+              <video id="ringVideo" autoplay muted loop playsinline preload="none"></video>
+            </div>
           </div>
         </div>
+        <footer>Наше маленькое «да» перед большой совместной жизнью</footer>
       </div>
     </section>
 
-    <!-- Step 3: Dubai -->
-    <section class="panel" id="step3">
-      <div class="frame">
-        <div class="kicker"><span class="dot"></span> Шаг 3</div>
+    <!-- 4) Шаг 3 (Дубай) -->
+    <section class="screen" data-section="step3">
+      <div class="page">
         <div class="card">
-          <h2>Наш маленький план Дубая</h2>
-          <div class="media" style="margin-top:14px">
-            <img src="img/dubai.jpg" alt="Dubai" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='img/dubai.png'" />
+          <div class="inner">
+            <div class="chip"><span class="dot"></span>шаг 3</div>
+            <h2>Наш маленький план Дубая</h2>
+
+            <div class="media media-contain" style="margin-top:14px">
+              <!-- Важно: dubai.jpg (как у тебя сейчас) -->
+              <img id="imgDubai" data-src="./img/dubai.jpg" alt="Dubai" decoding="async" loading="lazy">
+            </div>
+
+            <p style="margin-top:12px">
+              Прилететь вдвоём туда, где всё немного похоже на кино. Зайти в Cartier, не спеша посмотреть, примерить и почувствовать «то самое» кольцо. Выйти из бутика уже не просто парой, а людьми, которые сделали свой общий выбор.
+            </p>
           </div>
-          <p style="margin-top:12px">Прилететь вдвоём туда, где всё немного похоже на кино…</p>
         </div>
+        <footer>Наше маленькое «да» перед большой совместной жизнью</footer>
       </div>
     </section>
 
-    <!-- Outro: crest + hearts/AA -->
-    <section class="panel" id="outro">
-      <div class="frame">
-        <div class="card" style="text-align:center; padding: 22px 18px">
-          <img src="img/AAfam.jpg" alt="AA Family" style="width:min(520px,88%); height:auto; display:block; margin: 0 auto 16px" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='img/AAfam.png'" />
-          <h2 style="font-size: 24px">Ариночка, я хочу прожить с тобой всю жизнь.</h2>
-          <p style="margin-top:10px">Для меня важно не просто кольцо, а всё, что стоит за ним: ты, мы и наша общая история — от этого вечера до самого-самого дальше.</p>
+    <!-- 5) Вывод -->
+    <section class="screen" data-section="final">
+      <div class="page">
+        <div class="card">
+          <div class="inner" style="text-align:center">
+            <!-- Важно: AAfam.jpg -->
+            <img id="imgCrest" class="crest" data-src="./img/AAfam.jpg" alt="AA Family" decoding="async" loading="lazy">
 
-          <div style="margin-top:18px; display:flex; justify-content:center">
-            <svg width="88" height="36" viewBox="0 0 88 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
-              <defs>
-                <filter id="glow" x="-40%" y="-60%" width="180%" height="220%">
-                  <feGaussianBlur stdDeviation="2.2" result="blur" />
-                  <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.55 0" result="glow"/>
-                  <feMerge>
-                    <feMergeNode in="glow"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-              </defs>
+            <h2 style="margin-top:6px">Ариночка, я хочу прожить с тобой всю жизнь.</h2>
+            <p>
+              Для меня важно не просто кольцо, а всё, что стоит за ним: ты, мы и наша общая история — от этого вечера до самого‑самого дальше.
+            </p>
 
-              <g id="hearts" filter="url(#glow)">
-                <path id="h1" d="M22 10c0-3.3 2.7-6 6-6 1.9 0 3.6.9 4.7 2.2C33.8 4.9 35.5 4 37.4 4c3.3 0 6 2.7 6 6 0 7-10.7 11.4-10.7 11.4S22 17 22 10z" fill="rgba(255,255,255,.92)"/>
-                <path id="h2" d="M44.6 10c0-3.3 2.7-6 6-6 1.9 0 3.6.9 4.7 2.2C56.4 4.9 58.1 4 60 4c3.3 0 6 2.7 6 6 0 7-10.7 11.4-10.7 11.4S44.6 17 44.6 10z" fill="rgba(255,255,255,.92)"/>
-              </g>
-
-              <g id="aa" opacity="0" filter="url(#glow)">
-                <path d="M31 28 L37 8 L43 28" stroke="rgba(255,255,255,.92)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M34.2 20 H39.8" stroke="rgba(255,255,255,.92)" stroke-width="3.5" stroke-linecap="round"/>
-                <path d="M45 28 L51 8 L57 28" stroke="rgba(255,255,255,.92)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M48.2 20 H53.8" stroke="rgba(255,255,255,.92)" stroke-width="3.5" stroke-linecap="round"/>
-              </g>
-
-              <style>
-                #h1{transform-origin: 33px 18px; animation: hDance 2.8s ease-in-out infinite;}
-                #h2{transform-origin: 56px 18px; animation: hDance2 2.8s ease-in-out infinite;}
-                #aa{transform-origin: 44px 18px; animation: aaFade 2.8s ease-in-out infinite;}
-
-                @keyframes hDance{
-                  0%,18%{transform: translateX(0) scale(1); opacity:1}
-                  32%{transform: translateX(6px) scale(.92); opacity:.95}
-                  50%{transform: translateX(12px) scale(.88); opacity:0}
-                  68%{transform: translateX(6px) scale(.92); opacity:.95}
-                  82%,100%{transform: translateX(0) scale(1); opacity:1}
-                }
-                @keyframes hDance2{
-                  0%,18%{transform: translateX(0) scale(1); opacity:1}
-                  32%{transform: translateX(-6px) scale(.92); opacity:.95}
-                  50%{transform: translateX(-12px) scale(.88); opacity:0}
-                  68%{transform: translateX(-6px) scale(.92); opacity:.95}
-                  82%,100%{transform: translateX(0) scale(1); opacity:1}
-                }
-                @keyframes aaFade{
-                  0%,34%{opacity:0; transform: scale(.92)}
-                  50%{opacity:1; transform: scale(1)}
-                  66%{opacity:0; transform: scale(.92)}
-                  100%{opacity:0; transform: scale(.92)}
-                }
-              </style>
-            </svg>
+            <div class="mark" aria-hidden="true">
+              <!-- hearts -->
+              <svg class="hearts" viewBox="0 0 112 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g opacity="0.96">
+                  <path d="M28 40C18 33 10 26 10 17.5C10 12.3 13.7 8 19 8C22.4 8 25.2 9.8 27 12.2C28.8 9.8 31.6 8 35 8C40.3 8 44 12.3 44 17.5C44 26 36 33 28 40Z" fill="white" fill-opacity="0.92"/>
+                  <path d="M84 40C74 33 66 26 66 17.5C66 12.3 69.7 8 75 8C78.4 8 81.2 9.8 83 12.2C84.8 9.8 87.6 8 91 8C96.3 8 100 12.3 100 17.5C100 26 92 33 84 40Z" fill="white" fill-opacity="0.92"/>
+                </g>
+              </svg>
+              <!-- AA -->
+              <svg class="aa" viewBox="0 0 112 48" xmlns="http://www.w3.org/2000/svg">
+                <g fill="none" stroke="white" stroke-opacity="0.92" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M30 40 L40 10 L50 40"/>
+                  <path d="M34 28 H46"/>
+                  <path d="M62 40 L72 10 L82 40"/>
+                  <path d="M66 28 H78"/>
+                </g>
+              </svg>
+            </div>
           </div>
-
-          <div class="subhint" style="margin-top:10px">Наше маленькое «да» перед большой совместной жизнью</div>
         </div>
+        <footer>Наше маленькое «да» перед большой совместной жизнью</footer>
       </div>
     </section>
 
   </div>
 
-  <!-- Album overlay viewer -->
-  <div class="albumOverlay" id="albumOverlay" aria-hidden="true">
-    <div class="bookWrap">
-      <div class="albumChrome">
-        <div class="badge" id="spreadBadge">Разворот 1 / 24</div>
-        <button class="closeBtn" id="albumClose" type="button">Закрыть</button>
+  <!-- Модалка альбома -->
+  <div class="modal" id="albumModal" aria-hidden="true">
+    <div class="book-shell open-anim" role="dialog" aria-label="Альбом">
+      <div class="modal-ui">
+        <button class="modal-btn" id="closeAlbum">Закрыть</button>
+        <div class="nav-hint">Свайп влево/вправо — следующий/предыдущий разворот</div>
+        <button class="modal-btn" id="toggleHelp" style="opacity:.0; pointer-events:none">.</button>
       </div>
 
       <div class="book" id="book">
-        <div class="spread" aria-hidden="true">
-          <div class="page left"><img id="pageL" alt="" decoding="async"></div>
-          <div class="page right"><img id="pageR" alt="" decoding="async"></div>
-          <div class="seam"></div>
-        </div>
-
-        <!-- animated sheet (two-page flip) -->
-        <div class="sheet" id="sheet">
-          <div class="sheetFace sheetFront">
-            <div class="sheetSpread">
-              <div class="half"><img id="sfL" alt="" decoding="async"></div>
-              <div class="half"><img id="sfR" alt="" decoding="async"></div>
-            </div>
+        <div class="drag-layer" id="dragLayer">
+          <div class="page-half">
+            <div class="page-img"><img id="pageLeft" alt="" decoding="async"></div>
           </div>
-          <div class="sheetFace sheetBack">
-            <div class="sheetSpread">
-              <div class="half"><img id="sbL" alt="" decoding="async"></div>
-              <div class="half"><img id="sbR" alt="" decoding="async"></div>
-            </div>
+          <div class="spine"></div>
+          <div class="page-half">
+            <div class="page-img"><img id="pageRight" alt="" decoding="async"></div>
           </div>
-          <div class="sheetShadow"></div>
-        </div>
-
-        <div class="nav">
-          <div class="navBtn" id="prevBtn" aria-label="Назад">‹</div>
-          <div class="navBtn" id="nextBtn" aria-label="Вперёд">›</div>
         </div>
       </div>
 
-      <div class="openHint" style="margin-top:10px">Листай развороты свайпом влево/вправо</div>
     </div>
   </div>
 
   <script>
-    // ====== Helper: safe idle ======
-    const idle = (cb, t=900) => {
-      if ('requestIdleCallback' in window) return requestIdleCallback(cb, {timeout:t});
-      return setTimeout(cb, Math.min(t, 600));
+    // --- Настройки/пути (важно: расширения .jpg как у тебя в папке) ---
+    const PATHS = {
+      lotte: './img/lotte.jpg',
+      album: './img/album.png',
+      dubai: './img/dubai.jpg',
+      crest: './img/AAfam.jpg',
+      ring: './media/IMG_5945_sharper_fast_optimized.mp4'
     };
 
-    // ====== Asset loading strategy ======
-    // Goal:
-    // 1) instantly show lotte (preload)
-    // 2) load album + (01,02) early
-    // 3) if album NOT opened -> gradually warm up video/dubai/crest
-    // 4) if album opened -> warm up next spreads sequentially
+    const TOTAL = 47; // количество фото в альбоме
 
-    const state = {
-      albumOpened: false,
-    };
+    const app = document.getElementById('app');
+    const imgDubai = document.getElementById('imgDubai');
+    const imgCrest = document.getElementById('imgCrest');
+    const ringVideo = document.getElementById('ringVideo');
 
-    const preloadImage = (src) => new Promise((res) => {
-      const im = new Image();
-      im.decoding = 'async';
-      im.loading = 'eager';
-      im.onload = () => res(true);
-      im.onerror = () => res(false);
-      im.src = src;
-    });
-
-    const preloadVideo = (src) => {
-      // lightweight: create a <link rel=prefetch> + fetch HEAD-ish by browser
-      const l = document.createElement('link');
-      l.rel = 'prefetch';
-      l.as = 'video';
-      l.href = src;
-      document.head.appendChild(l);
-    };
-
-    // Warmup (runs after first paint)
-    idle(async ()=>{
-      // 01/02 already preloaded by <link>, but on some WebViews it's not guaranteed.
-      // Doing a tiny JS warmup ensures they're in cache.
-      await preloadImage('img/01.jpg');
-      await preloadImage('img/02.jpg');
-
-      // Give user a moment. If album is not opened, warm up the rest in background.
-      idle(()=>{
-        if (state.albumOpened) return;
-        preloadVideo('media/IMG_5945_sharper_fast_optimized.mp4');
-        preloadImage('img/dubai.jpg').then(ok=>{ if(!ok) preloadImage('img/dubai.png'); });
-        preloadImage('img/AAfam.jpg').then(ok=>{ if(!ok) preloadImage('img/AAfam.png'); });
-      }, 1600);
-    }, 1200);
-
-    // ====== Album viewer ======
-    const overlay = document.getElementById('albumOverlay');
-    const openBtn = document.getElementById('albumOpen');
-    const closeBtn = document.getElementById('albumClose');
-
-    const book = document.getElementById('book');
-    const sheet = document.getElementById('sheet');
-
-    const pageL = document.getElementById('pageL');
-    const pageR = document.getElementById('pageR');
-
-    const sfL = document.getElementById('sfL');
-    const sfR = document.getElementById('sfR');
-    const sbL = document.getElementById('sbL');
-    const sbR = document.getElementById('sbR');
-
-    const badge = document.getElementById('spreadBadge');
-
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-
-    // If you ever add/remove photos, update TOTAL here.
-    const TOTAL = 47;
+    // Утилиты
     const pad2 = (n) => String(n).padStart(2,'0');
-    const imgPath = (n) => `img/${pad2(n)}.jpg`;
+    const full = (n) => `./img/${pad2(n)}.jpg`;
+    const thumb = (n) => `./thumbs/${pad2(n)}.jpg`;
 
-    const spreadsTotal = Math.ceil(TOTAL / 2);
+    function preloadImage(url){
+      return new Promise((resolve, reject) => {
+        const im = new Image();
+        im.decoding = 'async';
+        im.onload = () => resolve(url);
+        im.onerror = reject;
+        im.src = url;
+      });
+    }
 
-    let spreadIndex = 0; // 0-based. spread 0 => (1,2)
-    let turning = false;
+    function preloadVideo(url){
+      // мягкий прогрев без автозагрузки всего видео
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'video';
+      link.href = url;
+      document.head.appendChild(link);
+    }
 
-    const setBadge = () => {
-      badge.textContent = `Разворот ${spreadIndex + 1} / ${spreadsTotal}`;
-    };
+    function idle(fn){
+      if('requestIdleCallback' in window) return requestIdleCallback(fn, {timeout: 1500});
+      return setTimeout(fn, 300);
+    }
 
-    const spreadNums = (idx) => {
+    // --- Быстрые «доводчики» (scroll-snap + JS страховка) ---
+    let snapTimer = null;
+    app.addEventListener('scroll', () => {
+      clearTimeout(snapTimer);
+      snapTimer = setTimeout(() => {
+        const screens = [...document.querySelectorAll('.screen')];
+        const y = app.scrollTop;
+        let best = screens[0];
+        let bestDist = Infinity;
+        for(const s of screens){
+          const top = s.offsetTop;
+          const dist = Math.abs(top - y);
+          if(dist < bestDist){ bestDist = dist; best = s; }
+        }
+        // если «между» — доводим
+        if(bestDist > 6 && bestDist < window.innerHeight * 0.45){
+          best.scrollIntoView({behavior:'smooth', block:'start'});
+        }
+      }, 110);
+    }, {passive:true});
+
+    // --- Ленивая загрузка для тяжёлого контента (дубай/герб/видео) ---
+    const io = new IntersectionObserver((entries) => {
+      for(const e of entries){
+        if(!e.isIntersecting) continue;
+        const sec = e.target.getAttribute('data-section');
+
+        if(sec === 'step2'){
+          // подставляем source только когда дошли до шага 2
+          if(!ringVideo.querySelector('source')){
+            const source = document.createElement('source');
+            source.src = PATHS.ring;
+            source.type = 'video/mp4';
+            ringVideo.appendChild(source);
+            ringVideo.load();
+            ringVideo.play().catch(()=>{});
+          }
+        }
+
+        if(sec === 'step3'){
+          if(imgDubai && !imgDubai.src){
+            imgDubai.src = imgDubai.dataset.src;
+          }
+        }
+
+        if(sec === 'final'){
+          if(imgCrest && !imgCrest.src){
+            imgCrest.src = imgCrest.dataset.src;
+          }
+        }
+
+        // Когда дошли до шага 1 и НЕ открывали альбом — в фоне можно подгрузить видео/дубай/герб
+        if(sec === 'step1'){
+          scheduleBackgroundPreload();
+        }
+      }
+    }, {root: app, threshold: 0.55});
+
+    document.querySelectorAll('.screen').forEach(s => io.observe(s));
+
+    // --- Альбом (вместо галереи): грузим по разворотам, а не все 47 сразу ---
+    const modal = document.getElementById('albumModal');
+    const openAlbumBtn = document.getElementById('openAlbum');
+    const closeAlbumBtn = document.getElementById('closeAlbum');
+
+    const pageLeft = document.getElementById('pageLeft');
+    const pageRight = document.getElementById('pageRight');
+    const dragLayer = document.getElementById('dragLayer');
+
+    let albumOpened = false;
+    let spreadIndex = 0; // 0 => (01,02), 1 => (03,04) ...
+
+    // кэш, чтобы не дёргать сеть по второму разу
+    const imgCache = new Map(); // url -> true
+
+    async function setPageImg(el, n){
+      const t = thumb(n);
+      const f = full(n);
+      el.alt = `Фото ${pad2(n)}`;
+
+      // быстрый плейсхолдер (миниатюра)
+      if(!imgCache.has(t)){
+        try{ await preloadImage(t); imgCache.set(t,true);}catch(e){}
+      }
+      el.src = t;
+
+      // полноразмер — догружаем асинхронно
+      idle(async () => {
+        if(imgCache.has(f)){
+          el.src = f;
+          return;
+        }
+        try{
+          await preloadImage(f);
+          imgCache.set(f,true);
+          // заменяем на full, если мы всё ещё на этом же развороте
+          el.src = f;
+        }catch(e){
+          // на всякий случай: если вдруг расширение .jpeg (не должно, но спасает)
+          const alt = f.replace(/\.jpg$/i, '.jpeg');
+          try{ await preloadImage(alt); imgCache.set(alt,true); el.src = alt; }catch(_e){}
+        }
+      });
+    }
+
+    function spreadToNumbers(idx){
       const left = idx*2 + 1;
       const right = idx*2 + 2;
       return {left, right};
-    };
+    }
 
-    const loadSpread = async (idx) => {
-      const {left, right} = spreadNums(idx);
-      const leftSrc = imgPath(left);
-      const rightSrc = right <= TOTAL ? imgPath(right) : null;
+    async function renderSpread(idx){
+      spreadIndex = Math.max(0, Math.min(idx, Math.floor((TOTAL-1)/2)));
+      const {left, right} = spreadToNumbers(spreadIndex);
+      await setPageImg(pageLeft, left);
+      if(right <= TOTAL) await setPageImg(pageRight, right);
+      else pageRight.removeAttribute('src');
 
-      // Set immediately; browser will decode async.
-      pageL.src = leftSrc;
-      pageR.src = rightSrc || leftSrc; // if odd count, mirror last
+      // мягкий префетч соседних разворотов
+      idle(() => prefetchAdjacent(spreadIndex));
+    }
 
-      setBadge();
+    function prefetchPair(a,b){
+      [a,b].forEach(n => {
+        if(n < 1 || n > TOTAL) return;
+        const f = full(n);
+        if(imgCache.has(f)) return;
+        preloadImage(f).then(()=>imgCache.set(f,true)).catch(()=>{});
+      });
+    }
 
-      // Preload next spread (02 ahead) for "native" feel
-      warmupNeighbors(idx);
-    };
+    function prefetchAdjacent(idx){
+      const prev = spreadToNumbers(idx-1);
+      const next = spreadToNumbers(idx+1);
+      prefetchPair(prev.left, prev.right);
+      prefetchPair(next.left, next.right);
+    }
 
-    const warmupNeighbors = (idx) => {
-      // Preload next / prev spread images
-      const next = idx + 1;
-      const prev = idx - 1;
+    function openAlbum(){
+      albumOpened = true;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+      // быстро: 01/02 уже частично прогреты preload'ом
+      renderSpread(0);
+    }
 
-      const jobs = [];
-      if (next < spreadsTotal) {
-        const n = spreadNums(next);
-        jobs.push(preloadImage(imgPath(n.left)));
-        if (n.right <= TOTAL) jobs.push(preloadImage(imgPath(n.right)));
-      }
-      if (prev >= 0) {
-        const p = spreadNums(prev);
-        jobs.push(preloadImage(imgPath(p.left)));
-        if (p.right <= TOTAL) jobs.push(preloadImage(imgPath(p.right)));
-      }
+    function closeAlbum(){
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+      // если закрыли — можно догружать остальные блоки сайта в фоне
+      scheduleBackgroundPreload();
+    }
 
-      // Additionally: queue the next-next quietly (keeps flipping buttery)
-      const nn = idx + 2;
-      if (nn < spreadsTotal) {
-        idle(()=>{
-          if (!state.albumOpened) return;
-          const x = spreadNums(nn);
-          preloadImage(imgPath(x.left));
-          if (x.right <= TOTAL) preloadImage(imgPath(x.right));
-        }, 1800);
-      }
+    openAlbumBtn.addEventListener('click', openAlbum);
+    closeAlbumBtn.addEventListener('click', closeAlbum);
+    modal.addEventListener('click', (e) => {
+      if(e.target === modal) closeAlbum();
+    });
 
-      Promise.allSettled(jobs);
-    };
+    // Свайп по книге (без влияния на скролл страницы)
+    let startX = 0;
+    let dx = 0;
+    let dragging = false;
 
-    const prepSheet = (fromIdx, toIdx, dir) => {
-      const a = spreadNums(fromIdx);
-      const b = spreadNums(toIdx);
-
-      // Front face = current spread
-      sfL.src = imgPath(a.left);
-      sfR.src = a.right <= TOTAL ? imgPath(a.right) : imgPath(a.left);
-
-      // Back face = target spread
-      // IMPORTANT: back face is rotated 180deg, order stays natural.
-      sbL.src = imgPath(b.left);
-      sbR.src = b.right <= TOTAL ? imgPath(b.right) : imgPath(b.left);
-
-      sheet.className = 'sheet show ' + (dir === 'next' ? 'next' : 'prev');
-      // Reset starting transform for prev animation
-      if (dir === 'prev') {
-        sheet.style.transform = 'perspective(1400px) rotateY(-180deg)';
-      } else {
-        sheet.style.transform = 'perspective(1400px) rotateY(0deg)';
-      }
-
-      // Force reflow so animation reliably plays on Telegram WebView/Chrome
-      void sheet.offsetWidth;
-    };
-
-    const finishTurn = (toIdx) => {
-      spreadIndex = toIdx;
-      loadSpread(spreadIndex);
-      sheet.className = 'sheet';
-      sheet.style.transform = '';
-      book.classList.remove('turning');
-      turning = false;
-    };
-
-    const go = (dir) => {
-      if (turning) return;
-      const to = dir === 'next' ? spreadIndex + 1 : spreadIndex - 1;
-      if (to < 0 || to >= spreadsTotal) return;
-
-      turning = true;
-      book.classList.add('turning');
-
-      prepSheet(spreadIndex, to, dir);
-
-      const onEnd = (e) => {
-        if (e.target !== sheet) return;
-        sheet.removeEventListener('animationend', onEnd);
-        finishTurn(to);
-      };
-      sheet.addEventListener('animationend', onEnd);
-    };
-
-    // Swipe gesture
-    let sx=0, sy=0, dx=0, dy=0, dragging=false;
-    const SWIPE = 42;
-
-    const onDown = (ev) => {
-      if (!state.albumOpened) return;
+    function onDown(clientX){
       dragging = true;
-      const t = ev.touches ? ev.touches[0] : ev;
-      sx = t.clientX; sy = t.clientY;
-      dx = 0; dy = 0;
-    };
+      startX = clientX;
+      dx = 0;
+      dragLayer.style.transition = 'none';
+    }
 
-    const onMove = (ev) => {
-      if (!dragging) return;
-      const t = ev.touches ? ev.touches[0] : ev;
-      dx = t.clientX - sx;
-      dy = t.clientY - sy;
-      // Prevent page scroll behind overlay
-      if (Math.abs(dx) > Math.abs(dy)) ev.preventDefault();
-    };
+    function onMove(clientX){
+      if(!dragging) return;
+      dx = clientX - startX;
+      const damp = Math.max(-220, Math.min(220, dx));
+      dragLayer.style.transform = `translateX(${damp}px)`;
+    }
 
-    const onUp = () => {
-      if (!dragging) return;
+    function onUp(){
+      if(!dragging) return;
       dragging = false;
-      if (Math.abs(dx) > SWIPE && Math.abs(dx) > Math.abs(dy)) {
-        if (dx < 0) go('next');
-        else go('prev');
+      dragLayer.style.transition = 'transform .28s cubic-bezier(.2,.8,.2,1)';
+
+      const threshold = 90;
+      const goNext = dx < -threshold;
+      const goPrev = dx > threshold;
+
+      if(goNext){
+        // лёгкая анимация «доворачивания»
+        dragLayer.style.transform = 'translateX(-140px)';
+        setTimeout(() => {
+          dragLayer.style.transform = 'translateX(0px)';
+          renderSpread(spreadIndex + 1);
+        }, 150);
+      } else if(goPrev){
+        dragLayer.style.transform = 'translateX(140px)';
+        setTimeout(() => {
+          dragLayer.style.transform = 'translateX(0px)';
+          renderSpread(spreadIndex - 1);
+        }, 150);
+      } else {
+        dragLayer.style.transform = 'translateX(0px)';
       }
-    };
+    }
 
-    // Open / Close
-    const lockBody = () => {
-      const y = window.scrollY || 0;
-      document.body.dataset.scrollY = String(y);
-      document.body.classList.add('lock');
-      document.body.style.top = `-${y}px`;
-    };
-    const unlockBody = () => {
-      const y = parseInt(document.body.dataset.scrollY || '0', 10);
-      document.body.classList.remove('lock');
-      document.body.style.top = '';
-      window.scrollTo(0, y);
-    };
+    // touch
+    const book = document.getElementById('book');
+    book.addEventListener('touchstart', (e) => {
+      if(!modal.classList.contains('open')) return;
+      if(e.touches.length !== 1) return;
+      onDown(e.touches[0].clientX);
+    }, {passive:true});
 
-    const openAlbum = async () => {
-      state.albumOpened = true;
-
-      // Stop background warmups and pivot to album spreads.
-      overlay.setAttribute('aria-hidden','false');
-      lockBody();
-
-      // Load first spread immediately
-      spreadIndex = 0;
-      setBadge();
-      await loadSpread(spreadIndex);
-
-      // Ensure next spread is ready quickly (03/04)
-      idle(()=>{
-        const n = spreadNums(1);
-        preloadImage(imgPath(n.left));
-        if (n.right <= TOTAL) preloadImage(imgPath(n.right));
-      }, 800);
-    };
-
-    const closeAlbum = () => {
-      overlay.setAttribute('aria-hidden','true');
-      unlockBody();
-
-      // Return to non-album state (allow background warmup)
-      state.albumOpened = false;
-      // small delayed warmup of other assets
-      idle(()=>{
-        if (state.albumOpened) return;
-        preloadVideo('media/IMG_5945_sharper_fast_optimized.mp4');
-        preloadImage('img/dubai.jpg').then(ok=>{ if(!ok) preloadImage('img/dubai.png'); });
-        preloadImage('img/AAfam.jpg').then(ok=>{ if(!ok) preloadImage('img/AAfam.png'); });
-      }, 1200);
-    };
-
-    openBtn.addEventListener('click', openAlbum);
-    closeBtn.addEventListener('click', closeAlbum);
-
-    // Close on backdrop click
-    overlay.addEventListener('click', (e)=>{
-      if (e.target === overlay) closeAlbum();
-    });
-
-    // Nav
-    nextBtn.addEventListener('click', ()=>go('next'));
-    prevBtn.addEventListener('click', ()=>go('prev'));
-
-    // Pointer / touch events on book
-    book.addEventListener('pointerdown', onDown);
-    book.addEventListener('pointermove', onMove, {passive:false});
-    book.addEventListener('pointerup', onUp);
-    book.addEventListener('pointercancel', onUp);
-
-    book.addEventListener('touchstart', onDown, {passive:true});
-    book.addEventListener('touchmove', onMove, {passive:false});
-    book.addEventListener('touchend', onUp);
-    book.addEventListener('touchcancel', onUp);
-
-    // Keyboard
-    document.addEventListener('keydown', (e)=>{
-      if (overlay.getAttribute('aria-hidden') === 'true') return;
-      if (e.key === 'Escape') closeAlbum();
-      if (e.key === 'ArrowRight') go('next');
-      if (e.key === 'ArrowLeft') go('prev');
-    });
-
-    // Defensive: prevent scroll behind overlay (Telegram WebView)
-    overlay.addEventListener('touchmove', (e)=>{
-      if (overlay.getAttribute('aria-hidden') === 'false') e.preventDefault();
+    book.addEventListener('touchmove', (e) => {
+      if(!dragging) return;
+      onMove(e.touches[0].clientX);
+      // блокируем прокрутку страницы под модалкой
+      e.preventDefault();
     }, {passive:false});
 
+    book.addEventListener('touchend', () => onUp(), {passive:true});
+
+    // mouse
+    book.addEventListener('mousedown', (e) => {
+      if(!modal.classList.contains('open')) return;
+      onDown(e.clientX);
+    });
+    window.addEventListener('mousemove', (e) => onMove(e.clientX));
+    window.addEventListener('mouseup', () => onUp());
+
+    // ESC
+    window.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && modal.classList.contains('open')) closeAlbum();
+    });
+
+    // --- Ускорение: фоновая подгрузка следующих блоков только когда это уместно ---
+    let bgScheduled = false;
+    function scheduleBackgroundPreload(){
+      if(bgScheduled) return;
+      if(albumOpened && modal.classList.contains('open')) return; // пока альбом открыт — качаем развороты
+
+      bgScheduled = true;
+      // небольшая пауза, чтобы не мешать рендеру первых экранов
+      setTimeout(() => {
+        idle(() => {
+          // прогреваем видео и картинки следующих шагов
+          preloadVideo(PATHS.ring);
+          preloadImage(PATHS.dubai).then(()=>{}).catch(()=>{});
+          preloadImage(PATHS.crest).then(()=>{}).catch(()=>{});
+        });
+      }, 900);
+    }
+
+    // --- Страховка: если вдруг какие-то .jpeg/.jpg перепутались, пробуем подменить при ошибке ---
+    function fallbackExt(imgEl){
+      imgEl.addEventListener('error', () => {
+        if(!imgEl.src) return;
+        if(imgEl.src.endsWith('.jpg')) imgEl.src = imgEl.src.replace(/\.jpg$/i, '.jpeg');
+        else if(imgEl.src.endsWith('.jpeg')) imgEl.src = imgEl.src.replace(/\.jpeg$/i, '.jpg');
+      });
+    }
+    [document.getElementById('imgLotte'), imgDubai, imgCrest].forEach(el => el && fallbackExt(el));
+
+    // На всякий случай: запускаем фоновую подгрузку не сразу, а после первого реального взаимодействия
+    window.addEventListener('pointerdown', () => scheduleBackgroundPreload(), {once:true});
   </script>
 </body>
 </html>
