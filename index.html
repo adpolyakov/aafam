@@ -623,6 +623,65 @@
   .viewer-nav{ display:none; }
 }
 
+
+
+/* ===== Gallery FIX: no-overlap iPhone/Instagram-like grid (works in Telegram/PC webviews) ===== */
+.photo-strip{
+  /* force CSS Grid instead of multi-column layout */
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  align-content: start !important;
+
+  /* cancel any column/masonry behaviors */
+  columns: unset !important;
+  column-count: unset !important;
+  column-gap: unset !important;
+}
+
+@media (max-width: 360px){
+  .photo-strip{ gap: 8px !important; }
+}
+
+.photo-strip .thumb{
+  margin: 0 !important;
+  width: 100% !important;
+  display: block !important;
+  position: relative !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  transform: none !important;
+
+  /* ensure stable 4:5 tile size everywhere (even where aspect-ratio is flaky) */
+  height: auto !important;
+  aspect-ratio: auto !important;
+  break-inside: auto !important;
+}
+
+/* ratio placeholder (4:5 => 125%) */
+.photo-strip .thumb::before{
+  content: "";
+  display: block;
+  padding-top: 125%;
+}
+
+.photo-strip .thumb img,
+.photo-strip .thumb .thumb-skel{
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.photo-strip .thumb img{
+  object-fit: cover !important;
+}
+
+/* keep focus ring subtle */
+.photo-strip .thumb:focus-visible{
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(96,165,250,.35), 0 10px 30px rgba(0,0,0,.35) !important;
+}
 </style>
 
 <link rel="preload" as="image" href="img/lotte.png">
