@@ -8,8 +8,8 @@
   <!-- Быстрый старт: грузим только то, что нужно в первые секунды -->
   <link rel="preload" as="image" href="./img/lotte.jpg" fetchpriority="high">
   <link rel="preload" as="image" href="./img/album.png" fetchpriority="high">
-  <link rel="preload" as="image" href="./thumbs/01.jpg">
-  <link rel="preload" as="image" href="./thumbs/02.jpg">
+  <link rel="preload" as="image" href="./img/thumbs/01.jpg">
+  <link rel="preload" as="image" href="./img/thumbs/02.jpg">
 
   <style>
     :root{
@@ -57,6 +57,14 @@
       align-items:center;
       justify-content:center;
       padding:22px 14px;
+    }
+
+
+    @supports (content-visibility: auto){
+      .screen{
+        content-visibility: auto;
+        contain-intrinsic-size: 100vh;
+      }
     }
 
     .page{width:min(var(--maxw), 100%);}
@@ -500,7 +508,7 @@
     // Утилиты
     const pad2 = (n) => String(n).padStart(2,'0');
     const full = (n) => `./img/${pad2(n)}.jpg`;
-    const thumb = (n) => `./thumbs/${pad2(n)}.jpg`;
+    const thumb = (n) => `./img/thumbs/${pad2(n)}.jpg`;
 
     function preloadImage(url){
       return new Promise((resolve, reject) => {
@@ -601,33 +609,76 @@
     // кэш, чтобы не дёргать сеть по второму разу
     const imgCache = new Map(); // url -> true
 
+    // Ограничиваем параллельные загрузки, чтобы не «душить» сеть и не получать хаос
+    const MAX_CONCURRENT_LOADS = 2;
+    let activeLoads = 0;
+    const loadQueue = [];
+
+    function enqueueLoad(task){
+      return new Promise((resolve, reject) => {
+        loadQueue.push({task, resolve, reject});
+        pumpQueue();
+      });
+    }
+
+    function pumpQueue(){
+      if(activeLoads >= MAX_CONCURRENT_LOADS) return;
+      const item = loadQueue.shift();
+      if(!item) return;
+      activeLoads++;
+      Promise.resolve()
+        .then(item.task)
+        .then(item.resolve)
+        .catch(item.reject)
+        .finally(() => {
+          activeLoads--;
+          pumpQueue();
+        });
+    }
+
+    // Токены защищают от гонок: старые догрузки не перезапишут текущий разворот
+    let globalImgToken = 0;
+
     async function setPageImg(el, n){
       const t = thumb(n);
       const f = full(n);
       el.alt = `Фото ${pad2(n)}`;
 
-      // быстрый плейсхолдер (миниатюра)
+      const token = String(++globalImgToken);
+      el.dataset.token = token;
+      el.dataset.wantFull = f;
+
+      // 1) Миниатюра — быстро
       if(!imgCache.has(t)){
-        try{ await preloadImage(t); imgCache.set(t,true);}catch(e){}
+        try{ await enqueueLoad(() => preloadImage(t)); imgCache.set(t,true);}catch(e){}
       }
+      if(el.dataset.token != token) return; // уже перелистнули
       el.src = t;
 
-      // полноразмер — догружаем асинхронно
-      idle(async () => {
+      // 2) Полноразмер — в idle и только если всё ещё актуально
+      idle(() => {
+        if(el.dataset.token != token || el.dataset.wantFull !== f) return;
+
         if(imgCache.has(f)){
           el.src = f;
           return;
         }
-        try{
-          await preloadImage(f);
-          imgCache.set(f,true);
-          // заменяем на full, если мы всё ещё на этом же развороте
-          el.src = f;
-        }catch(e){
-          // на всякий случай: если вдруг расширение .jpeg (не должно, но спасает)
-          const alt = f.replace(/\.jpg$/i, '.jpeg');
-          try{ await preloadImage(alt); imgCache.set(alt,true); el.src = alt; }catch(_e){}
-        }
+
+        enqueueLoad(() => preloadImage(f))
+          .then(() => {
+            imgCache.set(f,true);
+            if(el.dataset.token == token && el.dataset.wantFull === f) el.src = f;
+          })
+          .catch(() => {
+            // fallback на .jpeg (на всякий случай)
+            const alt = f.replace(/\.jpg$/i, '.jpeg');
+            return enqueueLoad(() => preloadImage(alt))
+              .then(() => {
+                imgCache.set(alt,true);
+                if(el.dataset.token == token && el.dataset.wantFull === f) el.src = alt;
+              })
+              .catch(()=>{});
+          });
       });
     }
 
@@ -640,29 +691,31 @@
     async function renderSpread(idx){
       spreadIndex = Math.max(0, Math.min(idx, Math.floor((TOTAL-1)/2)));
       const {left, right} = spreadToNumbers(spreadIndex);
+
       await setPageImg(pageLeft, left);
       if(right <= TOTAL) await setPageImg(pageRight, right);
-      else pageRight.removeAttribute('src');
+      else pageRight.src = '';
 
-      // мягкий префетч соседних разворотов
+      // мягкий префетч следующего разворота
       idle(() => prefetchAdjacent(spreadIndex));
     }
+
 
     function prefetchPair(a,b){
       [a,b].forEach(n => {
         if(n < 1 || n > TOTAL) return;
         const f = full(n);
         if(imgCache.has(f)) return;
-        preloadImage(f).then(()=>imgCache.set(f,true)).catch(()=>{});
+        enqueueLoad(() => preloadImage(f)).then(()=>imgCache.set(f,true)).catch(()=>{});
       });
     }
 
     function prefetchAdjacent(idx){
-      const prev = spreadToNumbers(idx-1);
+      // Префетчим ТОЛЬКО следующий разворот — так меньше конкуренции и быстрее реальный просмотр
       const next = spreadToNumbers(idx+1);
-      prefetchPair(prev.left, prev.right);
       prefetchPair(next.left, next.right);
     }
+
 
     function openAlbum(){
       albumOpened = true;
