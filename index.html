@@ -235,7 +235,7 @@
       width:100%;
       height:100%;
       object-fit:contain; /* фото целиком */
-      border-radius:16px;
+      border-radius:18px;
       box-shadow: 0 14px 34px rgba(0,0,0,.45);
       display:block;
       transform: translateZ(0);
@@ -243,12 +243,47 @@
       background:rgba(0,0,0,.10);
     }
 
-    /* Single-page режим (мобилки): показываем по 1 фото — так оно становится в 2 раза крупнее */
-    .modal[data-mode="single"] .book-shell{width:min(560px, 96vw); height:min(820px, 90vh);}
+    /* Single-page режим (мобилки): компактное окно «под фото» + дороже по виду */
     .modal[data-mode="single"] .spine{display:none;}
     .modal[data-mode="single"] .page-half.right{display:none;}
     .modal[data-mode="single"] .page-half.left{flex:1;}
-    .modal[data-mode="single"] .nav-hint{opacity:.55}
+
+    /* В single-режиме убираем «большую книжную ванну»: окно подстраивается под фото */
+    .modal[data-mode="single"] .book-shell{width:min(640px, 92vw); height:auto;}
+    .modal[data-mode="single"] .book{height:auto; border-radius:24px; background:transparent; border:none; box-shadow:none; overflow:visible;}
+    .modal[data-mode="single"] .drag-layer{position:relative; inset:auto;}
+    .modal[data-mode="single"] .page-half{display:flex; align-items:center; justify-content:center; background:transparent;}
+
+    /* Кадр/паспарту: минимальные поля, но с ощущением «премиум-рамки» */
+    .modal[data-mode="single"] .page-img{
+      position:relative;
+      inset:auto;
+      width:100%;
+      height:auto;
+      padding:0;
+      border-radius:24px;
+      overflow:visible;
+      border:none;
+      background:transparent;
+      box-shadow:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .modal[data-mode="single"] .page-img::after{display:none;}
+
+    /* Само фото: крупно, со скруглением, без лишних пустых зон */
+    .modal[data-mode="single"] .page-img img{
+      width:100%;
+      height:auto;
+      max-height:calc(100vh - 120px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      object-fit:contain;
+      border-radius:22px;
+      box-shadow: 0 22px 70px rgba(0,0,0,.55);
+      background:rgba(0,0,0,.10);
+    }
+
+    .modal[data-mode="single"] .nav-hint{opacity:.55; text-align:center;}
 
     /* Чуть больше воздуха на широких экранах */
     @media (min-width: 1100px){
@@ -420,6 +455,74 @@
       .page-img{inset:10px}
       .nav-hint{display:none}
     }
+  
+
+    /* --- Premium polish (анимации/детали) --- */
+    body::after{
+      content:"";
+      position:fixed;
+      inset:-2px;
+      pointer-events:none;
+      background:
+        radial-gradient(1100px 760px at 50% -12%, rgba(255,255,255,.08), transparent 58%),
+        radial-gradient(900px 620px at 14% 82%, rgba(111,162,255,.12), transparent 60%),
+        radial-gradient(900px 620px at 86% 78%, rgba(244,195,92,.10), transparent 62%),
+        radial-gradient(1000px 900px at 50% 120%, rgba(0,0,0,.55), transparent 55%);
+      mix-blend-mode: overlay;
+      opacity:.35;
+    }
+
+    /* Карточки чуть "живее" на ПК */
+    .card{transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease, background .35s ease;}
+    @media (hover:hover){
+      .card:hover{transform: translateY(-6px); border-color: rgba(255,255,255,.18); box-shadow: 0 38px 96px rgba(0,0,0,.62);}
+      .album-btn:hover{transform: translateY(-4px) scale(1.01); filter: brightness(1.06);}
+      .modal-btn:hover{border-color: rgba(255,255,255,.24); background: rgba(255,255,255,.09);}
+    }
+
+    /* Фокус-кольцо (красиво и доступно) */
+    :focus-visible{outline: 2px solid rgba(244,195,92,.55); outline-offset: 3px;}
+
+    /* Премиальная подгрузка/появление фото */
+    .page-img{position:relative;}
+    .page-img.loading::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius: inherit;
+      background:
+        linear-gradient(110deg, transparent 0%, rgba(255,255,255,.10) 22%, rgba(255,255,255,.04) 38%, transparent 55%),
+        radial-gradient(900px 520px at 50% 0%, rgba(255,255,255,.08), transparent 60%);
+      transform: translateX(-35%);
+      animation: sheen 1.05s ease-in-out infinite;
+      pointer-events:none;
+      opacity:.55;
+    }
+    @keyframes sheen{50%{transform: translateX(35%)} 100%{transform: translateX(75%)}}
+
+    .page-img img{
+      transition: opacity .28s ease, transform .45s cubic-bezier(.2,.8,.2,1), filter .35s ease;
+      opacity: 1;
+      filter: none;
+      transform: none;
+    }
+    .page-img img.is-loading{opacity:0; filter: blur(10px) saturate(.9); transform: scale(1.015);}
+    .page-img img.pop{animation: photoPop .52s cubic-bezier(.2,.8,.2,1) both;}
+    @keyframes photoPop{from{opacity:0; transform: scale(1.01)} to{opacity:1; transform: scale(1)}}
+
+    /* Чуть более "дорогие" кнопки в модалке */
+    .modal-btn{box-shadow: 0 10px 30px rgba(0,0,0,.35);}
+
+    /* Мягкое появление карточек при пролистывании */
+    .card.reveal{opacity:0; transform: translateY(14px) scale(.995);}
+    .card.reveal.in{opacity:1; transform:none;}
+    .card.reveal{transition: opacity .65s ease, transform .65s cubic-bezier(.2,.8,.2,1);}
+
+    @media (prefers-reduced-motion: reduce){
+      .drag-layer, .open-anim, .fade-in, .card, .album-btn, .page-img img, .card.reveal{transition:none !important; animation:none !important;}
+      .page-img.loading::before{display:none;}
+    }
+
   </style>
 </head>
 
@@ -691,6 +794,23 @@
 
     document.querySelectorAll('.screen').forEach(s => io.observe(s));
 
+    // Плавное появление карточек при пролистывании (смотрится "дороже")
+    const cardObserver = new IntersectionObserver((entries) => {
+      for(const e of entries){
+        if(e.isIntersecting){
+          e.target.classList.add('in');
+        }
+      }
+    }, {root: app, threshold: 0.22});
+
+    document.querySelectorAll('.card').forEach(c => {
+      c.classList.add('reveal');
+      // Первая карточка уже видна — пусть не "прыгает"
+      if(c.closest('[data-section="intro"]')) c.classList.add('in');
+      cardObserver.observe(c);
+    });
+
+
     // --- Альбом (вместо галереи): грузим по разворотам, а не все 47 сразу ---
     const modal = document.getElementById('albumModal');
     const openAlbumBtn = document.getElementById('openAlbum');
@@ -797,6 +917,34 @@
     // Токены защищают от гонок: старые догрузки не перезапишут текущий разворот
     let globalImgToken = 0;
 
+    // Премиальная отдача фото: плавный апгрейд thumb -> full + лёгкий "glint"
+    function beginUpgrade(el, token){
+      if(!el || el.dataset.token != token) return false;
+      el.classList.add('is-loading');
+      el.classList.remove('pop');
+      const frame = el.closest('.page-img');
+      if(frame) frame.classList.add('loading');
+      return true;
+    }
+
+    function wirePremiumImg(el){
+      if(!el || el.dataset._wired) return;
+      el.dataset._wired = '1';
+      el.addEventListener('load', () => {
+        // Если src сменился уже на другой — всё равно убираем визуальную загрузку
+        el.classList.remove('is-loading');
+        const frame = el.closest('.page-img');
+        if(frame) frame.classList.remove('loading');
+        // микро-анимация появления (если не reduced motion)
+        el.classList.add('pop');
+        setTimeout(() => el.classList.remove('pop'), 600);
+      });
+    }
+
+    wirePremiumImg(pageLeft);
+    wirePremiumImg(pageRight);
+
+
     async function setPageImg(el, n){
       const t = thumb(n);
       const f = full(n);
@@ -818,6 +966,7 @@
         if(el.dataset.token != token || el.dataset.wantFull !== f) return;
 
         if(imgCache.has(f)){
+          beginUpgrade(el, token);
           el.src = f;
           return;
         }
@@ -825,7 +974,7 @@
         enqueueLoad(() => preloadImage(f))
           .then(() => {
             imgCache.set(f,true);
-            if(el.dataset.token == token && el.dataset.wantFull === f) el.src = f;
+            if(el.dataset.token == token && el.dataset.wantFull === f){ beginUpgrade(el, token); el.src = f; }
           })
           .catch(() => {
             // fallback на .jpeg (на всякий случай)
@@ -833,7 +982,7 @@
             return enqueueLoad(() => preloadImage(alt))
               .then(() => {
                 imgCache.set(alt,true);
-                if(el.dataset.token == token && el.dataset.wantFull === f) el.src = alt;
+                if(el.dataset.token == token && el.dataset.wantFull === f){ beginUpgrade(el, token); el.src = alt; }
               })
               .catch(()=>{});
           });
