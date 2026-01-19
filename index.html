@@ -410,33 +410,86 @@
       filter: drop-shadow(0 22px 40px rgba(0,0,0,.55));
     }
 
-    /* Сердца ↔ AA (чисто CSS/SVG, без «круга», работает везде) */
+    /* Сердца ↔ AA — премиальная «парная» анимация с пересечением */
     .mark{
       margin:16px auto 0;
-      width:112px;
-      height:48px;
+      width:124px;
+      height:56px;
       position:relative;
       user-select:none;
       -webkit-user-select:none;
       touch-action:none;
+      perspective: 900px;
+      transform: translateZ(0);
+      filter: drop-shadow(0 18px 38px rgba(0,0,0,.55));
     }
-    .mark svg{position:absolute; inset:0; width:100%; height:100%;}
-
-    .mark .hearts{opacity:1; animation: heartsDance 2.6s ease-in-out infinite;}
-    .mark .aa{opacity:0; animation: aaReveal 2.6s ease-in-out infinite;}
-
-    @keyframes heartsDance{
-      0%{transform:translateX(0) scale(1); opacity:1}
-      22%{transform:translateX(0) scale(1.04); opacity:1}
-      38%{transform:translateX(0) scale(.98); opacity:1}
-      52%{transform:translateX(0) scale(.90); opacity:.0}
-      100%{transform:translateX(0) scale(1); opacity:1}
+    .mark::after{
+      content:"";
+      position:absolute;
+      inset:-10px;
+      border-radius:999px;
+      background:
+        radial-gradient(10px 10px at 18% 30%, rgba(255,255,255,.28), transparent 60%),
+        radial-gradient(12px 12px at 72% 24%, rgba(244,195,92,.22), transparent 62%),
+        radial-gradient(8px 8px at 84% 62%, rgba(111,162,255,.22), transparent 62%),
+        radial-gradient(9px 9px at 28% 74%, rgba(255,255,255,.18), transparent 62%);
+      opacity:.45;
+      mix-blend-mode: screen;
+      animation: twinkle 2.9s ease-in-out infinite;
+      pointer-events:none;
     }
-    @keyframes aaReveal{
-      0%,45%{opacity:0; transform: translateY(2px) scale(.96)}
-      56%{opacity:1; transform: translateY(0) scale(1)}
-      78%{opacity:1; transform: translateY(0) scale(1)}
-      100%{opacity:0; transform: translateY(2px) scale(.96)}
+    .mark svg{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      transform-style: preserve-3d;
+      will-change: transform, filter, opacity;
+      pointer-events:none;
+    }
+
+    /* Оба слоя всегда видимы — пересечение происходит за счёт 3D (translateZ) */
+    .mark .hearts{
+      opacity:1;
+      mix-blend-mode: screen;
+      filter: drop-shadow(0 8px 18px rgba(244,195,92,.10));
+      animation: heartsCross 2.9s cubic-bezier(.4,0,.2,1) infinite;
+    }
+    .mark .aa{
+      opacity:1;
+      mix-blend-mode: screen;
+      filter: drop-shadow(0 10px 22px rgba(111,162,255,.10));
+      animation: aaCross 2.9s cubic-bezier(.4,0,.2,1) infinite;
+    }
+
+    @keyframes heartsCross{
+      0%   {transform: translateX(-10px) translateY(0px) rotate(-6deg) translateZ(26px) scale(1.00); filter: drop-shadow(0 8px 18px rgba(244,195,92,.08));}
+      18%  {transform: translateX(-2px)  translateY(-1px) rotate(4deg)  translateZ(8px)  scale(1.06);}
+      36%  {transform: translateX(6px)   translateY(1px)  rotate(-3deg) translateZ(-18px) scale(1.02);}
+      50%  {transform: translateX(10px)  translateY(0px)  rotate(6deg)  translateZ(-26px) scale(.99);}
+      68%  {transform: translateX(2px)   translateY(1px)  rotate(-4deg) translateZ(-8px)  scale(1.06);}
+      86%  {transform: translateX(-6px)  translateY(-1px) rotate(3deg)  translateZ(18px)  scale(1.02);}
+      100% {transform: translateX(-10px) translateY(0px) rotate(-6deg) translateZ(26px) scale(1.00);}
+    }
+
+    @keyframes aaCross{
+      0%   {transform: translateX(10px)  translateY(0px)  rotate(6deg)  translateZ(-26px) scale(1.00); filter: drop-shadow(0 10px 22px rgba(111,162,255,.08));}
+      18%  {transform: translateX(2px)   translateY(1px)  rotate(-4deg) translateZ(-8px)  scale(1.06);}
+      36%  {transform: translateX(-6px)  translateY(-1px) rotate(3deg)  translateZ(18px)  scale(1.02);}
+      50%  {transform: translateX(-10px) translateY(0px)  rotate(-6deg) translateZ(26px)  scale(.99);}
+      68%  {transform: translateX(-2px)  translateY(-1px) rotate(4deg)  translateZ(8px)   scale(1.06);}
+      86%  {transform: translateX(6px)   translateY(1px)  rotate(-3deg) translateZ(-18px) scale(1.02);}
+      100% {transform: translateX(10px)  translateY(0px)  rotate(6deg)  translateZ(-26px) scale(1.00);}
+    }
+
+    @keyframes twinkle{
+      0%   {opacity:.22; transform: translateY(1px) scale(.98); filter: blur(.0px)}
+      45%  {opacity:.55; transform: translateY(-1px) scale(1.01); filter: blur(.2px)}
+      100% {opacity:.22; transform: translateY(1px) scale(.98); filter: blur(.0px)}
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .mark::after, .mark .hearts, .mark .aa{animation:none !important}
     }
 
     /* Мелкие правки под мобильные */
