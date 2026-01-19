@@ -695,6 +695,40 @@
 }
 
 
+
+/* ===== ПК: фиксируем "воздух" сверху/снизу и не даём медиа съедать текст ===== */
+@media (min-width: 821px){
+  /* страницы не должны упираться в края окна */
+  .screen{
+    padding-top: clamp(28px, 5vh, 72px) !important;
+    padding-bottom: clamp(28px, 5vh, 72px) !important;
+    min-height: auto !important; /* чтобы секции не растягивались ровно в 100vh */
+  }
+
+  /* одинаковый размер карточек + запас по высоте (чтобы всегда оставались отступы) */
+  :root{
+    --cardH: min(800px, calc(100vh - 180px)) !important;
+  }
+  .card{
+    height: var(--cardH) !important;
+  }
+
+  /* Важное: на 1 и 4 страницах картинка должна УЖИМАТЬСЯ, не обрезаться */
+  .media--hero{
+    max-height: min(420px, 44vh) !important;
+    min-height: 180px !important;
+  }
+  .media--hero img{
+    object-fit: contain !important; /* без обрезки */
+    background: rgba(0,0,0,.18);    /* чтобы пустоты выглядели эстетично */
+  }
+
+  /* немного больше воздуха между блоками контента */
+  .inner{
+    gap: 14px !important;
+  }
+}
+
 </style>
 </head>
 
@@ -708,7 +742,7 @@
           <div class="inner">
             <div class="chip"><span class="dot"></span>сайт с частичкой нашей любви и началом чего‑то нового</div>
 
-            <div class="lotte-title">Lotte — наш вечер</div>
+            <div class="lotte-title"></div>
             <div class="media hero-media" style="margin-top:10px">
               <!-- Важно: расширение .jpg (как у тебя в папке) -->
               <img id="imgLotte" src="./img/lotte.jpg" alt="Lotte" decoding="async" fetchpriority="high">
