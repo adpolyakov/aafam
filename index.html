@@ -12,7 +12,6 @@
   <link rel="preload" as="image" href="./img/thumbs/02.jpg">
 
   <style>
-
     :root{
       --bg0:#070b13;
       --bg1:#0b1220;
@@ -246,7 +245,7 @@
 
     /* Single-page режим (мобилки): компактное окно «под фото» + дороже по виду */
     .modal[data-mode="single"] .spine{display:none;}
-    .modal[data-mode="single"] .page-half.right{display:block;}
+    .modal[data-mode="single"] .page-half.right{display:none;}
     .modal[data-mode="single"] .page-half.left{flex:1;}
 
     /* В single-режиме убираем «большую книжную ванну»: окно подстраивается под фото */
@@ -578,156 +577,65 @@
     }
 
   
-@media (max-width: 820px){ .page-half.right{display:none;} }
+    /* === Premium layout fixes: no cropping, proper viewport fit, snap preserved === */
+    :root{
+      --outerPad: clamp(18px, 3.4vh, 56px);
+      --cardH: min(900px, calc(100vh - (2 * var(--outerPad)) - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
+    }
 
+    .screen{
+      padding: var(--outerPad) 14px !important;
+      min-height: 100vh;
+    }
 
-/* --- PC polish fixes (no cropping, centered album, premium navigation) --- */
-.hero-media{
-  flex: 1 1 auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: radial-gradient(120% 120% at 20% 10%, rgba(255,255,255,0.06), rgba(0,0,0,0) 60%);
-  border-radius: 26px;
-  overflow:hidden;
-}
-.hero-media img{
-  width:100%;
-  height:100%;
-  max-height: 100%;
-  object-fit: contain !important;
-  display:block;
-}
-.album-centered{
-  align-items: center !important;
-  text-align: center;
-}
-.album-centered .album-wrap{
-  width:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-.album-centered .album-btn{ margin: 0 auto; }
+    .card{
+      height: var(--cardH);
+    }
 
-.album-centered .album-btn{ width:min(360px, 72vw); }
-.album-centered .album-btn img{ width:100%; height:auto; display:block; }
+    .inner{
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 24px 22px 18px; /* keep existing look */
+      box-sizing: border-box;
+      overflow: hidden; /* prevents card overflow; media will shrink instead */
+    }
 
-.nav-arrow{
-  position:absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 46px;
-  height: 46px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(10,12,16,0.35);
-  color: rgba(255,255,255,0.92);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size: 30px;
-  line-height: 1;
-  cursor: pointer;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-  transition: transform .18s ease, background .18s ease, opacity .18s ease;
-  opacity: .92;
-  z-index: 8;
-  user-select: none;
-}
-.nav-arrow:hover{ background: rgba(10,12,16,0.55); transform: translateY(-50%) scale(1.04); }
-.nav-arrow:active{ transform: translateY(-50%) scale(0.98); }
-.nav-left{ left: 14px; }
-.nav-right{ right: 14px; }
-@media (max-width: 820px){
-  .nav-arrow{ width:42px; height:42px; font-size:28px; }
-  .nav-left{ left: 10px; }
-  .nav-right{ right: 10px; }
-}
+    /* Allow the main media blocks (pages 1 and 4) to scale DOWN instead of being cut */
+    .hero-media{
+      flex: 1 1 auto;
+      min-height: 220px;
+      border-radius: 26px;
+      overflow: hidden;
+    }
+    .hero-media img{
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+      object-fit: contain !important; /* IMPORTANT: no crop */
+      background: rgba(0,0,0,.18);
+    }
 
-/* Make crest bigger on final page */
-[data-section="final"] .crest{
-  width: min(480px, 74vw) !important;
-  max-width: 480px !important;
-  margin: 6px auto 14px !important;
-}
+    /* Keep ring video nicely sized within the viewport */
+    .media-square{
+      max-height: min(420px, 42vh);
+      margin-left: auto;
+      margin-right: auto;
+      flex: 0 0 auto;
+    }
+    .media-square video{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-/* Dancing AA + hearts */
-.dance-mark{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap: 14px;
-  height: 56px;
-  margin-top: 10px;
-  position: relative;
-  perspective: 600px;
-}
-.dance-heart{ width: 42px; height: 38px; filter: drop-shadow(0 8px 18px rgba(0,0,0,0.35)); transform-origin: 50% 60%; }
-.dance-aa{ width: 64px; height: 34px; filter: drop-shadow(0 10px 22px rgba(0,0,0,0.35)); transform-origin: 50% 60%; }
+    /* Let text breathe; prevent heading from sticking to media */
+    h1, h2{ margin-top: 0; }
+    .hint{ margin-top: auto; } /* pushes hint down if there is free space */
 
-.heart-left{ animation: heartLeft 2.6s ease-in-out infinite; }
-.heart-right{ animation: heartRight 2.6s ease-in-out infinite; }
-.dance-aa{ animation: aaDance 2.6s ease-in-out infinite; }
-
-@keyframes heartLeft{
-  0%   { transform: translateX(-22px) translateY(0px) rotate(-10deg) scale(1) translateZ(0); opacity:.92; }
-  20%  { transform: translateX(-8px)  translateY(-8px) rotate(8deg)  scale(1.06) translateZ(12px); opacity:1; }
-  50%  { transform: translateX(16px)  translateY(2px)  rotate(14deg) scale(0.98) translateZ(22px); }
-  80%  { transform: translateX(-10px) translateY(10px) rotate(-6deg) scale(1.03) translateZ(8px); opacity:.98; }
-  100% { transform: translateX(-22px) translateY(0px) rotate(-10deg) scale(1) translateZ(0); opacity:.92; }
-}
-@keyframes heartRight{
-  0%   { transform: translateX(22px) translateY(0px) rotate(10deg) scale(1) translateZ(0); opacity:.92; }
-  20%  { transform: translateX(8px)  translateY(8px) rotate(-8deg) scale(1.06) translateZ(-10px); opacity:1; }
-  50%  { transform: translateX(-16px) translateY(-2px) rotate(-14deg) scale(0.98) translateZ(-20px); }
-  80%  { transform: translateX(10px) translateY(-10px) rotate(6deg) scale(1.03) translateZ(-8px); opacity:.98; }
-  100% { transform: translateX(22px) translateY(0px) rotate(10deg) scale(1) translateZ(0); opacity:.92; }
-}
-@keyframes aaDance{
-  0%   { transform: translateY(0px) rotate(0deg) scale(1); opacity:.92; }
-  25%  { transform: translateY(-3px) rotate(-4deg) scale(1.02); opacity:1; }
-  50%  { transform: translateY(2px) rotate(6deg) scale(0.98); }
-  75%  { transform: translateY(-2px) rotate(-2deg) scale(1.01); }
-  100% { transform: translateY(0px) rotate(0deg) scale(1); opacity:.92; }
-}
-
-
-
-/* ===== ПК: фиксируем "воздух" сверху/снизу и не даём медиа съедать текст ===== */
-@media (min-width: 821px){
-  /* страницы не должны упираться в края окна */
-  .screen{
-    padding-top: clamp(28px, 5vh, 72px) !important;
-    padding-bottom: clamp(28px, 5vh, 72px) !important;
-    min-height: auto !important; /* чтобы секции не растягивались ровно в 100vh */
-  }
-
-  /* одинаковый размер карточек + запас по высоте (чтобы всегда оставались отступы) */
-  :root{
-    --cardH: min(800px, calc(100vh - 180px)) !important;
-  }
-  .card{
-    height: var(--cardH) !important;
-  }
-
-  /* Важное: на 1 и 4 страницах картинка должна УЖИМАТЬСЯ, не обрезаться */
-  .media--hero{
-    max-height: min(420px, 44vh) !important;
-    min-height: 180px !important;
-  }
-  .media--hero img{
-    object-fit: contain !important; /* без обрезки */
-    background: rgba(0,0,0,.18);    /* чтобы пустоты выглядели эстетично */
-  }
-
-  /* немного больше воздуха между блоками контента */
-  .inner{
-    gap: 14px !important;
-  }
-}
+    /* Remove any remaining global footer text (if it exists somewhere else) */
+    footer{ display:none !important; }
 
 </style>
 </head>
@@ -742,7 +650,7 @@
           <div class="inner">
             <div class="chip"><span class="dot"></span>сайт с частичкой нашей любви и началом чего‑то нового</div>
 
-            <div class="lotte-title"></div>
+            <div class="lotte-title">Lotte — наш вечер</div>
             <div class="media hero-media" style="margin-top:10px">
               <!-- Важно: расширение .jpg (как у тебя в папке) -->
               <img id="imgLotte" src="./img/lotte.jpg" alt="Lotte" decoding="async" fetchpriority="high">
@@ -756,14 +664,14 @@
             <div class="hint">Листай вниз ↓</div>
           </div>
         </div>
-</div>
+        </div>
     </section>
 
     <!-- 2) Шаг 1 (обложка альбома + книга по клику) -->
     <section class="screen" data-section="step1">
       <div class="page">
         <div class="card">
-          <div class="inner album-centered">
+          <div class="inner">
             <div class="chip"><span class="dot"></span>шаг 1</div>
             <h2>Моменты, которые привели нас к этому вечеру</h2>
             <p>Люблю тебя в каждом из них ∞</p>
@@ -777,7 +685,7 @@
             <div class="album-caption">Нажми на альбом — и он откроется</div>
           </div>
         </div>
-</div>
+        </div>
     </section>
 
     <!-- 3) Шаг 2 (видео как гифка) -->
@@ -796,7 +704,7 @@
             </div>
           </div>
         </div>
-</div>
+        </div>
     </section>
 
     <!-- 4) Шаг 3 (Дубай) -->
@@ -817,7 +725,7 @@
             </p>
           </div>
         </div>
-</div>
+        </div>
     </section>
 
     <!-- 5) Вывод -->
@@ -833,11 +741,16 @@
               Для меня важно не просто кольцо, а всё, что стоит за ним: ты, мы и наша общая история — от этого вечера до самого‑самого дальше.
             </p>
 
-            <div class="mark dance-mark" aria-hidden="true">
-              <svg class="dance-heart heart-left" viewBox="0 0 48 44" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <path d="M24 42C14 34 6 28 6 18.5C6 12.5 10.2 8 16 8C19.7 8 22.4 9.5 24 12C25.6 9.5 28.3 8 32 8C37.8 8 42 12.5 42 18.5C42 28 34 34 24 42Z" fill="white" fill-opacity="0.92"/>
-</svg>
-              <svg class="dance-aa" viewBox="0 0 112 48" xmlns="http://www.w3.org/2000/svg">
+            <div class="mark" aria-hidden="true">
+              <!-- hearts -->
+              <svg class="hearts" viewBox="0 0 112 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g opacity="0.96">
+                  <path d="M28 40C18 33 10 26 10 17.5C10 12.3 13.7 8 19 8C22.4 8 25.2 9.8 27 12.2C28.8 9.8 31.6 8 35 8C40.3 8 44 12.3 44 17.5C44 26 36 33 28 40Z" fill="white" fill-opacity="0.92"/>
+                  <path d="M84 40C74 33 66 26 66 17.5C66 12.3 69.7 8 75 8C78.4 8 81.2 9.8 83 12.2C84.8 9.8 87.6 8 91 8C96.3 8 100 12.3 100 17.5C100 26 92 33 84 40Z" fill="white" fill-opacity="0.92"/>
+                </g>
+              </svg>
+              <!-- AA -->
+              <svg class="aa" viewBox="0 0 112 48" xmlns="http://www.w3.org/2000/svg">
                 <g fill="none" stroke="white" stroke-opacity="0.92" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M30 40 L40 10 L50 40"/>
                   <path d="M34 28 H46"/>
@@ -845,13 +758,10 @@
                   <path d="M66 28 H78"/>
                 </g>
               </svg>
-              <svg class="dance-heart heart-right" viewBox="0 0 48 44" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <path d="M24 42C14 34 6 28 6 18.5C6 12.5 10.2 8 16 8C19.7 8 22.4 9.5 24 12C25.6 9.5 28.3 8 32 8C37.8 8 42 12.5 42 18.5C42 28 34 34 24 42Z" fill="white" fill-opacity="0.92"/>
-</svg>
             </div>
           </div>
         </div>
-</div>
+        </div>
     </section>
 
   </div>
@@ -874,9 +784,6 @@
 
       <div class="book" id="book">
         <div class="drag-layer" id="dragLayer">
-        <button class="nav-arrow nav-left" id="navPrev" aria-label="Предыдущий разворот" type="button">‹</button>
-        <button class="nav-arrow nav-right" id="navNext" aria-label="Следующий разворот" type="button">›</button>
-
           <div class="page-half left">
             <div class="page-img"><img id="pageLeft" alt="" decoding="async"></div>
           </div>
@@ -891,7 +798,6 @@
   </div>
 
   <script>
-
     // --- Настройки/пути (важно: расширения .jpg как у тебя в папке) ---
     const PATHS = {
       lotte: './img/lotte.jpg',
@@ -1417,38 +1323,70 @@
 
     // На всякий случай: запускаем фоновую подгрузку не сразу, а после первого реального взаимодействия
     window.addEventListener('pointerdown', () => scheduleBackgroundPreload(), {once:true});
-  
+  </script>
 
-    // --- Arrow buttons + keyboard navigation (premium UX) ---
-    const navPrev = document.getElementById('navPrev');
-    const navNext = document.getElementById('navNext');
+<script>
+/* Snap assist ("доводчик") for trackpads/mouse wheels: moves strictly section-by-section */
+(function(){
+  const app = document.querySelector('.app');
+  if(!app) return;
+  const screens = Array.from(app.querySelectorAll('.screen'));
+  if(!screens.length) return;
 
-    function turn(dir){
-      if(!modal.classList.contains('open')) return;
+  let locked = false;
+  const lockFor = (ms)=>{ locked = true; setTimeout(()=>locked=false, ms); };
 
-      const delta = (dir === 'next') ? 1 : -1;
+  const isOverlayOpen = ()=> document.body.classList.contains('album-open') || document.querySelector('.album-overlay[aria-hidden="false"]');
 
-      if(isMobileSingle){
-        const next = photoIndex + delta;
-        renderPhoto(next, {showLoader:true});
-      } else {
-        const next = spreadIndex + delta;
-        renderSpread(next, {showLoader:true});
-      }
+  const scrollToIndex = (i)=>{
+    const idx = Math.max(0, Math.min(screens.length-1, i));
+    app.scrollTo({ top: screens[idx].offsetTop, behavior: 'smooth' });
+  };
+
+  const currentIndex = ()=>{
+    const y = app.scrollTop + 2;
+    let idx = 0;
+    for(let i=0;i<screens.length;i++){
+      if(screens[i].offsetTop <= y) idx = i;
+      else break;
     }
+    return idx;
+  };
 
-    navPrev?.addEventListener('click', () => turn('prev'));
-    navNext?.addEventListener('click', () => turn('next'));
+  // Wheel: one notch -> one screen
+  app.addEventListener('wheel', (e)=>{
+    if(isOverlayOpen()) return;
+    // allow natural small scrolling if user holds shift/ctrl (accessibility)
+    if(e.ctrlKey || e.metaKey || e.altKey) return;
+    if(locked) { e.preventDefault(); return; }
 
-    document.addEventListener('keydown', (e) => {
-      if(!modal.classList.contains('open')) return;
-      if(e.key === 'ArrowLeft'){ e.preventDefault(); turn('prev'); }
-      if(e.key === 'ArrowRight'){ e.preventDefault(); turn('next'); }
-      if(e.key === 'Escape'){ e.preventDefault(); closeModal(); }
-    }, {passive:false});
+    const dy = e.deltaY;
+    // ignore tiny noise
+    if(Math.abs(dy) < 10) return;
 
+    e.preventDefault();
+    const idx = currentIndex();
+    scrollToIndex(idx + (dy > 0 ? 1 : -1));
+    lockFor(520);
+  }, { passive:false });
 
+  // Keyboard navigation (desktop)
+  window.addEventListener('keydown', (e)=>{
+    if(isOverlayOpen()) return;
+    const keysNext = ['ArrowDown','PageDown',' '];
+    const keysPrev = ['ArrowUp','PageUp'];
+    if(!keysNext.includes(e.key) && !keysPrev.includes(e.key)) return;
+    // don't steal typing
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+    if(tag === 'input' || tag === 'textarea') return;
 
+    e.preventDefault();
+    const idx = currentIndex();
+    scrollToIndex(idx + (keysNext.includes(e.key) ? 1 : -1));
+    lockFor(420);
+  });
+})();
 </script>
+
 </body>
 </html>
