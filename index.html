@@ -195,55 +195,6 @@
       overflow:hidden;
     }
 
-    /* --- Fix: идеальная стыковка разворота у корешка + без «съезжаний» --- */
-    .page-half.left{
-      border-top-left-radius: 28px;
-      border-bottom-left-radius: 28px;
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-    .page-half.right{
-      border-top-right-radius: 28px;
-      border-bottom-right-radius: 28px;
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-    }
-
-    /* Паспарту: у корешка радиус = 0, чтобы не было «дырок» и кривых стыков */
-    .page-half.left .page-img{
-      border-top-left-radius: 22px;
-      border-bottom-left-radius: 22px;
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-    .page-half.right .page-img{
-      border-top-right-radius: 22px;
-      border-bottom-right-radius: 22px;
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-    }
-    .page-half.left .page-img img{
-      border-top-left-radius: 18px;
-      border-bottom-left-radius: 18px;
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-    .page-half.right .page-img img{
-      border-top-right-radius: 18px;
-      border-bottom-right-radius: 18px;
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-    }
-
-    /* Корешок: тоже без острых краёв (важно при масштабировании/анимации) */
-    .spine{
-      border-top-left-radius: 14px;
-      border-bottom-left-radius: 14px;
-      border-top-right-radius: 14px;
-      border-bottom-right-radius: 14px;
-    }
-
-
     /* Скругление разворота: внешние углы мягкие, у корешка — почти прямые */
     .page-half.left{ border-top-left-radius:28px; border-bottom-left-radius:28px; }
     .page-half.right{ border-top-right-radius:28px; border-bottom-right-radius:28px; }
@@ -264,46 +215,58 @@
     }
 
     .page-img{
-      position:absolute; inset:14px;
-      border-radius:22px;
+      position:absolute;
+      inset:16px 16px 18px;
+      border-radius:24px;
       overflow:hidden;
-      border:1px solid rgba(255,255,255,.10);
-      padding:10px;
-      background:
-        radial-gradient(900px 520px at 50% 0%, rgba(255,255,255,.08), transparent 60%),
-        linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.46));
-      box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,.06),
-        0 18px 50px rgba(0,0,0,.45);
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      background: radial-gradient(900px 420px at 50% 0%, rgba(255,255,255,.10), transparent 58%),
+                  linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.18));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), 0 22px 80px rgba(0,0,0,.55);
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
     }
 
-    /* В развороте: у корешка не делаем сильных скруглений, чтобы ничего не «съезжало» */
-    .page-half.left .page-img{border-top-right-radius:10px; border-bottom-right-radius:10px;}
-    .page-half.right .page-img{border-top-left-radius:10px; border-bottom-left-radius:10px;}
+    /* Заполняем «пустоты» премиально: размытой подложкой текущего фото (без кропа основного кадра) */
+    .page-img::before{
+      content:"";
+      position:absolute;
+      inset:-18px;
+      background-image: var(--page-bg);
+      background-size: cover;
+      background-position: center;
+      filter: blur(22px) saturate(1.05) contrast(1.02);
+      transform: scale(1.08);
+      opacity: .55;
+    }
     .page-img::after{
       content:"";
-      position:absolute; inset:0;
-      background: radial-gradient(800px 320px at 50% 0%, rgba(255,255,255,.10), transparent 55%);
+      position:absolute;
+      inset:0;
+      background: radial-gradient(520px 320px at 50% 18%, rgba(255,255,255,.10), transparent 62%),
+                  radial-gradient(900px 520px at 50% 110%, rgba(0,0,0,.55), transparent 55%),
+                  linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.22));
       pointer-events:none;
-      opacity:.9;
     }
+
     .page-img img{
+      position:relative;
+      z-index:1;
       width:100%;
       height:100%;
       object-fit:contain; /* фото целиком */
       border-radius:18px;
-      box-shadow: 0 14px 34px rgba(0,0,0,.45);
+      background:rgba(0,0,0,.10);
+      box-shadow: 0 18px 50px rgba(0,0,0,.55);
       display:block;
       transform: translateZ(0);
       -webkit-transform: translateZ(0);
-      background:rgba(0,0,0,.10);
     }
 
-    .page-half.left .page-img img{border-top-right-radius:6px; border-bottom-right-radius:6px;}
-    .page-half.right .page-img img{border-top-left-radius:6px; border-bottom-left-radius:6px;}
+    /* У корешка чуть менее круглые углы — выглядит реалистичнее */
+    .page-half.left .page-img img{border-top-right-radius:10px; border-bottom-right-radius:10px;}
+    .page-half.right .page-img img{border-top-left-radius:10px; border-bottom-left-radius:10px;}
+
 
     /* Single-page режим (мобилки): компактное окно «под фото» + дороже по виду */
     .modal[data-mode="single"] .spine{display:none;}
@@ -346,6 +309,44 @@
     }
 
     .modal[data-mode="single"] .nav-hint{opacity:.55; text-align:center;}
+
+
+    /* Стрелки навигации по разворотам */
+    .nav-arrow{
+      position:absolute;
+      top:50%;
+      transform: translateY(-50%);
+      width:44px;
+      height:44px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.25);
+      color:rgba(255,255,255,.9);
+      font-size:26px;
+      line-height:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      z-index:4;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 16px 50px rgba(0,0,0,.55);
+      opacity:.0;
+      transition: opacity .18s ease, transform .18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nav-arrow.left{left:12px;}
+    .nav-arrow.right{right:12px;}
+    .book-shell:hover .nav-arrow{opacity:.85;}
+    .nav-arrow:active{transform: translateY(-50%) scale(.97);}
+
+    /* На мобильных стрелки всегда видимы и больше зона тапа */
+    @media (max-width: 820px){
+      .nav-arrow{opacity:.85; width:52px; height:52px; font-size:30px;}
+      .nav-arrow.left{left:10px;}
+      .nav-arrow.right{right:10px;}
+    }
 
     /* Чуть больше воздуха на широких экранах */
     @media (min-width: 1100px){
@@ -835,6 +836,11 @@
         <button class="modal-btn" id="closeAlbum">Закрыть</button>
         <div class="nav-hint" id="navHint">Свайп влево/вправо — следующий/предыдущий разворот</div>
         <button class="modal-btn" id="toggleHelp" style="opacity:.0; pointer-events:none">.</button>
+
+
+      <!-- Навигация стрелками (клик/тап) -->
+      <button class="nav-arrow left" id="albumPrev" aria-label="Предыдущий разворот" type="button">‹</button>
+      <button class="nav-arrow right" id="albumNext" aria-label="Следующий разворот" type="button">›</button>
       </div>
 
       <div class="album-loading" id="albumLoading" aria-hidden="true">
@@ -986,6 +992,8 @@
     const modal = document.getElementById('albumModal');
     const openAlbumBtn = document.getElementById('openAlbum');
     const closeAlbumBtn = document.getElementById('closeAlbum');
+const albumPrevBtn = document.getElementById('albumPrev');
+    const albumNextBtn = document.getElementById('albumNext');
     const navHint = document.getElementById('navHint');
 
     const pageLeft = document.getElementById('pageLeft');
@@ -1105,7 +1113,7 @@
         // Если src сменился уже на другой — всё равно убираем визуальную загрузку
         el.classList.remove('is-loading');
         const frame = el.closest('.page-img');
-        if(frame) frame.classList.remove('loading');
+        if(frame){ frame.classList.remove('loading'); frame.style.setProperty('--page-bg', `url(${el.currentSrc || el.src})`); }
         // микро-анимация появления (если не reduced motion)
         el.classList.add('pop');
         setTimeout(() => el.classList.remove('pop'), 600);
@@ -1131,6 +1139,8 @@
       }
       if(el.dataset.token != token) return; // уже перелистнули
       el.src = t;
+      const fr = el.closest('.page-img');
+      if(fr) fr.style.setProperty('--page-bg', `url(${t})`);
 
       // 2) Полноразмер — в idle и только если всё ещё актуально
       idle(() => {
@@ -1228,6 +1238,7 @@
       modal.classList.add('open');
       modal.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('album-open');
       applyAlbumMode();
       // быстро: 01/02 уже частично прогреты preload'ом
       if(singleMode){
@@ -1242,6 +1253,7 @@
       modal.classList.remove('open');
       modal.setAttribute('aria-hidden','true');
       document.body.style.overflow = '';
+      document.body.classList.remove('album-open');
       // сбрасываем лоадер/блокировку, если закрыли во время догрузки
       if(albumLoading){
         albumLoading.classList.remove('on');
@@ -1254,11 +1266,45 @@
 
     openAlbumBtn.addEventListener('click', openAlbum);
     closeAlbumBtn.addEventListener('click', closeAlbum);
+
+    albumPrevBtn && albumPrevBtn.addEventListener('click', () => turn('prev'));
+    albumNextBtn && albumNextBtn.addEventListener('click', () => turn('next'));
     modal.addEventListener('click', (e) => {
       if(e.target === modal) closeAlbum();
     });
 
-    // Свайп по книге (без влияния на скролл страницы)
+    
+
+    function turn(dir){
+      if(!modal.classList.contains('open')) return;
+      if(turnLocked) return;
+      const isNext = dir === 'next';
+      const shouldShowTurnLoader = (dir2) => {
+        if(singleMode){
+          const target = Math.max(1, Math.min(photoIndex + (dir2 === 'next' ? 1 : -1), TOTAL));
+          if(target == photoIndex) return false;
+          return !(imgCache.has(thumb(target)) || imgCache.has(full(target)));
+        } else {
+          const targetIdx = Math.max(0, Math.min(spreadIndex + (dir2 === 'next' ? 1 : -1), Math.floor((TOTAL-1)/2)));
+          if(targetIdx == spreadIndex) return false;
+          const nums = spreadToNumbers(targetIdx);
+          const leftReady = imgCache.has(thumb(nums.left)) || imgCache.has(full(nums.left));
+          const rightReady = (nums.right > TOTAL) ? true : (imgCache.has(thumb(nums.right)) || imgCache.has(full(nums.right)));
+          return !(leftReady && rightReady);
+        }
+      };
+
+      if(shouldShowTurnLoader(dir)) showAlbumLoader(singleMode ? 'Загружаю фото…' : 'Загружаю разворот…');
+
+      dragLayer.style.transition = 'transform .28s cubic-bezier(.2,.8,.2,1)';
+      dragLayer.style.transform = `translateX(${isNext ? -140 : 140}px)`;
+      setTimeout(() => {
+        dragLayer.style.transform = 'translateX(0px)';
+        if(singleMode) renderPhoto(photoIndex + (isNext ? 1 : -1), {showLoader:true});
+        else renderSpread(spreadIndex + (isNext ? 1 : -1), {showLoader:true});
+      }, 150);
+    }
+// Свайп по книге (без влияния на скролл страницы)
     let startX = 0;
     let dx = 0;
     let dragging = false;
@@ -1350,9 +1396,13 @@
     window.addEventListener('mousemove', (e) => onMove(e.clientX));
     window.addEventListener('mouseup', () => onUp());
 
-    // ESC
+    // Клавиатура (внутри альбома)
     window.addEventListener('keydown', (e) => {
-      if(e.key === 'Escape' && modal.classList.contains('open')) closeAlbum();
+      if(!modal.classList.contains('open')) return;
+      if(e.key === 'Escape') return closeAlbum();
+      if(e.key === 'ArrowRight') { e.preventDefault(); return turn('next'); }
+      if(e.key === 'ArrowLeft')  { e.preventDefault(); return turn('prev'); }
+    });
     });
 
     // --- Ускорение: фоновая подгрузка следующих блоков только когда это уместно ---
