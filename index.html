@@ -191,7 +191,62 @@
         radial-gradient(520px 320px at 18% 18%, rgba(244,195,92,.08), transparent 60%),
         radial-gradient(520px 320px at 82% 18%, rgba(111,162,255,.08), transparent 60%),
         linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.10));
+      /* чтобы внутренние слои/рамки не вылезали за скругление */
+      overflow:hidden;
     }
+
+    /* --- Fix: идеальная стыковка разворота у корешка + без «съезжаний» --- */
+    .page-half.left{
+      border-top-left-radius: 28px;
+      border-bottom-left-radius: 28px;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .page-half.right{
+      border-top-right-radius: 28px;
+      border-bottom-right-radius: 28px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    /* Паспарту: у корешка радиус = 0, чтобы не было «дырок» и кривых стыков */
+    .page-half.left .page-img{
+      border-top-left-radius: 22px;
+      border-bottom-left-radius: 22px;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .page-half.right .page-img{
+      border-top-right-radius: 22px;
+      border-bottom-right-radius: 22px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+    .page-half.left .page-img img{
+      border-top-left-radius: 18px;
+      border-bottom-left-radius: 18px;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .page-half.right .page-img img{
+      border-top-right-radius: 18px;
+      border-bottom-right-radius: 18px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    /* Корешок: тоже без острых краёв (важно при масштабировании/анимации) */
+    .spine{
+      border-top-left-radius: 14px;
+      border-bottom-left-radius: 14px;
+      border-top-right-radius: 14px;
+      border-bottom-right-radius: 14px;
+    }
+
+
+    /* Скругление разворота: внешние углы мягкие, у корешка — почти прямые */
+    .page-half.left{ border-top-left-radius:28px; border-bottom-left-radius:28px; }
+    .page-half.right{ border-top-right-radius:28px; border-bottom-right-radius:28px; }
     .page-half::before{
       content:"";
       position:absolute; inset:0;
@@ -224,6 +279,10 @@
       align-items:center;
       justify-content:center;
     }
+
+    /* В развороте: у корешка не делаем сильных скруглений, чтобы ничего не «съезжало» */
+    .page-half.left .page-img{border-top-right-radius:10px; border-bottom-right-radius:10px;}
+    .page-half.right .page-img{border-top-left-radius:10px; border-bottom-left-radius:10px;}
     .page-img::after{
       content:"";
       position:absolute; inset:0;
@@ -242,6 +301,9 @@
       -webkit-transform: translateZ(0);
       background:rgba(0,0,0,.10);
     }
+
+    .page-half.left .page-img img{border-top-right-radius:6px; border-bottom-right-radius:6px;}
+    .page-half.right .page-img img{border-top-left-radius:6px; border-bottom-left-radius:6px;}
 
     /* Single-page режим (мобилки): компактное окно «под фото» + дороже по виду */
     .modal[data-mode="single"] .spine{display:none;}
@@ -674,7 +736,7 @@
           <div class="inner">
             <div class="chip"><span class="dot"></span>шаг 1</div>
             <h2>Моменты, которые привели нас к этому вечеру</h2>
-            <p>В этот альбом я собрал малую, но любимую часть тех моментов, которые привели нас к этому вечеру. Люблю тебя в каждом из них ∞</p>
+            <p>Люблю тебя в каждом из них ∞</p>
 
             <div class="album-wrap">
               <button class="album-btn" id="openAlbum" aria-label="Открыть альбом">
@@ -696,7 +758,7 @@
             <div class="chip"><span class="dot"></span>шаг 2</div>
             <h2>Каким я представляю твоё кольцо</h2>
             <p>
-              Мне приглянулось это колечко и я безумно бы хотел канонично вручить его тебе сегодня. Но ещё больше я хочу подобрать идеальный размер и оставить возможность для твоего участия в этом выборе. А чтобы этот уход от канона не омрачал моё предложение, я придумал для нас целое приключение...
+              Тонкое, аккуратное, элегантное — такое же, как ты. А 8 бриллиантов вместо одного — как символ нашей любви.
             </p>
 
             <div class="media media-square" style="margin-top:16px">
@@ -721,10 +783,7 @@
             </div>
 
             <p style="margin-top:12px">
-              1. Как только доделают твой загранник, мы улетаем в тёплые края. Надеюсь, успеем до конца апреля
-2. Там нас будет ждать уютный отель с красивым видом и 5-7 дней отдыха с походами по бутикам Cartier
-3. Я хочу, чтобы ты примерила и почувствовала "то самое" кольцо. И уже с ним я осуществлю каноничное предложение
-*Т.к. это всё — продолжение события, инициированного мной, все основные издержки в виде билетов на самолёт и проживания в отеле я беру на себя 💸
+              Прилететь вдвоём туда, где всё немного похоже на кино. Зайти в Cartier, не спеша посмотреть, примерить и почувствовать «то самое» кольцо. Выйти из бутика уже не просто парой, а людьми, которые сделали свой общий выбор.
             </p>
           </div>
         </div>
@@ -741,7 +800,7 @@
 
             <h2 style="margin-top:6px">Ариночка, я хочу прожить с тобой всю жизнь.</h2>
             <p>
-              В горе и радости, в болезни и здравии, в богатстве и бедности — всегда
+              Для меня важно не просто кольцо, а всё, что стоит за ним: ты, мы и наша общая история — от этого вечера до самого‑самого дальше.
             </p>
 
             <div class="mark" aria-hidden="true">
