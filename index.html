@@ -754,7 +754,56 @@
     @media (prefers-reduced-motion: reduce){
       .drag-layer, .card, .album-btn, .page-img img, .card.reveal{transition:none !important; animation:none !important;}
     }
-  </style>
+  
+    /* Video loading polish */
+    .video-wrap{ position:relative; width:100%; height:100%; }
+    #ringVideo{ width:100%; height:100%; object-fit: cover; border-radius: 22px; display:block; }
+    .video-poster{
+      position:absolute; inset:0;
+      border-radius: 22px;
+      overflow:hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.20));
+      border:1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:flex-end;
+      justify-content:flex-start;
+      padding:16px;
+      gap:10px;
+      opacity:1;
+      transition: opacity .35s ease;
+      pointer-events:none;
+    }
+    .video-poster .poster-text{
+      font-size:12px;
+      letter-spacing:.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.70);
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.10);
+      padding:8px 10px;
+      border-radius: 999px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .video-poster .shimmer{
+      position:absolute; inset:0;
+      background:
+        radial-gradient(700px 260px at 18% 10%, rgba(244,195,92,.10), transparent 60%),
+        radial-gradient(680px 260px at 85% 25%, rgba(111,162,255,.10), transparent 60%),
+        linear-gradient(110deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.08) 35%, rgba(255,255,255,0) 70%);
+      transform: translateX(-20%);
+      animation: shimmerMove 2.2s ease-in-out infinite;
+      opacity:.9;
+      mix-blend-mode: screen;
+    }
+    @keyframes shimmerMove{
+      0%{ transform: translateX(-35%); }
+      50%{ transform: translateX(8%); }
+      100%{ transform: translateX(-35%); }
+    }
+    .video-ready #ringPoster{ opacity:0; }
+
+</style>
 </head>
 
 <body>
@@ -817,7 +866,13 @@
             </p>
 
             <div class="media media-square">
-              <video id="ringVideo" autoplay muted loop playsinline preload="none"></video>
+              <div class="video-wrap">
+              <video id="ringVideo" autoplay muted loop playsinline preload="metadata"></video>
+              <div class="video-poster" id="ringPoster" aria-hidden="true">
+                <div class="shimmer"></div>
+                <div class="poster-text">Видео загружается…</div>
+              </div>
+            </div>
             </div>
           </div>
         </div>
@@ -834,8 +889,7 @@
 
             <div class="media hero-media">
               <img id="imgDubai"
-                   src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                   data-src="./img/dubai.jpg"
+                   src="./img/dubai.jpg"
                    alt="Dubai" decoding="async" loading="lazy">
             </div>
 
@@ -881,8 +935,7 @@
         <div class="card reveal">
           <div class="inner" style="text-align:center">
             <img id="imgCrest"
-                 src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                 data-src="./img/AAfam.png"
+                 src="./img/AAfam.png"
                  alt="AA Family" decoding="async" loading="lazy"
                  style="margin:6px auto 14px; width:min(280px, 70%); height:auto; display:block; filter: drop-shadow(0 22px 40px rgba(0,0,0,.55));">
 
@@ -967,6 +1020,17 @@
       crest: './img/AAfam.png',
       ring: './media/IMG_5945_sharper_fast_optimized.mp4'
     };
+    function markVideoReady(){
+      document.documentElement.classList.add('video-ready');
+    }
+    if(ringVideo){
+      ringVideo.addEventListener('canplay', markVideoReady, {once:true});
+      ringVideo.addEventListener('loadeddata', markVideoReady, {once:true});
+      ringVideo.addEventListener('error', () => {
+        // keep poster visible; no hard failure UI
+      });
+    }
+
 
     const TOTAL = 47;
 
@@ -974,6 +1038,8 @@
     const imgDubai = document.getElementById('imgDubai');
     const imgCrest = document.getElementById('imgCrest');
     const ringVideo = document.getElementById('ringVideo');
+    const ringPoster = document.getElementById('ringPoster');
+
 
     const pad2 = (n) => String(n).padStart(2,'0');
     const full = (n) => `./img/${pad2(n)}.jpg`;
@@ -1048,26 +1114,14 @@ if(c.closest('[data-section="intro"]')) c.classList.add('in');
             ringVideo.play().catch(()=>{});
           }
         }
-
-        if(sec === 'step3'){
-          if(imgDubai && imgDubai.dataset.src && !imgDubai.dataset._loaded){
-            imgDubai.src = imgDubai.dataset.src;
-            imgDubai.dataset._loaded = '1';
-          }
         }
-
-        if(sec === 'final'){
-          if(imgCrest && imgCrest.dataset.src && !imgCrest.dataset._loaded){
-            imgCrest.src = imgCrest.dataset.src;
-            imgCrest.dataset._loaded = '1';
-          }
         }
 
         if(sec === 'step1'){
           scheduleBackgroundPreload();
         }
       }
-    }, {root: app, threshold: 0.55});
+    }, {root: app, threshold: 0.28});
 
     document.querySelectorAll('.screen').forEach(s => io.observe(s));
 
@@ -1463,11 +1517,10 @@ if(c.closest('[data-section="intro"]')) c.classList.add('in');
       if(albumOpened && modal.classList.contains('open')) return;
       bgScheduled = true;
       setTimeout(() => {
-        idle(() => {
-          preloadVideo(PATHS.ring);
-          preloadImage(PATHS.dubai).catch(()=>{});
-          preloadImage(PATHS.crest).catch(()=>{});
-        });
+        idle(() => { preloadVideo(PATHS.ring); });
+      }, 650);
+    }
+);
       }, 900);
     }
 
