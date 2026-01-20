@@ -803,6 +803,56 @@
     }
     .video-ready #ringPoster{ opacity:0; }
 
+
+    /* Step 3 plan – slimmer on desktop */
+    .plan{ gap:10px; }
+    .plan li{
+      grid-template-columns: 44px 1fr;
+      gap:12px;
+      padding:12px 14px;
+      border-radius: 16px;
+    }
+    .plan .tag{
+      width:44px; height:44px;
+      border-radius: 14px;
+    }
+    .plan .tag span{ font-size: 11px; letter-spacing: .16em; }
+    .plan .title{
+      font-size: 12px;
+      letter-spacing: .06em;
+      text-transform:none;
+      color: rgba(255,255,255,.72);
+      font-weight: 600;
+    }
+    .plan .text{ font-size: 14px; color: rgba(255,255,255,.76); }
+
+
+    /* Final mark animation (hearts + AA) */
+    .mark{ position: relative; width: 112px; height: 48px; }
+    .mark svg{ display:block; }
+    .hearts{
+      transform-origin: 50% 60%;
+      opacity: .92;
+    }
+    .aa path{
+      stroke-dasharray: 140;
+      stroke-dashoffset: 140;
+      opacity: .95;
+    }
+    @keyframes pulseHearts{
+      0%, 100%{ transform: scale(1); opacity:.92; }
+      50%{ transform: scale(1.06); opacity:1; }
+    }
+    @keyframes drawAA{
+      to{ stroke-dashoffset: 0; }
+    }
+    /* Play only when final section was reached */
+    .final-in .hearts{ animation: pulseHearts 2.2s ease-in-out infinite; }
+    .final-in .aa path{ animation: drawAA 1.7s ease forwards; }
+    .final-in .aa path:nth-child(2){ animation-delay: .08s; }
+    .final-in .aa path:nth-child(3){ animation-delay: .16s; }
+    .final-in .aa path:nth-child(4){ animation-delay: .24s; }
+
 </style>
 </head>
 
@@ -898,21 +948,21 @@
                 <li>
                   <div class="tag"><span>01</span></div>
                   <div class="body">
-                    <div class="title">TRIGGER</div>
+                    <div class="title">загран и полёт</div>
                     <div class="text">Как только доделают твой загранник — улетаем в тёплые края. Надеюсь, успеем до конца апреля.</div>
                   </div>
                 </li>
                 <li>
                   <div class="tag"><span>02</span></div>
                   <div class="body">
-                    <div class="title">BASE</div>
+                    <div class="title">отель, отдых, ювелирка</div>
                     <div class="text">Нас будет ждать уютный отель с красивым видом и 5–7 дней отдыха с походами по бутикам Cartier.</div>
                   </div>
                 </li>
                 <li>
                   <div class="tag"><span>03</span></div>
                   <div class="body">
-                    <div class="title">FINAL</div>
+                    <div class="title">счастливый финал, где все жили долго и счастливо</div>
                     <div class="text">Ты примеришь и почувствуешь «то самое» кольцо — и уже с ним я сделаю каноничное предложение.</div>
                   </div>
                 </li>
