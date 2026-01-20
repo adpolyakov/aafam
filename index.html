@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>AA Family</title>
+  <script>document.documentElement.classList.add('js');</script>
 
   <!-- High-priority hero assets -->
   <link rel="preload" as="image" href="./img/lotte.jpg" fetchpriority="high">
@@ -193,11 +194,8 @@
       padding: var(--outerPad) 14px;
     }
 
-    @supports (content-visibility: auto){
-      .screen{content-visibility:auto; contain-intrinsic-size:100dvh;}
-    }
-
-    .page{width:min(var(--maxw), 100%);}
+    /* content-visibility disabled (could cause blank rendering in some setups) */
+.page{width:min(var(--maxw), 100%);}
 
     .card{
       position:relative;
@@ -211,6 +209,8 @@
       height: var(--cardH);
       transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease;
     }
+    /* Safe default: reveal cards are visible without JS */
+    .card.reveal{opacity:1; transform:none;}
     .card::before{
       content:"";
       position:absolute; inset:0;
@@ -702,11 +702,10 @@
     @keyframes spin{to{transform:rotate(360deg)}}
 
     /* reveal cards */
-    .card.reveal{opacity:0; transform: translateY(14px) scale(.995);}
-    .card.reveal.in{opacity:1; transform:none;}
-    .card.reveal{transition: opacity .65s ease, transform .65s cubic-bezier(.2,.8,.2,1);}
-
-    /* Single mode (mobile album) */
+    .js .card.reveal{opacity:0; transform: translateY(14px) scale(.995);} 
+    .js .card.reveal.in{opacity:1; transform:none;} 
+    .js .card.reveal{transition: opacity .65s ease, transform .65s cubic-bezier(.2,.8,.2,1);} 
+/* Single mode (mobile album) */
     .modal[data-mode="single"] .spine{display:none;}
     .modal[data-mode="single"] .page-half.right{display:none;}
     .modal[data-mode="single"] .page-half.left{flex:1;}
