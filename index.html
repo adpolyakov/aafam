@@ -404,11 +404,49 @@
       mix-blend-mode: screen;
     }
 
+    /* 4:5 photos: dedicated clip with real rounded corners */
+    .photo-clip{
+      width:100%;
+      height:100%;
+      max-width:100%;
+      max-height:100%;
+      aspect-ratio: 4 / 5;
+      border-radius: 22px;
+      overflow:hidden;
+      background: rgba(0,0,0,.14);
+      box-shadow: 0 12px 34px rgba(0,0,0,.40);
+      outline: 1px solid rgba(255,255,255,.10);
+      outline-offset: -1px;
+      display:flex;
+      align-items:stretch;
+      justify-content:stretch;
+      transform: translateZ(0);
+    }
+
+    /* Center the 4:5 clip inside the mat */
+    .page-img{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    /* Make the mat slightly larger so portrait photos feel natural */
+    :root{
+      --outerEdge: 10px;
+      --gutter: 20px;
+    }
+
+    /* Spread canvas: a touch taller / less wide = more portrait-friendly */
+    .book-shell{
+      width:min(920px, 92vw);
+      height:min(760px, 88vh);
+    }
+
     .page-img img{
       width:100%;
       height:100%;
-      object-fit:contain;
-      border-radius:18px;
+      object-fit: cover;
+      border-radius:0;
       box-shadow: 0 10px 26px rgba(0,0,0,.34);
       display:block;
       background:rgba(0,0,0,.10);
@@ -781,11 +819,11 @@
         <div class="drag-shade" aria-hidden="true"></div>
         <div class="drag-layer" id="dragLayer">
           <div class="page-half left">
-            <div class="page-img"><img id="pageLeft" alt="" decoding="async"></div>
+            <div class="page-img"><div class="photo-clip"><img id="pageLeft" alt="" decoding="async" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="></div></div>
           </div>
           <div class="spine" aria-hidden="true"></div>
           <div class="page-half right">
-            <div class="page-img"><img id="pageRight" alt="" decoding="async"></div>
+            <div class="page-img"><div class="photo-clip"><img id="pageRight" alt="" decoding="async" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="></div></div>
           </div>
         </div>
       </div>
@@ -1006,22 +1044,57 @@
       if(!el || el.dataset._wired) return;
       el.dataset._wired = '1';
       el.addEventListener('load', () => { el.classList.remove('is-loading'); });
+      el.addEventListener('error', () => { el.classList.remove('is-loading'); });
     }
     wirePremiumImg(pageLeft);
     wirePremiumImg(pageRight);
 
     async function setPageImg(el, n){
-      const t = thumb(n);
-      const f = full(n);
-      el.alt = `Фото ${pad2(n)}`;
-
       const token = String(++globalImgToken);
       el.dataset.token = token;
-      el.dataset.wantFull = f;
 
-      if(!imgCache.has(t)){
-        try{ await enqueueLoad(() => preloadImage(t)); imgCache.set(t,true);}catch(e){}
+      const baseThumb = `./img/thumbs/${pad2(n)}`;
+      const baseFull  = `./img/${pad2(n)}`;
+
+      el.alt = `Фото ${pad2(n)}`;
+
+      async function resolveAndSet(base, preferCacheKey){
+        // Try jpg then jpeg (and cache what succeeds)
+        const candidates = [`${base}.jpg`, `${base}.jpeg`];
+        for(const url of candidates){
+          const cacheKey = url;
+          if(imgCache.has(cacheKey)){
+            if(el.dataset.token === token) el.src = url;
+            return url;
+          }
+          try{
+            await enqueueLoad(() => preloadImage(url));
+            imgCache.set(cacheKey, true);
+            if(el.dataset.token === token) el.src = url;
+            return url;
+          }catch(e){
+            // continue
+          }
+        }
+        return null;
       }
+
+      // 1) quick thumb (if exists)
+      const thumbUrl = await resolveAndSet(baseThumb);
+      // If thumb not found, keep whatever current src is; full will still be attempted.
+
+      // 2) then full in idle
+      idle(async () => {
+        if(el.dataset.token !== token) return;
+        el.classList.add('is-loading');
+
+        const fullUrl = await resolveAndSet(baseFull);
+        if(!fullUrl){
+          // leave thumb (or previous) and remove loading blur
+          el.classList.remove('is-loading');
+        }
+      });
+    }
       if(el.dataset.token != token) return;
       el.src = t;
 
