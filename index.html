@@ -74,6 +74,115 @@
       scroll-behavior:smooth;
     }
 
+    /* Desktop text: center the text column so it doesn't stick to the left */
+    .copy{
+      width:100%;
+      max-width: min(680px, 100%);
+      margin-left:auto;
+      margin-right:auto;
+    }
+    .copy > *{max-width:100%}
+
+    /* Keep text left-aligned, but center the column */
+    .copy, .copy p, .copy li{ text-align:left; }
+
+    /* Slightly relax the global line length on wide screens */
+    @media (min-width: 860px){
+      :root{ --lineMax: 68ch; }
+      p{ max-width: var(--lineMax); }
+      p{ margin-left:auto; margin-right:auto; }
+      h1, h2{ margin-left:auto; margin-right:auto; max-width: min(760px, 100%); }
+    }
+
+    /* Plan list (Step 3) – code-like premium timeline */
+    .plan{
+      list-style:none;
+      padding:0;
+      margin: 4px auto 0;
+      width:100%;
+      max-width: min(720px, 100%);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .plan li{
+      position:relative;
+      display:grid;
+      grid-template-columns: 56px 1fr;
+      gap:14px;
+      padding:14px 16px;
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.16));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+      overflow:hidden;
+    }
+    .plan li::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(520px 220px at 20% 0%, rgba(244,195,92,.10), transparent 60%),
+        radial-gradient(520px 220px at 85% 20%, rgba(111,162,255,.10), transparent 60%);
+      opacity:.7;
+      mix-blend-mode: screen;
+    }
+    .plan .tag{
+      position:relative;
+      width:56px; height:56px;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.24);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+    }
+    .plan .tag span{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      letter-spacing: .18em;
+      color: rgba(255,255,255,.86);
+    }
+    .plan .tag::after{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      border-radius: 16px;
+      background: radial-gradient(120px 60px at 30% 20%, rgba(244,195,92,.35), transparent 62%);
+      opacity:.55;
+      pointer-events:none;
+      mix-blend-mode: screen;
+    }
+    .plan .body{
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width:0;
+    }
+    .plan .title{
+      font-size:13px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color: rgba(255,255,255,.62);
+    }
+    .plan .text{
+      color: rgba(255,255,255,.78);
+      line-height:1.55;
+    }
+    .plan-note{
+      margin: 12px auto 0;
+      max-width: min(720px, 100%);
+      color: rgba(255,255,255,.60);
+      font-size: 13px;
+      line-height:1.55;
+      border-left: 2px solid rgba(244,195,92,.45);
+      padding-left: 12px;
+    }
+
+
     .screen{
       min-height:100dvh;
       scroll-snap-align:start;
@@ -731,14 +840,35 @@
                    alt="Dubai" decoding="async" loading="lazy">
             </div>
 
-            <p>
-              1) Как только доделают твой загранник — улетаем в тёплые края. Надеюсь, успеем до конца апреля.<br>
-              2) Нас будет ждать уютный отель с красивым видом и 5–7 дней отдыха с походами по бутикам Cartier.<br>
-              3) Ты примеришь и почувствуешь «то самое» кольцо — и уже с ним я сделаю каноничное предложение.
-            </p>
-            <p style="color:rgba(255,255,255,.62)">
-              *Так как это продолжение события, инициированного мной, основные издержки (перелёт и проживание) я беру на себя 💸
-            </p>
+            <div class="copy">
+              <ol class="plan" aria-label="План Дубая">
+                <li>
+                  <div class="tag"><span>01</span></div>
+                  <div class="body">
+                    <div class="title">TRIGGER</div>
+                    <div class="text">Как только доделают твой загранник — улетаем в тёплые края. Надеюсь, успеем до конца апреля.</div>
+                  </div>
+                </li>
+                <li>
+                  <div class="tag"><span>02</span></div>
+                  <div class="body">
+                    <div class="title">BASE</div>
+                    <div class="text">Нас будет ждать уютный отель с красивым видом и 5–7 дней отдыха с походами по бутикам Cartier.</div>
+                  </div>
+                </li>
+                <li>
+                  <div class="tag"><span>03</span></div>
+                  <div class="body">
+                    <div class="title">FINAL</div>
+                    <div class="text">Ты примеришь и почувствуешь «то самое» кольцо — и уже с ним я сделаю каноничное предложение.</div>
+                  </div>
+                </li>
+              </ol>
+
+              <div class="plan-note">
+                Так как это продолжение события, инициированного мной, основные издержки (перелёт и проживание) я беру на себя 💸
+              </div>
+            </div>
 
             <div class="hint">Листай вниз ↓</div>
           </div>
