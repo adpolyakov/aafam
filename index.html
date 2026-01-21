@@ -8,6 +8,8 @@
 
   <title>Для Арины</title>
 
+  <link rel="preload" as="image" href="img/lotte.jpg" fetchpriority="high" />
+
   <style>
     :root{
       /* Premium palette */
@@ -162,6 +164,8 @@
       scroll-snap-type: y proximity;
     }
     .section{
+      content-visibility: auto;
+      contain-intrinsic-size: 900px;
       min-height: calc(100vh - (62px + env(safe-area-inset-top)));
       display:flex;
       align-items:center;
@@ -230,7 +234,47 @@
       filter: saturate(1.02) contrast(1.03);
     }
 
-    .media-badge{
+
+    /* Progressive image loading (perceived performance) */
+    .media-card{
+      --sk: rgba(255,255,255,.08);
+      --sk2: rgba(255,255,255,.02);
+    }
+    .media-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(110deg, transparent 0%, rgba(255,255,255,.07) 10%, transparent 20%) ,
+        radial-gradient(600px 420px at 20% 20%, rgba(216,182,111,.10), transparent 60%),
+        radial-gradient(600px 420px at 80% 40%, rgba(123,211,255,.08), transparent 60%);
+      opacity: .55;
+      transform: translateX(-30%);
+      animation: shimmer 1.35s cubic-bezier(.2,.8,.2,1) infinite;
+      pointer-events:none;
+      transition: opacity .55s var(--ease);
+    }
+    .media-card.is-loaded::after{
+      opacity: 0;
+      animation: none;
+    }
+    @keyframes shimmer{
+      0%{ transform: translateX(-30%); }
+      100%{ transform: translateX(30%); }
+    }
+    .media-card img{
+      opacity: 0;
+      filter: blur(14px) saturate(1.05);
+      transform: scale(1.02) translateZ(0);
+      transition: opacity .65s var(--ease), filter .85s var(--ease), transform .85s var(--ease);
+    }
+    .media-card.is-loaded img{
+      opacity: 1;
+      filter: blur(0) saturate(1.02) contrast(1.03);
+      transform: scale(1.0) translateZ(0);
+    }
+
+.media-badge{
       position:absolute;
       left: 16px; top: 16px;
       display:inline-flex; align-items:center; gap:8px;
@@ -438,8 +482,8 @@
           <div class="grid">
             <div class="media">
               <div class="media-card reveal" data-reveal>
-                <!-- Положи картинку в репозиторий: img/01-hero.jpg (это изображение из твоего сообщения) -->
-                <img src="img/01-hero.jpg" alt="Иллюстрация предложения" loading="eager" decoding="async" />
+                <!-- Картинка первого окна: img/lotte.jpg -->
+                <img src="img/lotte.jpg" alt="Иллюстрация предложения" loading="eager" decoding="async" fetchpriority="high" />
                 <div class="media-badge"><b>Экран 1</b> · начало</div>
               </div>
             </div>
@@ -662,6 +706,32 @@
       }, { root: main, threshold: 0.55 });
 
       sections.forEach(s => so.observe(s));
+
+      // Progressive image: remove shimmer + fade-in once decoded
+      const imgs = Array.from(document.querySelectorAll('.media-card img'));
+      imgs.forEach(async (img) => {
+        const card = img.closest('.media-card');
+        if(!card) return;
+
+        const markLoaded = () => card.classList.add('is-loaded');
+
+        // If cached and already complete
+        if (img.complete && img.naturalWidth > 0) {
+          try { await img.decode(); } catch(e){}
+          markLoaded();
+          return;
+        }
+
+        img.addEventListener('load', async () => {
+          try { await img.decode(); } catch(e){}
+          markLoaded();
+        }, { once:true });
+
+        img.addEventListener('error', () => {
+          // If something goes wrong, still remove shimmer to avoid infinite loading state
+          markLoaded();
+        }, { once:true });
+      });
 
       // Prevent “horizontal jiggle” on iOS overscroll
       main.addEventListener('scroll', ()=>{
