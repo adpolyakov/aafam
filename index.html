@@ -97,10 +97,14 @@
 
     /* Main scroll container */
     main{
-      height:100vh;
+      height:100dvh;
       overflow-y:auto;
       scroll-behavior:smooth;
       padding-top: calc(62px + env(safe-area-inset-top));
+    }
+
+    @supports not (height: 100dvh){
+      main{ height:100vh; }
     }
 
     /* CSS snap for desktop; iOS will be disabled via JS to avoid fighting momentum */
@@ -110,12 +114,17 @@
       content-visibility: auto;
       contain-intrinsic-size: 900px;
 
-      min-height: calc(100vh - (62px + env(safe-area-inset-top)));
+      min-height: calc(100dvh - (62px + env(safe-area-inset-top)));
       display:flex;
       align-items:center;
       padding: 44px var(--pad);
       scroll-snap-align: start;
       position:relative;
+    }
+
+    /* dvh fallback for older browsers */
+    @supports not (height: 100dvh){
+      .section{ min-height: calc(100vh - (62px + env(safe-area-inset-top))); }
     }
 
     .container{
@@ -309,8 +318,7 @@
       border-radius: 999px;
       border:1px solid rgba(255,255,255,.28);
       position:relative;
-    }
-    .mouse::after{
+    }    .mouse::after{
       content:"";
       width: 4px;
       height: 4px;
@@ -402,17 +410,7 @@
       .hint.hint-fixed{ bottom: calc(10px + env(safe-area-inset-bottom)); }
       .mouse{ width: 16px; height: 24px; }
 
-
-      /* Center the album cover panel vertically on small phones */
-      #s2.section{
-        flex-direction: column;
-        justify-content: center;
-      }
-      #s2 .panel{
-        margin: auto 0;
-      }
-
-      .section{ padding: 22px var(--pad) 26px; }
+      .section{ padding: 20px var(--pad); }
       .panel{ border-radius: 28px; }
     }
 
