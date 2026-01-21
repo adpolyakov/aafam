@@ -480,6 +480,12 @@
       }
     }
 
+
+    @supports (height: 100dvh){
+      main{ height: 100dvh; }
+      .section{ min-height: calc(100dvh - (62px + env(safe-area-inset-top))); }
+    }
+
     /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
       main{ scroll-behavior:auto; }
