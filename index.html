@@ -74,7 +74,19 @@
 
     /* Top bar */
     .topbar{
-      position:fixed;
+
+    /* Header layout tweak (no title / no CTA) */
+    .topbar{
+      justify-content:center;
+    }
+    .brand{
+      min-width: unset;
+      position:absolute;
+      left: var(--pad);
+      top: 50%;
+      transform: translateY(-50%);
+    }
+          position:fixed;
       left:0; right:0;
       top: env(safe-area-inset-top);
       z-index:50;
@@ -452,11 +464,7 @@
   <header class="topbar">
     <div class="brand" role="banner">
       <div class="mark" aria-hidden="true"></div>
-      <div class="brand-title">
-        <strong>Для Арины</strong>
-        <span>маленькая история в 5 экранах</span>
-      </div>
-    </div>
+</div>
 
     <nav class="nav" aria-label="Навигация по экранам">
       <button class="dot" data-to="s1" aria-label="Экран 1" aria-current="true"></button>
@@ -465,14 +473,7 @@
       <button class="dot" data-to="s4" aria-label="Экран 4"></button>
       <button class="dot" data-to="s5" aria-label="Экран 5"></button>
     </nav>
-
-    <div class="cta">
-      <a class="pill" href="#s5" aria-label="К финалу">
-        <i aria-hidden="true"></i>
-        <span>к финалу</span>
-      </a>
-    </div>
-  </header>
+</header>
 
   <main id="main" class="snap" aria-label="Основной контент">
     <!-- SECTION 1 -->
@@ -484,8 +485,7 @@
               <div class="media-card reveal" data-reveal>
                 <!-- Картинка первого окна: img/lotte.jpg -->
                 <img src="img/lotte.jpg" alt="Иллюстрация предложения" loading="eager" decoding="async" fetchpriority="high" />
-                <div class="media-badge"><b>Экран 1</b> · начало</div>
-              </div>
+</div>
             </div>
             <div class="content">
               <div class="kicker reveal" data-reveal>Сайт с частичкой нашей любви</div>
@@ -525,8 +525,7 @@
             <div class="media">
               <div class="media-card reveal" data-reveal>
                 <img src="img/02.jpg" alt="Тёплый момент" loading="lazy" decoding="async" />
-                <div class="media-badge"><b>Экран 2</b> · про тебя</div>
-              </div>
+</div>
             </div>
             <div class="content">
               <div class="kicker reveal" data-reveal>ты — про детали</div>
@@ -560,8 +559,7 @@
             <div class="media">
               <div class="media-card reveal" data-reveal>
                 <img src="img/03.jpg" alt="Наши моменты" loading="lazy" decoding="async" />
-                <div class="media-badge"><b>Экран 3</b> · мы</div>
-              </div>
+</div>
             </div>
             <div class="content">
               <div class="kicker reveal" data-reveal>то, что я люблю</div>
@@ -595,8 +593,7 @@
             <div class="media">
               <div class="media-card reveal" data-reveal>
                 <img src="img/04.jpg" alt="Будущее" loading="lazy" decoding="async" />
-                <div class="media-badge"><b>Экран 4</b> · обещание</div>
-              </div>
+</div>
             </div>
             <div class="content">
               <div class="kicker reveal" data-reveal>простое обещание</div>
@@ -630,8 +627,7 @@
             <div class="media">
               <div class="media-card reveal" data-reveal>
                 <img src="img/05-final.jpg" alt="Финал" loading="lazy" decoding="async" />
-                <div class="media-badge"><b>Экран 5</b> · дальше</div>
-              </div>
+</div>
             </div>
             <div class="content">
               <div class="kicker reveal" data-reveal>продолжение</div>
