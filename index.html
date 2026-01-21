@@ -137,8 +137,7 @@
       color: var(--muted);
       font-size: 14px;
       line-height:1.5;
-      max-width: none;
-      width: 100%;
+      max-width: 70ch;
     }
 
     .hero{
@@ -149,20 +148,7 @@
       overflow:hidden;
     }
 
-    .hero-media{
-      border-radius: var(--radius2);
-      background:
-        radial-gradient(700px 420px at 25% 30%, rgba(57,112,255,.10), transparent 60%),
-        radial-gradient(700px 420px at 80% 70%, rgba(255,206,120,.10), transparent 55%),
-        rgba(0,0,0,.25);
-      border: 1px solid rgba(255,255,255,.10);
-      overflow:hidden;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-      min-height: 440px;
-    }
+    .hero-media{border-radius:var(--r2); overflow:hidden; background:rgba(0,0,0,.18); border:1px solid rgba(255,255,255,.08); box-shadow:none;}
 
     .hero-media img, .hero-media video{
       width:min(420px, 72vw);
@@ -201,7 +187,7 @@
       color: rgba(255,255,255,.70);
       line-height: 1.55;
       font-size: 14px;
-      max-width: none;
+      max-width: 72ch;
     }
     .copy p:last-child{ margin-bottom:0; }
 
@@ -213,16 +199,7 @@
     }
 
     /* Album cover button */
-    .album-wrap{
-      width:min(520px, 78vw);
-      aspect-ratio: 1/1;
-      border-radius: 22px;
-      overflow:hidden;
-      position:relative;
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: 0 18px 55px rgba(0,0,0,.45);
-      background: rgba(0,0,0,.22);
-    }
+    .album-wrap{position:relative; width:min(520px, 92vw); max-height:56vh; aspect-ratio:4/5; margin:0 auto; border-radius:var(--r2); overflow:hidden; background:rgba(0,0,0,.12); border:1px solid rgba(255,255,255,.08); box-shadow:none; cursor:pointer;}
     .album-wrap img{
       width:100%; height:100%;
       object-fit: cover;
@@ -236,21 +213,7 @@
                   linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.28));
       pointer-events:none;
     }
-    
-    .album-btn{
-      all: unset;
-      display:block;
-      width:100%;
-      height:100%;
-      cursor:pointer;
-      border-radius: 22px;
-    }
-    .album-btn:focus-visible{
-      outline: 2px solid rgba(255,208,120,.45);
-      outline-offset: 4px;
-    }
-
-.album-cta{
+    .album-cta{
       position:absolute;
       left:18px; right:18px; bottom:16px;
       display:flex;
@@ -343,39 +306,10 @@
       font-weight: 900;
     }
 
-    .spread{
-      position:relative;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-      padding: 18px;
-      min-height: min(66vh, 620px);
-      background: rgba(0,0,0,.08);
-    }
-    .page{
-      position:relative;
-      border-radius: 22px;
-      margin: 0 6px;
-      overflow:hidden;
-      border: 1px solid rgba(255,255,255,.10);
-      background:
-        radial-gradient(700px 420px at 25% 30%, rgba(57,112,255,.10), transparent 60%),
-        radial-gradient(700px 420px at 80% 70%, rgba(255,206,120,.10), transparent 55%),
-        rgba(0,0,0,.20);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 16px;
-    }
+    .spread{position:relative; display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:14px; background:rgba(0,0,0,.06);}
+    .page{position:relative; border-radius:22px; overflow:hidden; border:1px solid rgba(255,255,255,.10); background:rgba(0,0,0,.10); display:flex; align-items:stretch; justify-content:stretch; padding:0;}
 
-    .page img{
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      border-radius: 18px;
-      background: rgba(255,255,255,.02);
-      border: 1px solid rgba(255,255,255,.10);
-    }
+    .page img{width:100%; height:100%; object-fit:cover; border-radius:0; border:none; background:transparent; display:block;}
 
     .navbtn{
       position:absolute;
@@ -403,22 +337,8 @@
     }
 
     /* Step 2 video */
-    .video-wrap{
-      position:relative;
-      width:min(420px, 72vw);
-      aspect-ratio: 4/5;
-      border-radius: var(--radiusImg);
-      overflow:hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,.45);
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.25);
-    }
-    .video-wrap video{
-      width:100%; height:100%;
-      object-fit: cover;
-      display:block;
-      border-radius: var(--radiusImg);
-    }
+    .video-wrap{position:relative; width:100%; aspect-ratio:4/5; border-radius:var(--r2); overflow:hidden; background:rgba(0,0,0,.18); border:1px solid rgba(255,255,255,.08);}
+    .video-wrap video{width:100%; height:100%; object-fit:cover; display:block;}
     .video-poster{
       position:absolute; inset:0;
       display:flex;
@@ -456,7 +376,7 @@
     }
     .plan li{
       display:flex;
-      gap: 10px;
+      gap: 12px;
       padding: 12px 14px;
       border-radius: 16px;
       background: rgba(255,255,255,.04);
@@ -582,7 +502,7 @@
       grid-template-columns: 1fr;
       gap: 12px;
     }
-    @media (min-width: 720px){
+    @media (min-width: 860px){
       .plan2-grid{ grid-template-columns: 1fr 1fr; }
     }
     .plan2-item{
@@ -598,26 +518,16 @@
       -webkit-backdrop-filter: blur(10px);
     }
     .plan2-badge{
-      width: 40px; height: 40px;
-      border-radius: 14px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight: 900;
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      display:grid; place-items:center;
+      font-weight: 800;
       color: rgba(255,255,255,.92);
-      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
-      border: 1px solid rgba(255,255,255,.16);
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      background: radial-gradient(120% 120% at 30% 20%, rgba(244,195,92,.22), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.14);
       flex: 0 0 auto;
     }
-    .plan2-title{
-      font-size: 13px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      font-weight: 900;
-      color: rgba(255,255,255,.92);
-      text-shadow: 0 10px 26px rgba(0,0,0,.55);
-    }
+    .plan2-title{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.92); font-weight:700; margin-bottom:6px;}
     .plan2-text{
       margin-top: 6px;
       font-size: 14px;
@@ -632,7 +542,15 @@
 
     /* Ensure album cover is clickable on desktop */
     #albumCover, #albumCover *{ pointer-events: auto; }
-  </style>
+  
+@keyframes heartPop{0%{transform:translateY(8px) scale(.92); opacity:0}60%{opacity:1}100%{transform:translateY(0) scale(1); opacity:1}}
+
+.final-mark{display:flex; align-items:center; justify-content:center; gap:12px; margin-top:22px;}
+.final-mark .hearts{width:64px; height:34px;}
+.final-in .final-mark{animation:heartPop 900ms ease both;}
+
+.screen{content-visibility:auto; contain-intrinsic-size: 1000px;}
+</style>
 </head>
 <body>
   <div class="bg"></div>
@@ -648,8 +566,8 @@
         <button class="navbtn left" id="prevSpread" aria-label="Предыдущий разворот">‹</button>
         <button class="navbtn right" id="nextSpread" aria-label="Следующий разворот">›</button>
 
-        <div class="page" id="pageL"><img alt="" id="imgL" /></div>
-        <div class="page" id="pageR"><img alt="" id="imgR" /></div>
+        <div class="page" id="pageL"><img loading="lazy" decoding="async" alt="" id="imgL" /></div>
+        <div class="page" id="pageR"><img loading="lazy" decoding="async" alt="" id="imgR" /></div>
       </div>
     </div>
   </div>
@@ -663,7 +581,7 @@
 
           <div class="hero" style="margin-top:16px;">
             <div class="hero-media">
-              <img src="./img/lotte.jpg" alt="Lotte" />
+              <img loading="lazy" decoding="async" src="./img/intro.jpg" alt="Lotte" />
             </div>
 
             <div class="copy">
@@ -685,20 +603,17 @@
           <div class="subtitle">В этот альбом я собрал малую, но любимую часть тех моментов, которые привели нас к этому вечеру. Люблю тебя в каждом из них ∞</div>
 
           <div class="hero">
-            
             <div class="hero-media">
-              <button id="openAlbum" class="album-wrap album-btn" type="button" aria-label="Открыть альбом">
-                <img id="albumCover" src="./img/album.png" alt="AA Family Album" />
-                <div class="album-cta">
-                  <div class="label">
-                    <div class="small">альбом</div>
-                    <div class="big">Нажми — и он откроется</div>
+              <div class="album-wrap" aria-label="Открыть альбом">
+                <button id="openAlbum" class="album-wrap" style="all:unset; display:block; width:100%; height:100%;">
+                  <img loading="lazy" decoding="async" src="./img/album.png" alt="AA Family Album" />
+<div class="big">Нажми — и он откроется</div>
+                    </div>
+                    <div class="btn">Открыть ↗</div>
                   </div>
-                  <div class="btn">Открыть ↗</div>
-                </div>
-              </button>
+                </button>
+              </div>
             </div>
-
             <div class="scrollhint">Листай вниз ↓</div>
           </div>
         </div>
@@ -716,11 +631,11 @@
           <div class="hero">
             <div class="hero-media" id="ringFrame">
               <div class="video-wrap" id="ringWrap">
-                <video id="ringVideo" muted loop playsinline preload="metadata" controls></video>
-                <div class="video-poster" id="ringPoster">
-                  <div class="play">▶</div>
-                  <div>нажми, чтобы включить</div>
-                </div>
+                <video id="ringVideo" class="gif-video" autoplay muted loop playsinline preload="metadata" disablepictureinpicture>
+                  <source src="./media/IMG_5945_sharper_fast_optimized.mp4" type="video/mp4">
+                </video>
+                <div class="video-fallback" aria-hidden="true">Видео загружается…</div>
+              </div>
               </div>
             </div>
 
@@ -739,7 +654,7 @@
 
           <div class="hero">
             <div class="hero-media">
-              <img src="./img/dubai.jpg" alt="План Дубая" />
+              <img loading="lazy" decoding="async" src="./img/plan.jpg" alt="План Дубая" />
             </div>
 
             <div class="copy">
@@ -794,7 +709,7 @@
         <div class="inner">
           <div class="hero" style="padding: 24px;">
             <div style="display:flex; justify-content:center; margin-top: 6px;">
-              <img src="./img/AAfam.png" alt="AA Family crest" style="width: 150px; height:auto; filter: drop-shadow(0 16px 40px rgba(0,0,0,.35));" />
+              <img loading="lazy" decoding="async" src="./img/crest.png" alt="AA Family crest" style="width: 150px; height:auto; filter: drop-shadow(0 16px 40px rgba(0,0,0,.35));" />
             </div>
 
             <div style="text-align:center; margin-top: 16px;">
@@ -847,14 +762,19 @@
     // ====== CONFIG ======
     const PATHS = {
       albumCover: './img/album.png',
-      intro: './img/lotte.jpg',
-      plan: './img/dubai.jpg',
-      crest: './img/AAfam.png',
+      intro: './img/intro.jpg',
+      plan: './img/plan.jpg',
+      crest: './img/crest.png',
+      ringPoster: './img/album.png',
       ring: './media/IMG_5945_sharper_fast_optimized.mp4',
-      // Album pages: 01..47 (расширение может быть .jpg или .JPG — это обработаем фолбэком)
-      albumCount: 47
+      album: [
+        './img/01.jpg','./img/02.jpg','./img/03.jpg','./img/04.jpg','./img/05.jpg','./img/06.jpg',
+        './img/07.jpg','./img/08.jpg','./img/09.jpg','./img/10.jpg','./img/11.jpg','./img/12.jpg',
+        './img/13.jpg','./img/14.jpg','./img/15.jpg','./img/16.jpg','./img/17.jpg','./img/18.jpg',
+        './img/19.jpg','./img/20.jpg','./img/21.jpg','./img/22.jpg','./img/23.jpg','./img/24.jpg'
+      ]
     };
-    const RING_SOURCES = [PATHS.ring, './media/IMG_5945_sharper_fast_optimized.MP4', './media/IMG_5945_sharper_fast_optimized.mp4'];
+    const RING_SOURCES = [PATHS.ring, './img/ring.MP4', './img/ring.webm', './media/IMG_5945_sharper_fast_optimized.mp4'];
 
     // Elements (declare early to avoid ReferenceError)
     const ringVideo = document.getElementById('ringVideo');
@@ -876,26 +796,13 @@
       return p.replace(/\\/g,'/');
     }
 
-    
-    function pad2(n){ return String(n).padStart(2,'0'); }
-
-    function getAlbumPath(n){
-      if(n < 1 || n > PATHS.albumCount) return null;
-      return `./img/${pad2(n)}.jpg`;
-    }
-
-function withFallbacks(path){
+    function withFallbacks(path){
       const p = normalizePath(path);
       const out = [p];
 
-      // jpg/jpeg/JPG/JPEG fallback
-      const ext = p.split('.').pop();
-      if(/jpe?g/i.test(ext)){
-        out.push(p.replace(/\.jpe?g$/i, '.jpg'));
-        out.push(p.replace(/\.jpe?g$/i, '.jpeg'));
-        out.push(p.replace(/\.jpe?g$/i, '.JPG'));
-        out.push(p.replace(/\.jpe?g$/i, '.JPEG'));
-      }
+      // jpg/jpeg fallback
+      if(p.endsWith('.jpg')) out.push(p.replace(/\.jpg$/i, '.jpeg'));
+      if(p.endsWith('.jpeg')) out.push(p.replace(/\.jpeg$/i, '.jpg'));
 
       // cache buster fallback
       out.push(p + (p.includes('?') ? '&' : '?') + 'v=1');
@@ -924,8 +831,8 @@ function withFallbacks(path){
     }
 
     async function renderSpread(){
-      const left = getAlbumPath(spreadIndex*2 + 1);
-      const right = getAlbumPath(spreadIndex*2 + 2);
+      const left = PATHS.album[spreadIndex*2];
+      const right = PATHS.album[spreadIndex*2+1];
 
       if(left) await loadImgWithFallback(imgL, left);
       else imgL.removeAttribute('src');
@@ -934,7 +841,7 @@ function withFallbacks(path){
       else imgR.removeAttribute('src');
 
       prevSpreadBtn.disabled = spreadIndex <= 0;
-      nextSpreadBtn.disabled = spreadIndex >= Math.floor((PATHS.albumCount-1)/2);
+      nextSpreadBtn.disabled = spreadIndex >= Math.floor((PATHS.album.length-1)/2);
       prevSpreadBtn.style.opacity = prevSpreadBtn.disabled ? .35 : 1;
       nextSpreadBtn.style.opacity = nextSpreadBtn.disabled ? .35 : 1;
     }
@@ -956,7 +863,7 @@ function withFallbacks(path){
 
     prevSpreadBtn?.addEventListener('click', () => { if(spreadIndex>0){ spreadIndex--; renderSpread(); }});
     nextSpreadBtn?.addEventListener('click', () => {
-      const max = Math.floor((PATHS.albumCount-1)/2);
+      const max = Math.floor((PATHS.album.length-1)/2);
       if(spreadIndex<max){ spreadIndex++; renderSpread(); }
     });
 
@@ -988,53 +895,34 @@ function withFallbacks(path){
     const ringWrap = document.getElementById('ringWrap');
     const ringFrame = document.getElementById('ringFrame');
 
-        function ensureRingSource(){
+    function ensureRingSource(){
       if(!ringVideo) return;
-      if(ringVideo.dataset.srcReady === '1') return;
+      if(ringVideo.querySelector('source')) return;
 
       let idx = 0;
-
       const tryNext = () => {
         const url = RING_SOURCES[idx++];
         if(!url) return;
-
-        ringVideo.pause();
-        // Прямое присваивание src обычно надёжнее, чем <source> (особенно на Safari/iOS)
-        ringVideo.removeAttribute('src');
-        ringVideo.load();
-
-        ringVideo.src = url;
+        ringVideo.innerHTML = '';
+        const s = document.createElement('source');
+        s.src = url;
+        s.type = url.endsWith('.webm') ? 'video/webm' : 'video/mp4';
+        ringVideo.appendChild(s);
         ringVideo.load();
       };
 
-      const onErr = () => {
+      ringVideo.addEventListener('error', () => {
         if(idx < RING_SOURCES.length) tryNext();
-        else{
-          ringWrap?.classList.add('error');
-          const tip = document.getElementById('ringTip');
-          if(tip) tip.textContent = 'Видео не удалось загрузить 😕';
-        }
-      };
-
-      ringVideo.addEventListener('error', onErr, { once:false });
-      ringVideo.addEventListener('loadedmetadata', () => {
-        ringVideo.dataset.srcReady = '1';
-      }, { once:true });
+      });
 
       tryNext();
-
-      // страховка от «вечной» загрузки
-      window.setTimeout(() => {
-        if(ringVideo.dataset.srcReady !== '1') onErr();
-      }, 9000);
     }
 
     function startRingVideo(){
-      if(!ringVideo) return;
-      ensureRingSource();
-      ringPoster?.classList.add('hide');
-      ringVideo.play().catch(()=>{});
-    }
+  if(!ringVideo) return;
+  try{ ringVideo.muted = true; ringVideo.loop = true; ringVideo.playsInline = true; }catch(e){}
+  ringVideo.play().catch(()=>{});
+}
 
     function markVideoReady(){
       ringPoster?.classList.add('hide');
@@ -1056,48 +944,32 @@ function withFallbacks(path){
 
     // ====== FINAL ANIMATION TRIGGER ======
     const app = document.getElementById('app');
-        // ====== FINAL: анимация сердец/AA (надёжно через IntersectionObserver внутри scroll-контейнера) ======
-    (function(){
+    function inViewport(el, topPct=0.25, bottomPct=0.10){
+      if(!el) return false;
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      return (r.top < vh * (1 - topPct)) && (r.bottom > vh * bottomPct);
+    }
+    function tickFinal(){
       const finalSec = document.querySelector('.screen[data-section="final"]');
-      if(!finalSec) return;
-
-      const restart = () => {
-        const el = document.documentElement;
-        el.classList.remove('final-in');
-        // принудительный reflow, чтобы CSS-анимации перезапускались
-        void el.offsetWidth;
-        el.classList.add('final-in');
-      };
-
-      // Fallback: если IO недоступен — просто запускаем при первом заходе на секцию
-      const app = document.getElementById('app');
-      if(!('IntersectionObserver' in window) || !app){
-        app?.addEventListener('scroll', () => {
-          const r = finalSec.getBoundingClientRect();
-          const vh = window.innerHeight || 1;
-          if(r.top < vh * 0.55 && r.bottom > vh * 0.20) restart();
-        }, {passive:true});
-        window.addEventListener('load', restart, {once:true});
-        return;
+      if(inViewport(finalSec, 0.25, 0.10)){
+        document.documentElement.classList.add('final-in');
       }
+    }
+    app.addEventListener('scroll', () => { requestAnimationFrame(tickFinal); }, {passive:true});
+    window.addEventListener('load', tickFinal, {once:true});
+    window.addEventListener('scroll', tickFinal, {passive:true});
 
-      let armed = true;
-      const io = new IntersectionObserver((entries) => {
-        for(const e of entries){
-          if(e.target !== finalSec) continue;
-          if(e.isIntersecting && armed){
-            restart();
-            armed = false;
-            // разрешаем перезапуск, когда пользователь уйдёт со страницы
-            window.setTimeout(() => { armed = true; }, 1200);
-          }
-        }
-      }, { root: app, threshold: 0.55 });
-
-      io.observe(finalSec);
-      window.addEventListener('beforeunload', () => io.disconnect(), {once:true});
+    // Make the album cover area clickable (not only the button label)
+    (function bindAlbumCover(){
+      const btn = document.getElementById('openAlbum');
+      const wrap = document.querySelector('.album-wrap');
+      const open = (e)=>{ e && e.preventDefault(); btn?.click(); };
+      if(wrap){
+        wrap.style.cursor = 'pointer';
+        wrap.addEventListener('click', open, {passive:false});
+      }
     })();
-    // Album cover is already a <button>, so no extra click-binding needed.
   </script>
 </body>
 </html>
