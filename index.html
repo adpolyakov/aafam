@@ -402,6 +402,16 @@
       .hint.hint-fixed{ bottom: calc(10px + env(safe-area-inset-bottom)); }
       .mouse{ width: 16px; height: 24px; }
 
+
+      /* Center the album cover panel vertically on small phones */
+      #s2.section{
+        flex-direction: column;
+        justify-content: center;
+      }
+      #s2 .panel{
+        margin: auto 0;
+      }
+
       .section{ padding: 22px var(--pad) 26px; }
       .panel{ border-radius: 28px; }
     }
