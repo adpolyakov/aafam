@@ -7,7 +7,7 @@
   <meta name="description" content="Личный сайт-продолжение предложения для Арины." />
   <title>Для Арины</title>
 
-  <!-- Hero preload (helps iPhone) -->
+  <!-- Speed-up first screen image -->
   <link rel="preload" as="image" href="img/lotte.jpg" fetchpriority="high" />
 
   <style>
@@ -42,17 +42,16 @@
     body{
       margin:0;
       color:var(--text);
-      background:
-        radial-gradient(1200px 900px at 20% -10%, rgba(216,182,111,.22), transparent 55%),
-        radial-gradient(900px 700px at 90% 10%, rgba(123,211,255,.16), transparent 52%),
-        radial-gradient(1100px 900px at 50% 110%, rgba(216,182,111,.14), transparent 55%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
+      background: radial-gradient(1200px 900px at 20% -10%, rgba(216,182,111,.22), transparent 55%),
+                  radial-gradient(900px 700px at 90% 10%, rgba(123,211,255,.16), transparent 52%),
+                  radial-gradient(1100px 900px at 50% 110%, rgba(216,182,111,.14), transparent 55%),
+                  linear-gradient(180deg, var(--bg0), var(--bg1));
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
       letter-spacing: .2px;
       overflow-x:hidden;
     }
 
-    /* Subtle premium noise */
+    /* Subtle premium noise overlay */
     body::before{
       content:"";
       position:fixed;
@@ -64,7 +63,7 @@
       transform:translateZ(0);
     }
 
-    /* Top bar (dots only) */
+    /* Top bar (only dots) */
     .topbar{
       position:fixed;
       left:0; right:0;
@@ -81,9 +80,7 @@
       border-bottom: 1px solid rgba(255,255,255,.06);
     }
 
-    .nav{
-      display:flex; align-items:center; gap:8px;
-    }
+    .nav{ display:flex; align-items:center; gap:8px; }
     .dot{
       width:10px; height:10px;
       border-radius:999px;
@@ -105,6 +102,8 @@
       scroll-behavior:smooth;
       padding-top: calc(62px + env(safe-area-inset-top));
     }
+
+    /* CSS snap for desktop; iOS will be disabled via JS to avoid fighting momentum */
     main.snap{ scroll-snap-type: y proximity; }
 
     .section{
@@ -175,7 +174,6 @@
       height:100%;
       object-fit: contain;
       display:block;
-      transform: translateZ(0);
     }
 
     /* Progressive image loading (perceived performance) */
@@ -184,7 +182,7 @@
       position:absolute;
       inset:0;
       background:
-        linear-gradient(110deg, transparent 0%, rgba(255,255,255,.07) 10%, transparent 20%),
+        linear-gradient(110deg, transparent 0%, rgba(255,255,255,.07) 10%, transparent 20%) ,
         radial-gradient(600px 420px at 20% 20%, rgba(216,182,111,.10), transparent 60%),
         radial-gradient(600px 420px at 80% 40%, rgba(123,211,255,.08), transparent 60%);
       opacity: .55;
@@ -193,18 +191,22 @@
       pointer-events:none;
       transition: opacity .55s var(--ease);
     }
-    .media-card.is-loaded::after{ opacity:0; animation:none; }
-
-    @keyframes shimmer{ 0%{ transform:translateX(-30%);} 100%{ transform:translateX(30%);} }
-
+    .media-card.is-loaded::after{
+      opacity: 0;
+      animation: none;
+    }
+    @keyframes shimmer{
+      0%{ transform: translateX(-30%); }
+      100%{ transform: translateX(30%); }
+    }
     .media-card img{
-      opacity:0;
+      opacity: 0;
       filter: blur(14px) saturate(1.05);
       transform: scale(1.02) translateZ(0);
       transition: opacity .65s var(--ease), filter .85s var(--ease), transform .85s var(--ease);
     }
     .media-card.is-loaded img{
-      opacity:1;
+      opacity: 1;
       filter: blur(0) saturate(1.02) contrast(1.03);
       transform: scale(1.0) translateZ(0);
     }
@@ -236,7 +238,7 @@
       opacity:.9;
     }
 
-    h1, h2{ margin:0; letter-spacing:-0.6px; }
+    h1, h2{ margin:0; letter-spacing: -0.6px; }
     h1{ font-size: var(--h1); line-height: 1.02; }
     h2{ font-size: var(--h2); line-height: 1.1; }
 
@@ -333,15 +335,21 @@
     }
     .reveal.is-in{ opacity:1; transform: translateY(0); }
 
-    /* Tablet / general responsive */
+    /* Responsive layout */
     @media (max-width: 920px){
-      .grid{ grid-template-columns: 1fr; min-height: unset; }
+      .grid{
+        grid-template-columns: 1fr;
+        min-height: unset;
+      }
       .media{
         border-right: none;
         border-bottom: 1px solid rgba(255,255,255,.07);
         padding: 14px;
       }
-      .media-card{ aspect-ratio: 4 / 5; height:auto; }
+      .media-card{
+        aspect-ratio: 4 / 5;
+        height:auto;
+      }
       .panel{ border-radius: 28px; }
       .section{ padding: 34px var(--pad); }
       .hint{ display:none; }
@@ -349,57 +357,22 @@
 
     /* iPhone / small phones tuning (keeps desktop untouched) */
     @media (max-width: 520px){
-      /* Isolate screens on iPhone: prevent early peek + center content */
-      main{
-        /* On iOS, padding-top + section-height subtraction causes peeking.
-           For phones we remove main padding and account for header inside section padding. */
-        padding-top: 0 !important;
-        scroll-snap-type: y mandatory;
-        overscroll-behavior-y: contain;
-        scroll-padding-top: calc(62px + env(safe-area-inset-top));
-        -webkit-overflow-scrolling: touch;
-      }
-      .section{
-        height: 100dvh;
-        min-height: unset;
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
-        overflow: hidden;
-        /* Air top/bottom + safe areas + header space */
-        padding-top: calc(18px + 62px + env(safe-area-inset-top));
-        padding-bottom: calc(20px + env(safe-area-inset-bottom));
+      #s1 .media{
+        padding: 12px;
         justify-content: center;
       }
-
-      /* Isolate screens on mobile: no early peeking of next section */
-main{
-  scroll-snap-type: y mandatory;
-  overscroll-behavior-y: contain;
-  /* Match iOS visible viewport (set via JS) */
-  height: calc(var(--app-vh, 1vh) * 100);
-}
-.section{
-  /* Center each screen and make it exactly one viewport tall */
-  height: calc((var(--app-vh, 1vh) * 100) - (62px + env(safe-area-inset-top)));
-  min-height: unset;
-  scroll-snap-stop: always;
-  overflow: hidden;
-
-  display:flex;
-  flex-direction: column;
-  justify-content: center;
-
-  padding: 14px var(--pad) 18px;
-}
-      #s1 .media{ padding: 12px; justify-content:center; }
       #s1 .media-card{
+        /* Match the image ratio AND avoid side "air" */
         aspect-ratio: 2 / 3;
-        height: 48vh;
+        height: 52vh;
         width: auto;
         max-width: 100%;
         border-radius: 28px;
       }
-      #s1 .content{ padding: 16px 18px 22px; gap: 12px; }
+      #s1 .content{
+        padding: 16px 18px 22px;
+        gap: 12px;
+      }
       #s1 h1{
         font-size: clamp(26px, 6.6vw, 34px);
         white-space: nowrap;
@@ -409,29 +382,16 @@ main{
 
       .hint{
         display:flex;
-        position: fixed;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: calc(10px + env(safe-area-inset-bottom));
+        bottom: 10px;
         font-size: 11px;
-        opacity: .78;
-        z-index: 40;
+        opacity: .8;
       }
-      .mouse{ width:16px; height:24px; }
-      /* Subtle separation cue while swiping */
-      .section::after{
-        content:"";
-        position:absolute;
-        left:0; right:0; bottom:0;
-        height: 18px;
-        background: linear-gradient(180deg, transparent, rgba(0,0,0,.55));
-        pointer-events:none;
-        opacity:.65;
-      }
+      .mouse{ width: 16px; height: 24px; }
 
+      .section{ padding: 22px var(--pad) 26px; }
+      .panel{ border-radius: 28px; }
     }
 
-    /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
       main{ scroll-behavior:auto; }
       .mouse::after{ animation:none; }
@@ -499,13 +459,16 @@ main{
           <div class="grid">
             <div class="media">
               <div class="media-card reveal" data-reveal>
-                <img src="img/02.jpg" alt="Шаг 2" loading="lazy" decoding="async" />
+                <img src="img/02.jpg" alt="Тёплый момент" loading="lazy" decoding="async" />
               </div>
             </div>
             <div class="content">
-              <div class="kicker reveal" data-reveal>дальше</div>
-              <h2 class="reveal" data-reveal>Экран 2</h2>
-              <p class="reveal" data-reveal>Тут будет следующий шаг и контент, который мы проработаем дальше.</p>
+              <div class="kicker reveal" data-reveal>ты — про детали</div>
+              <h2 class="reveal" data-reveal>Ты умеешь делать красиво. И жизнь рядом с тобой — тоже.</h2>
+              <p class="reveal" data-reveal>
+                Ты замечаешь нюансы, чувствуешь форму, цвет, настроение.
+                И у тебя есть редкий талант — превращать «обычно» в «вау».
+              </p>
               <div class="actions">
                 <button class="btn primary" data-scroll="#s3">
                   <span class="icon" aria-hidden="true">
@@ -530,13 +493,16 @@ main{
           <div class="grid">
             <div class="media">
               <div class="media-card reveal" data-reveal>
-                <img src="img/03.jpg" alt="Шаг 3" loading="lazy" decoding="async" />
+                <img src="img/03.jpg" alt="Наши моменты" loading="lazy" decoding="async" />
               </div>
             </div>
             <div class="content">
-              <div class="kicker reveal" data-reveal>план</div>
-              <h2 class="reveal" data-reveal>Экран 3</h2>
-              <p class="reveal" data-reveal>Здесь будет следующий блок и детали продолжения.</p>
+              <div class="kicker reveal" data-reveal>то, что я люблю</div>
+              <h2 class="reveal" data-reveal>С тобой спокойно. И одновременно — хочется жить громче.</h2>
+              <p class="reveal" data-reveal>
+                Я люблю наши привычки, наши «внутренние шутки», наши планы.
+                Люблю, что рядом с тобой я становлюсь лучше — без давления, просто потому что хочу.
+              </p>
               <div class="actions">
                 <button class="btn primary" data-scroll="#s4">
                   <span class="icon" aria-hidden="true">
@@ -545,7 +511,7 @@ main{
                       <path d="M7 14l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <span>Дальше</span>
+                  <span>Ещё чуть-чуть</span>
                 </button>
               </div>
             </div>
@@ -561,13 +527,16 @@ main{
           <div class="grid">
             <div class="media">
               <div class="media-card reveal" data-reveal>
-                <img src="img/04.jpg" alt="Шаг 4" loading="lazy" decoding="async" />
+                <img src="img/04.jpg" alt="Будущее" loading="lazy" decoding="async" />
               </div>
             </div>
             <div class="content">
-              <div class="kicker reveal" data-reveal>ещё</div>
-              <h2 class="reveal" data-reveal>Экран 4</h2>
-              <p class="reveal" data-reveal>Здесь будет следующий шаг и оформим его красиво.</p>
+              <div class="kicker reveal" data-reveal>простое обещание</div>
+              <h2 class="reveal" data-reveal>Я хочу быть твоим домом. И твоим приключением.</h2>
+              <p class="reveal" data-reveal>
+                Поддерживать тебя в твоих мечтах. Беречь нас в сложные дни.
+                И делать так, чтобы через годы мы всё так же выбирали друг друга — каждый день.
+              </p>
               <div class="actions">
                 <button class="btn primary" data-scroll="#s5">
                   <span class="icon" aria-hidden="true">
@@ -596,18 +565,20 @@ main{
               </div>
             </div>
             <div class="content">
-              <div class="kicker reveal" data-reveal>финал</div>
-              <h2 class="reveal" data-reveal>Экран 5</h2>
-              <p class="reveal" data-reveal>Тут будет QR и дальнейший план действий.</p>
+              <div class="kicker reveal" data-reveal>продолжение</div>
+              <h1 class="reveal" data-reveal>Поехали дальше.</h1>
+              <p class="reveal" data-reveal>
+                Сейчас будет план, шаг за шагом — чтобы этот день стал началом нашей новой главы.
+              </p>
               <div class="actions">
-                <button class="btn primary" data-scroll="#s1">
+                <button class="btn primary" data-scroll="#s1" aria-label="Вернуться к началу">
                   <span class="icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
                       <path d="M3 12a9 9 0 1 0 3-6.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                       <path d="M3 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <span>Наверх</span>
+                  <span>Ещё раз</span>
                 </button>
               </div>
             </div>
@@ -615,7 +586,6 @@ main{
         </div>
       </div>
     </section>
-
   </main>
 
   <script>
@@ -629,23 +599,15 @@ main{
       const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
       const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-
-      // Fix iOS viewport height so sections don't "peek" into the next one
-      function setAppVh(){
-        const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--app-vh', `${vh}px`);
-      }
-      setAppVh();
-      window.addEventListener('resize', setAppVh);
-
-      // Keep desktop snap; on iOS we'll still allow the CSS mobile mandatory snap to handle isolation.
-      if ((isIOS && window.innerWidth > 520) || reduceMotion) main.classList.remove('snap');
+      // Disable CSS snap on iOS Safari (we use JS “доводчики” below)
+      if (isIOS || reduceMotion) main.classList.remove('snap');
 
       function scrollToId(id){
         const el = document.getElementById(id);
         if(!el) return;
         el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
       }
+
       dots.forEach(d => d.addEventListener('click', () => scrollToId(d.dataset.to)));
 
       document.querySelectorAll('[data-scroll]').forEach(btn=>{
@@ -655,7 +617,7 @@ main{
         });
       });
 
-      // Reveal
+      // Reveal on view
       const io = new IntersectionObserver((entries)=>{
         entries.forEach(e=>{
           if(e.isIntersecting) e.target.classList.add('is-in');
@@ -663,7 +625,7 @@ main{
       }, { root: main, threshold: 0.18 });
       revealEls.forEach(el => io.observe(el));
 
-      // Active dot
+      // Active dot by section
       const so = new IntersectionObserver((entries)=>{
         entries.forEach(e=>{
           if(!e.isIntersecting) return;
@@ -673,7 +635,7 @@ main{
       }, { root: main, threshold: 0.55 });
       sections.forEach(s => so.observe(s));
 
-      // Progressive image: fade-in when decoded
+      // Progressive image: remove shimmer + fade-in once decoded
       const imgs = Array.from(document.querySelectorAll('.media-card img'));
       imgs.forEach(async (img) => {
         const card = img.closest('.media-card');
@@ -692,38 +654,65 @@ main{
           markLoaded();
         }, { once:true });
 
-        img.addEventListener('error', () => markLoaded(), { once:true });
+        img.addEventListener('error', () => { markLoaded(); }, { once:true });
       });
 
+      // Snap-to-section “доводчики” (prevents half-cut content)
+      const SNAP_IDLE_MS = 130; // debounce after last scroll event
+      const SNAP_EPS_PX = 8;    // do nothing if already aligned
+      let snapTimer = null;
+      let isSnapping = false;
 
-      // Mobile “dovodchiki”: if iOS leaves you between screens, gently snap to nearest section
-      const isPhone = window.matchMedia && window.matchMedia('(max-width: 520px)').matches;
-      if(isPhone){
-        let t = null;
-        const snapToNearest = () => {
-          const top = main.scrollTop;
-          let best = sections[0];
-          let bestDist = Infinity;
-          for (const s of sections){
-            const dist = Math.abs(s.offsetTop - top);
-            if (dist < bestDist){ bestDist = dist; best = s; }
+      function nearestSection(){
+        const top = main.scrollTop;
+        const vh = main.clientHeight || window.innerHeight;
+        const probe = top + vh * 0.22; // reading bias
+
+        let best = sections[0];
+        let bestDist = Infinity;
+
+        for (const s of sections){
+          const y = s.offsetTop;
+          const dist = Math.abs(y - probe);
+          if (dist < bestDist){
+            bestDist = dist;
+            best = s;
           }
-          // Only snap if we're meaningfully between screens
-          if(best && bestDist > 24){
-            main.scrollTo({ top: best.offsetTop, behavior: reduceMotion ? 'auto' : 'smooth' });
-          }
-        };
-        main.addEventListener('scroll', ()=>{
-          if(t) clearTimeout(t);
-          t = setTimeout(snapToNearest, 120);
-        }, {passive:true});
-        window.addEventListener('resize', ()=>{
-          if(t) clearTimeout(t);
-          t = setTimeout(snapToNearest, 60);
-        });
+        }
+        return best;
       }
 
-      // Prevent horizontal jiggle on iOS overscroll
+      function snapNow(){
+        if (isSnapping) return;
+        const s = nearestSection();
+        if (!s) return;
+
+        const targetTop = s.offsetTop;
+        const curTop = main.scrollTop;
+
+        if (Math.abs(curTop - targetTop) <= SNAP_EPS_PX) return;
+
+        isSnapping = true;
+        main.scrollTo({ top: targetTop, behavior: reduceMotion ? 'auto' : 'smooth' });
+
+        window.setTimeout(() => { isSnapping = false; }, reduceMotion ? 0 : 650);
+      }
+
+      function scheduleSnap(){
+        if (isSnapping) return;
+        if (snapTimer) window.clearTimeout(snapTimer);
+        snapTimer = window.setTimeout(snapNow, SNAP_IDLE_MS);
+      }
+
+      main.addEventListener('scroll', scheduleSnap, { passive:true });
+      main.addEventListener('wheel', scheduleSnap, { passive:true });
+      main.addEventListener('touchend', () => window.setTimeout(snapNow, 90), { passive:true });
+      main.addEventListener('keyup', (e) => {
+        const keys = ['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '];
+        if (keys.includes(e.key)) scheduleSnap();
+      });
+
+      // Prevent “horizontal jiggle” on iOS overscroll
       main.addEventListener('scroll', ()=>{
         if(main.scrollLeft !== 0) main.scrollLeft = 0;
       }, {passive:true});
