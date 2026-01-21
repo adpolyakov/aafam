@@ -1420,16 +1420,33 @@ if(!file){
       });
 
       // Snap-to-section “доводчики” (prevents half-cut content)
-      const SNAP_IDLE_MS = 90; // debounce after last scroll event (more responsive)
-      const SNAP_EPS_PX = 6;    // do nothing if already aligned
-      const PROBE_FACTOR = 0.40; // higher = easier to move to next section
+      // Key improvement: direction-aware bias. Upward swipes should not require a “hard pull”.
+      const SNAP_IDLE_MS = 90;  // debounce after last scroll event (more responsive)
+      const SNAP_EPS_PX  = 6;   // do nothing if already aligned
+
+      // Probe factors: where inside the viewport we "vote" for the nearest section.
+      // Smaller probe => easier to snap upward; larger probe => easier to snap downward.
+      const PROBE_DOWN = 0.46;  // feels natural for light downward swipes
+      const PROBE_UP   = 0.20;  // makes upward transitions much easier on iPhone
+
       let snapTimer = null;
       let isSnapping = false;
+
+      // Track scroll direction (1 = down, -1 = up)
+      let lastTop = main.scrollTop;
+      let scrollDir = 1;
+
+      function updateScrollDir(){
+        const t = main.scrollTop;
+        const d = t - lastTop;
+        if (Math.abs(d) > 1) scrollDir = d > 0 ? 1 : -1;
+        lastTop = t;
+      }
 
       function nearestSection(){
         const top = main.scrollTop;
         const vh = main.clientHeight || window.innerHeight;
-        const probe = top + vh * PROBE_FACTOR; // snapping bias (tuned for light swipes)
+        const probe = top + vh * (scrollDir > 0 ? PROBE_DOWN : PROBE_UP);
 
         let best = sections[0];
         let bestDist = Infinity;
@@ -1467,8 +1484,20 @@ if(!file){
         snapTimer = window.setTimeout(snapNow, SNAP_IDLE_MS);
       }
 
-      main.addEventListener('scroll', scheduleSnap, { passive:true });
-      main.addEventListener('wheel', scheduleSnap, { passive:true });
+      // Scroll/touch input: update direction continuously, then debounce snap
+      main.addEventListener('scroll', () => {
+        updateScrollDir();
+        scheduleSnap();
+      }, { passive:true });
+
+      // Wheel is more "steppy" — keep it responsive
+      main.addEventListener('wheel', (e) => {
+        // wheel delta gives direction even before scrollTop settles
+        if (Math.abs(e.deltaY) > 0) scrollDir = e.deltaY > 0 ? 1 : -1;
+        scheduleSnap();
+      }, { passive:true });
+
+      // On touch end, snap almost immediately using the last detected direction
       main.addEventListener('touchend', () => window.setTimeout(snapNow, 40), { passive:true });
       main.addEventListener('keyup', (e) => {
         const keys = ['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '];
