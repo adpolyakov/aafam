@@ -740,3 +740,745 @@
 </script>
 </body>
 </html>
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0c10" />
+  <title>Для Арины</title>
+
+  <style>
+    :root{
+      --bg:#0b0c10;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.04);
+      --stroke: rgba(255,255,255,.10);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --muted2: rgba(255,255,255,.52);
+      --r: 28px;
+      --r2: 22px;
+      --shadow: 0 30px 120px rgba(0,0,0,.55);
+      --shadow2: 0 10px 40px rgba(0,0,0,.35);
+      --safe-top: env(safe-area-inset-top);
+      --safe-btm: env(safe-area-inset-bottom);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      color:var(--text);
+      font: 16px/1.45 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 900px at 20% 10%, rgba(255,255,255,.07), transparent 55%),
+        radial-gradient(900px 700px at 85% 15%, rgba(120,170,255,.10), transparent 60%),
+        radial-gradient(800px 700px at 30% 85%, rgba(255,210,140,.08), transparent 60%),
+        var(--bg);
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.06;
+      mix-blend-mode:overlay;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+      transform:translateZ(0);
+    }
+
+    /* Pages (native snap; without extra JS “hard snapping”) */
+    .pages{
+      height:100svh;
+      overflow-y:auto;
+      scroll-snap-type:y mandatory;
+      scroll-behavior:smooth;
+      overscroll-behavior-y: contain;
+    }
+    .page{
+      min-height:100svh;
+      scroll-snap-align:start;
+      scroll-snap-stop:always;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: calc(18px + var(--safe-top)) 18px calc(22px + var(--safe-btm));
+      position:relative;
+    }
+
+    /* Top dots */
+    .topbar{
+      position:fixed;
+      left:0; right:0;
+      top: calc(10px + var(--safe-top));
+      z-index:50;
+      display:flex;
+      justify-content:center;
+    }
+    .dots{
+      display:flex; gap:10px;
+      padding:10px 14px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.20);
+      border: 1px solid rgba(255,255,255,.08);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 35px rgba(0,0,0,.35);
+    }
+    .dot{
+      width:10px; height:10px;
+      border-radius:999px;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.07);
+      opacity:.8;
+      transition: transform .25s ease, background .25s ease, opacity .25s ease;
+      cursor:pointer;
+    }
+    .dot.active{
+      background: rgba(255,255,255,.65);
+      opacity:1;
+      transform: scale(1.15);
+    }
+
+    /* Card */
+    .card{
+      width:min(1120px, 94vw);
+      border-radius: var(--r);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow:hidden;
+      position:relative;
+    }
+    .card::after{
+      content:"";
+      position:absolute; inset:-2px;
+      pointer-events:none;
+      background:
+        radial-gradient(800px 300px at 10% 10%, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(650px 240px at 90% 20%, rgba(120,170,255,.12), transparent 60%);
+      opacity:.55;
+    }
+    .card-inner{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 520px;
+    }
+    .divider{
+      position:absolute;
+      left:50%; top:16px; bottom:16px;
+      width:1px;
+      background: linear-gradient(180deg, transparent, rgba(255,255,255,.10), transparent);
+      transform: translateX(-.5px);
+      z-index:2;
+    }
+
+    /* Media side */
+    .media{
+      padding: 24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .media-card{
+      width: 100%;
+      max-width: 470px;
+      aspect-ratio: 4/5;
+      border-radius: var(--r2);
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.09);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .media-card img{
+      width:100%; height:100%;
+      object-fit: cover;
+      display:block;
+    }
+
+    /* Content side */
+    .content{
+      padding: 56px 56px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:14px;
+    }
+    .kicker{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color: var(--muted2);
+      font-size: 12px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+    .kicker::before{
+      content:"";
+      width:18px; height:2px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.18);
+    }
+    .title{
+      margin:0;
+      font-size: clamp(34px, 4.2vw, 56px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+    .lead{
+      margin:0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+      max-width: 52ch;
+    }
+
+    /* Bottom hint */
+    .scroll-hint{
+      position:absolute;
+      left:50%;
+      bottom: calc(16px + var(--safe-btm));
+      transform: translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color: rgba(255,255,255,.40);
+      font-size: 12px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      user-select:none;
+      pointer-events:none;
+    }
+    .scroll-hint .mouse{
+      width: 18px; height: 26px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.25);
+      position:relative;
+      opacity:.9;
+    }
+    .scroll-hint .mouse::after{
+      content:"";
+      width: 2px; height: 6px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.35);
+      position:absolute;
+      left:50%; top:6px;
+      transform: translateX(-50%);
+      animation: wheel 1.6s ease-in-out infinite;
+    }
+    @keyframes wheel{ 0%,100%{ transform:translate(-50%,0); opacity:.35;} 50%{ transform:translate(-50%,6px); opacity:.85;} }
+
+    /* Screen 2 album cover */
+    .album-wrap{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:14px;
+      width:100%;
+    }
+    .album-cover{
+      width:min(420px, 100%);
+      aspect-ratio: 1/1;
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      position:relative;
+      cursor:pointer;
+      transition: transform .25s ease, filter .25s ease;
+    }
+    .album-cover:hover{ transform: translateY(-2px); filter: brightness(1.02); }
+    .album-cover img{ width:100%; height:100%; object-fit: contain; display:block; padding: 14px; }
+    .album-caption{
+      font-size: 13px;
+      letter-spacing: .26px;
+      color: rgba(255,255,255,.62);
+      user-select:none;
+    }
+
+    /* Album overlay */
+    .overlay{
+      position:fixed; inset:0;
+      z-index:200;
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(14px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: calc(18px + var(--safe-top)) 18px calc(18px + var(--safe-btm));
+    }
+    .overlay.show{ display:flex; }
+
+    .overlay-close{
+      position:absolute;
+      top: calc(14px + var(--safe-top));
+      right: 14px;
+      width: 38px; height: 38px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.80);
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    .overlay-close:hover{ background: rgba(255,255,255,.09); }
+
+    .spread{
+      width: min(1180px, 96vw);
+      aspect-ratio: 16/9;
+      border-radius: var(--r);
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .spread-inner{
+      position:absolute; inset:0;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 16px;
+      gap: 16px;
+    }
+    .pageSide{
+      position:relative;
+      border-radius: calc(var(--r) - 10px);
+      background: rgba(0,0,0,.20);
+      border: 1px solid rgba(255,255,255,.08);
+      overflow:hidden;
+    }
+    .photo-bg{
+      position:absolute; inset:0;
+      background-size: cover;
+      background-position:center;
+      filter: blur(18px) saturate(1.1);
+      transform: scale(1.08);
+      opacity:.42;
+    }
+    .photo{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit: cover; /* допускаем минимальную подрезку */
+      padding: 18px;
+      border-radius: calc(var(--r) - 14px);
+      background: rgba(0,0,0,.18);
+      display:block;
+    }
+
+    /* Last page placeholder */
+    .album-empty{
+      position:absolute; inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap: 18px;
+      padding: 22px;
+      text-align:center;
+      color: rgba(255,255,255,.86);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+    }
+    .album-empty-text{
+      font-size: clamp(14px, 1.2vw, 18px);
+      line-height: 1.28;
+      letter-spacing: .15px;
+      max-width: 32ch;
+      opacity: .92;
+    }
+
+    /* Two interlocking hearts (no text animation) */
+    .hearts{
+      width: 120px;
+      height: 74px;
+      stroke: rgba(255,255,255,.95);
+      fill:none;
+      stroke-width: 2.4;
+      opacity:.92;
+      filter: drop-shadow(0 10px 24px rgba(255,255,255,.08));
+      transform-origin: 50% 55%;
+      animation: heartsPulse 4.2s cubic-bezier(.2,.8,.2,1) infinite;
+    }
+    .hearts path{
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    @keyframes heartsPulse{
+      0%, 60%, 100% { transform: translateZ(0) scale(1); opacity: .92; }
+      70% { transform: translateZ(0) scale(1.016); opacity: 1; }
+      82% { transform: translateZ(0) scale(1.006); opacity: .98; }
+    }
+
+    /* overlay nav */
+    .navBtn{
+      position:absolute;
+      top:50%;
+      transform: translateY(-50%);
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.80);
+      display:grid; place-items:center;
+      cursor:pointer;
+      box-shadow: 0 10px 28px rgba(0,0,0,.30);
+      user-select:none;
+    }
+    .navBtn:hover{ background: rgba(255,255,255,.08); }
+    .navPrev{ left: 14px; }
+    .navNext{ right: 14px; }
+    .counter{
+      position:absolute;
+      left: 18px;
+      bottom: 14px;
+      color: rgba(255,255,255,.45);
+      font-size: 12px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .card-inner{ grid-template-columns: 1fr; }
+      .divider{ display:none; }
+      .content{ padding: 26px 26px 30px; }
+      .media{ padding: 22px 22px 10px; }
+      .media-card{ max-width: 520px; }
+    }
+    @media (max-width: 560px){
+      .page{ padding: calc(12px + var(--safe-top)) 14px calc(18px + var(--safe-btm)); }
+      .media-card{ aspect-ratio: 3/4; }
+      .title{ font-size: 34px; }
+      .lead{ font-size: 15px; }
+      .spread{ aspect-ratio: 9/16; }
+      .photo{ padding: 14px; }
+      .navBtn{ width: 40px; height: 40px; border-radius: 14px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ scroll-behavior:auto !important; }
+      .scroll-hint .mouse::after{ animation:none !important; }
+      .hearts{ animation:none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar" aria-hidden="true">
+    <div class="dots">
+      <div class="dot active" data-to="0"></div>
+      <div class="dot" data-to="1"></div>
+      <div class="dot" data-to="2"></div>
+      <div class="dot" data-to="3"></div>
+      <div class="dot" data-to="4"></div>
+    </div>
+  </div>
+
+  <main class="pages" id="pages">
+    <!-- Screen 1 -->
+    <section class="page" data-index="0">
+      <div class="card">
+        <div class="divider"></div>
+        <div class="card-inner">
+          <div class="media">
+            <div class="media-card">
+              <img src="img/lotte.jpg" alt="Мы" loading="eager" decoding="async">
+            </div>
+          </div>
+          <div class="content">
+            <div class="kicker">Сайт с частичкой нашей любви</div>
+            <h1 class="title">Начало чего-то нового</h1>
+            <p class="lead">Любимая, бесконечное спасибо тебе за то, что выбрала меня и согласилась на моё странное предложение. Сейчас расскажу тебе, что я задумал...</p>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-hint"><span class="mouse"></span><span>листай вниз</span></div>
+    </section>
+
+    <!-- Screen 2 -->
+    <section class="page" data-index="1">
+      <div class="card">
+        <div class="divider"></div>
+        <div class="card-inner">
+          <div class="media">
+            <div class="album-wrap">
+              <div class="album-cover" id="openAlbum" role="button" tabindex="0" aria-label="Открыть альбом">
+                <img src="img/album.png" alt="Наш альбом" loading="lazy" decoding="async">
+              </div>
+              <div class="album-caption">Нажми, чтобы открыть</div>
+            </div>
+          </div>
+          <div class="content">
+            <div class="kicker">Моменты вместе</div>
+            <h2 class="title" style="font-size: clamp(30px, 3.6vw, 48px);">Наш альбом</h2>
+            <p class="lead">В этот альбом я собрал малую, но любимую часть тех моментов, которые привели нас к этому вечеру. Люблю тебя в каждом из них❣️</p>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-hint"><span class="mouse"></span><span>листай вниз</span></div>
+    </section>
+
+    <!-- Screen 3-5 placeholders -->
+    <section class="page" data-index="2">
+      <div class="card"><div class="card-inner" style="grid-template-columns:1fr;min-height:420px;">
+        <div class="content" style="padding:56px;"><div class="kicker">дальше</div><h2 class="title" style="font-size:42px;">Экран 3</h2><p class="lead">Скоро добавим контент.</p></div>
+      </div></div>
+      <div class="scroll-hint"><span class="mouse"></span><span>листай вниз</span></div>
+    </section>
+
+    <section class="page" data-index="3">
+      <div class="card"><div class="card-inner" style="grid-template-columns:1fr;min-height:420px;">
+        <div class="content" style="padding:56px;"><div class="kicker">дальше</div><h2 class="title" style="font-size:42px;">Экран 4</h2><p class="lead">Скоро добавим контент.</p></div>
+      </div></div>
+      <div class="scroll-hint"><span class="mouse"></span><span>листай вниз</span></div>
+    </section>
+
+    <section class="page" data-index="4">
+      <div class="card"><div class="card-inner" style="grid-template-columns:1fr;min-height:420px;">
+        <div class="content" style="padding:56px;"><div class="kicker">финал</div><h2 class="title" style="font-size:42px;">Экран 5</h2><p class="lead">Скоро добавим контент.</p></div>
+      </div></div>
+    </section>
+  </main>
+
+  <!-- Album Overlay -->
+  <div class="overlay" id="albumOverlay" aria-hidden="true">
+    <button class="overlay-close" id="closeAlbum" aria-label="Закрыть">✕</button>
+
+    <div class="spread" role="dialog" aria-label="Наш альбом">
+      <button class="navBtn navPrev" id="prevBtn" aria-label="Назад">‹</button>
+      <button class="navBtn navNext" id="nextBtn" aria-label="Вперёд">›</button>
+      <div class="counter" id="counter">1 / 1</div>
+
+      <div class="spread-inner">
+        <div class="pageSide left">
+          <div class="photo-bg" id="bgL"></div>
+          <img class="photo" id="imgL" alt="">
+        </div>
+
+        <div class="pageSide right">
+          <div class="photo-bg" id="bgR"></div>
+          <img class="photo" id="imgR" alt="">
+          <div class="album-empty" id="emptyR" aria-hidden="true">
+            <div class="album-empty-text">Место для наших новых счастливых,<br>семейных фотокарточек</div>
+
+            <!-- ДВА пересекающихся сердца -->
+            <svg class="hearts" viewBox="0 0 140 80" aria-hidden="true">
+              <!-- Left heart -->
+              <path d="M48 18
+                       C36 2, 14 10, 20 30
+                       C26 48, 44 58, 70 72
+                       C96 58, 114 48, 120 30
+                       C126 10, 104 2, 92 18
+                       C84 26, 78 34, 70 42
+                       C62 34, 56 26, 48 18 Z"/>
+              <!-- Right heart (shifted) -->
+              <path d="M72 18
+                       C60 2, 38 10, 44 30
+                       C50 48, 68 58, 94 72
+                       C120 58, 138 48, 144 30
+                       C150 10, 128 2, 116 18
+                       C108 26, 102 34, 94 42
+                       C86 34, 80 26, 72 18 Z"
+                    transform="translate(-18,0)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const pages = document.getElementById('pages');
+  const dots = Array.from(document.querySelectorAll('.dot'));
+  const sections = Array.from(document.querySelectorAll('.page[data-index]'));
+
+  // Dots click
+  dots.forEach(d => d.addEventListener('click', () => {
+    const idx = Number(d.dataset.to);
+    pages.scrollTo({ top: sections[idx].offsetTop, behavior: 'smooth' });
+  }));
+
+  // Active dot on scroll (lightweight)
+  pages.addEventListener('scroll', () => {
+    const mid = pages.scrollTop + pages.clientHeight * 0.5;
+    let idx = 0;
+    for (let i=0;i<sections.length;i++){
+      if (sections[i].offsetTop <= mid) idx = i;
+    }
+    dots.forEach(d => d.classList.toggle('active', Number(d.dataset.to) === idx));
+  }, {passive:true});
+
+  // ===== Album logic =====
+  const openBtn = document.getElementById('openAlbum');
+  const overlay = document.getElementById('albumOverlay');
+  const closeBtn = document.getElementById('closeAlbum');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const counter = document.getElementById('counter');
+
+  const imgL = document.getElementById('imgL');
+  const imgR = document.getElementById('imgR');
+  const bgL  = document.getElementById('bgL');
+  const bgR  = document.getElementById('bgR');
+  const emptyR = document.getElementById('emptyR');
+
+  // Numeric files auto-discovery (01.jpg / 01.JPG / 001.jpg ...)
+  async function buildFiles(){
+    const exts = ['jpg','JPG','jpeg','JPEG'];
+    const max = 300;
+    const stopAfterMisses = 10;
+    const files = [];
+    let misses = 0;
+
+    const tryUrl = (url) => new Promise((resolve) => {
+      const im = new Image();
+      im.decoding = 'async';
+      im.onload = () => resolve(true);
+      im.onerror = () => resolve(false);
+      im.src = url;
+    });
+
+    for (let i=1; i<=max; i++){
+      const n2 = String(i).padStart(2,'0');
+      const n3 = String(i).padStart(3,'0');
+      let ok = false;
+      let picked = null;
+
+      for (const name of [n2, n3]){
+        for (const ext of exts){
+          const url = `img/${name}.${ext}`;
+          // eslint-disable-next-line no-await-in-loop
+          if (await tryUrl(url)) { ok = true; picked = url; break; }
+        }
+        if (ok) break;
+      }
+
+      if (ok){
+        files.push(picked);
+        misses = 0;
+      } else {
+        misses++;
+        if (misses >= stopAfterMisses && files.length > 0) break;
+      }
+    }
+    return files;
+  }
+
+  function makePairs(list){
+    const out = [];
+    for (let i=0;i<list.length;i+=2) out.push([list[i], list[i+1] || null]);
+    return out;
+  }
+
+  let files = [];
+  let pairs = [];
+  let idx = 0;
+  let inited = false;
+
+  function setSide(isRight, file){
+    const img = isRight ? imgR : imgL;
+    const bg  = isRight ? bgR  : bgL;
+
+    if (!file){
+      img.removeAttribute('src');
+      bg.style.backgroundImage = '';
+      if (isRight){
+        const showEmpty = pairs[idx] && !pairs[idx][1];
+        emptyR.style.display = showEmpty ? 'flex' : 'none';
+      }
+      return;
+    }
+
+    if (isRight) emptyR.style.display = 'none';
+
+    img.src = file;
+    bg.style.backgroundImage = `url('${file}')`;
+  }
+
+  function prefetchNext(){
+    const next = pairs[idx+1];
+    if (!next) return;
+    [next[0], next[1]].filter(Boolean).forEach(url => {
+      const im = new Image();
+      im.decoding='async';
+      im.src = url;
+    });
+  }
+
+  function render(){
+    if (!pairs.length) return;
+    const [L,R] = pairs[idx];
+    setSide(false, L);
+    setSide(true, R);
+    counter.textContent = `${idx+1} / ${pairs.length}`;
+    prevBtn.style.opacity = idx === 0 ? .35 : 1;
+    nextBtn.style.opacity = idx === pairs.length-1 ? .35 : 1;
+    prefetchNext();
+  }
+
+  async function openAlbum(){
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+
+    if (!inited){
+      files = await buildFiles();
+      pairs = makePairs(files);
+      idx = 0;
+      inited = true;
+    }
+    render();
+  }
+
+  function closeAlbum(){
+    overlay.classList.remove('show');
+    overlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  }
+
+  function prev(){ if (idx>0){ idx--; render(); } }
+  function next(){ if (idx<pairs.length-1){ idx++; render(); } }
+
+  openBtn.addEventListener('click', openAlbum);
+  openBtn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openAlbum(); }});
+  closeBtn.addEventListener('click', closeAlbum);
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeAlbum(); });
+
+  document.addEventListener('keydown', (e)=>{
+    if (!overlay.classList.contains('show')) return;
+    if (e.key==='Escape') closeAlbum();
+    if (e.key==='ArrowLeft') prev();
+    if (e.key==='ArrowRight') next();
+  });
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  // Swipe on overlay
+  let sx=0, sy=0;
+  overlay.addEventListener('touchstart', (e)=>{
+    if(!overlay.classList.contains('show')) return;
+    const t=e.touches[0]; sx=t.clientX; sy=t.clientY;
+  }, {passive:true});
+
+  overlay.addEventListener('touchend', (e)=>{
+    if(!overlay.classList.contains('show')) return;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-sx, dy=t.clientY-sy;
+    if(Math.abs(dx)>42 && Math.abs(dx)>Math.abs(dy)*1.2){
+      dx<0 ? next() : prev();
+    }
+  }, {passive:true});
+})();
+</script>
+</body>
+</html>
