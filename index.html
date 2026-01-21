@@ -36,6 +36,8 @@
 
       --ease: cubic-bezier(.2,.8,.2,1);
       --topbar: 62px;
+      --mainTop: calc(var(--topbar) + env(safe-area-inset-top));
+      --mainBottom: calc(env(safe-area-inset-bottom) + 14px);
     }
 
     *{ box-sizing:border-box; }
@@ -104,9 +106,9 @@
       height: 100dvh;         /* dynamic viewport */
       overflow-y:auto;
       scroll-behavior:smooth;
-      padding-top: calc(var(--topbar) + env(safe-area-inset-top));
-      padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
-    }
+      padding-top: var(--mainTop);
+      padding-bottom: var(--mainBottom);
+}
 
     /* CSS snap for desktop; iOS will be disabled via JS to avoid fighting momentum */
     main.snap{ scroll-snap-type: y proximity; }
@@ -115,9 +117,9 @@
       content-visibility: auto;
       contain-intrinsic-size: 900px;
 
-      min-height: calc(100vh - (var(--topbar) + env(safe-area-inset-top)) - env(safe-area-inset-bottom));
-      min-height: calc(100svh - (var(--topbar) + env(safe-area-inset-top)) - env(safe-area-inset-bottom));
-      min-height: calc(100dvh - (var(--topbar) + env(safe-area-inset-top)) - env(safe-area-inset-bottom));
+      min-height: calc(100vh - var(--mainTop) - var(--mainBottom));
+      min-height: calc(100svh - var(--mainTop) - var(--mainBottom));
+      min-height: calc(100dvh - var(--mainTop) - var(--mainBottom));
       display:flex;
       align-items:center;
       justify-content:center;
@@ -368,6 +370,13 @@
 
     /* iPhone / small phones tuning (keeps desktop untouched) */
     @media (max-width: 520px){
+      /* prevent next screen peeking + add top air */
+      .section{
+        min-height: calc(100dvh - var(--mainTop) - var(--mainBottom));
+        padding-top: 34px;
+        padding-bottom: 34px;
+      }
+
       #s1 .media{
         padding: 12px;
         justify-content: center;
@@ -390,12 +399,19 @@
         letter-spacing: -0.8px;
       }
       #s1 .actions{ display:none; }
+      #s1 .panel{ margin-bottom: 54px; }
+
 
       .hint{
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(var(--mainBottom) + 8px);
         display:flex;
-        bottom: 10px;
         font-size: 11px;
-        opacity: .8;
+        opacity: .82;
+        z-index: 60;
+        pointer-events: none;
       }
       .mouse{ width: 16px; height: 24px; }
 
