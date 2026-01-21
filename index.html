@@ -5,17 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0c10" />
   <title>Для Арины</title>
+
   <style>
     :root{
       --bg:#0b0c10;
       --panel: rgba(255,255,255,.06);
       --panel2: rgba(255,255,255,.04);
       --stroke: rgba(255,255,255,.10);
-      --stroke2: rgba(255,255,255,.14);
       --text: rgba(255,255,255,.92);
       --muted: rgba(255,255,255,.68);
       --muted2: rgba(255,255,255,.52);
-      --accent: rgba(255, 227, 170, .95);
       --r: 28px;
       --r2: 22px;
       --shadow: 0 30px 120px rgba(0,0,0,.55);
@@ -23,19 +22,20 @@
       --safe-top: env(safe-area-inset-top);
       --safe-btm: env(safe-area-inset-bottom);
     }
+
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{
       margin:0;
-      background: radial-gradient(1200px 900px at 20% 10%, rgba(255,255,255,.07), transparent 55%),
-                  radial-gradient(900px 700px at 85% 15%, rgba(120,170,255,.10), transparent 60%),
-                  radial-gradient(800px 700px at 30% 85%, rgba(255,210,140,.08), transparent 60%),
-                  var(--bg);
       color:var(--text);
       font: 16px/1.45 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 900px at 20% 10%, rgba(255,255,255,.07), transparent 55%),
+        radial-gradient(900px 700px at 85% 15%, rgba(120,170,255,.10), transparent 60%),
+        radial-gradient(800px 700px at 30% 85%, rgba(255,210,140,.08), transparent 60%),
+        var(--bg);
       overflow-x:hidden;
     }
-    /* subtle premium noise */
     body::before{
       content:"";
       position:fixed; inset:0;
@@ -46,7 +46,7 @@
       transform:translateZ(0);
     }
 
-    /* Scroll snap pages */
+    /* Pages (native snap; without extra JS “hard snapping”) */
     .pages{
       height:100svh;
       overflow-y:auto;
@@ -65,7 +65,7 @@
       position:relative;
     }
 
-    /* top dots */
+    /* Top dots */
     .topbar{
       position:fixed;
       left:0; right:0;
@@ -73,7 +73,6 @@
       z-index:50;
       display:flex;
       justify-content:center;
-      pointer-events:none;
     }
     .dots{
       display:flex; gap:10px;
@@ -83,7 +82,6 @@
       border: 1px solid rgba(255,255,255,.08);
       backdrop-filter: blur(14px);
       box-shadow: 0 10px 35px rgba(0,0,0,.35);
-      pointer-events:auto;
     }
     .dot{
       width:10px; height:10px;
@@ -100,7 +98,7 @@
       transform: scale(1.15);
     }
 
-    /* main card */
+    /* Card */
     .card{
       width:min(1120px, 94vw);
       border-radius: var(--r);
@@ -115,8 +113,9 @@
       content:"";
       position:absolute; inset:-2px;
       pointer-events:none;
-      background: radial-gradient(800px 300px at 10% 10%, rgba(255,255,255,.10), transparent 60%),
-                  radial-gradient(650px 240px at 90% 20%, rgba(120,170,255,.12), transparent 60%);
+      background:
+        radial-gradient(800px 300px at 10% 10%, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(650px 240px at 90% 20%, rgba(120,170,255,.12), transparent 60%);
       opacity:.55;
     }
     .card-inner{
@@ -124,7 +123,6 @@
       z-index:1;
       display:grid;
       grid-template-columns: 1fr 1fr;
-      gap:0;
       min-height: 520px;
     }
     .divider{
@@ -136,7 +134,7 @@
       z-index:2;
     }
 
-    /* media side */
+    /* Media side */
     .media{
       padding: 24px;
       display:flex;
@@ -152,7 +150,6 @@
       border: 1px solid rgba(255,255,255,.09);
       box-shadow: var(--shadow2);
       overflow:hidden;
-      position:relative;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -161,10 +158,9 @@
       width:100%; height:100%;
       object-fit: cover;
       display:block;
-      transform: translateZ(0);
     }
 
-    /* content side */
+    /* Content side */
     .content{
       padding: 56px 56px;
       display:flex;
@@ -187,8 +183,8 @@
       border-radius: 999px;
       background: rgba(255,255,255,.18);
     }
-    h1,h2{ margin:0; }
     .title{
+      margin:0;
       font-size: clamp(34px, 4.2vw, 56px);
       line-height: 1.05;
       letter-spacing: -0.02em;
@@ -201,7 +197,7 @@
       max-width: 52ch;
     }
 
-    /* bottom hint */
+    /* Bottom hint */
     .scroll-hint{
       position:absolute;
       left:50%;
@@ -236,7 +232,7 @@
     }
     @keyframes wheel{ 0%,100%{ transform:translate(-50%,0); opacity:.35;} 50%{ transform:translate(-50%,6px); opacity:.85;} }
 
-    /* Section 2 album */
+    /* Screen 2 album cover */
     .album-wrap{
       display:flex;
       flex-direction:column;
@@ -254,7 +250,6 @@
       overflow:hidden;
       position:relative;
       cursor:pointer;
-      transform: translateZ(0);
       transition: transform .25s ease, filter .25s ease;
     }
     .album-cover:hover{ transform: translateY(-2px); filter: brightness(1.02); }
@@ -263,11 +258,8 @@
       font-size: 13px;
       letter-spacing: .26px;
       color: rgba(255,255,255,.62);
-      opacity:.92;
-      transition: opacity .25s ease;
       user-select:none;
     }
-    .album-cover:hover + .album-caption{ opacity:1; }
 
     /* Album overlay */
     .overlay{
@@ -312,19 +304,8 @@
       position:absolute; inset:0;
       display:grid;
       grid-template-columns: 1fr 1fr;
-      gap:0;
       padding: 16px;
-    }
-    .spread-inner::before{
-      content:"";
-      position:absolute;
-      left:50%; top:18px; bottom:18px;
-      width: 10px;
-      transform: translateX(-50%);
-      background: radial-gradient(closest-side, rgba(0,0,0,.22), transparent 70%);
-      filter: blur(1px);
-      opacity:.9;
-      pointer-events:none;
+      gap: 16px;
     }
     .pageSide{
       position:relative;
@@ -344,13 +325,14 @@
     .photo{
       position:absolute; inset:0;
       width:100%; height:100%;
-      object-fit: cover; /* allows tiny crop if needed */
+      object-fit: cover; /* допускаем минимальную подрезку */
+      padding: 18px;
       border-radius: calc(var(--r) - 14px);
-      padding: 18px; /* inner margin like mat */
       background: rgba(0,0,0,.18);
+      display:block;
     }
 
-    /* Placeholder (last right page) */
+    /* Last page placeholder */
     .album-empty{
       position:absolute; inset:0;
       display:none;
@@ -367,50 +349,33 @@
       font-size: clamp(14px, 1.2vw, 18px);
       line-height: 1.28;
       letter-spacing: .15px;
-      max-width: 30ch;
+      max-width: 32ch;
       opacity: .92;
-      animation: albumTextFloat 4.6s cubic-bezier(.2,.8,.2,1) infinite;
-      transform: translate3d(0,0,0);
-    }
-    @keyframes albumTextFloat{
-      0%, 55%, 100% { transform: translate3d(0, 0, 0); opacity: .88; }
-      62% { transform: translate3d(0, -3px, 0); opacity: .98; }
-      72% { transform: translate3d(0, -1px, 0); opacity: .94; }
     }
 
+    /* Two interlocking hearts (no text animation) */
     .hearts{
-      width: 110px;
-      height: 70px;
+      width: 120px;
+      height: 74px;
       stroke: rgba(255,255,255,.95);
       fill:none;
       stroke-width: 2.4;
       opacity:.92;
-      transform-origin: 50% 55%;
       filter: drop-shadow(0 10px 24px rgba(255,255,255,.08));
-      animation: heartsPulse 3.6s cubic-bezier(.2,.8,.2,1) infinite;
-      animation-delay: .22s;
+      transform-origin: 50% 55%;
+      animation: heartsPulse 4.2s cubic-bezier(.2,.8,.2,1) infinite;
     }
     .hearts path{
       stroke-linecap: round;
       stroke-linejoin: round;
-      stroke-dasharray: 340;
-      stroke-dashoffset: 22;
-      animation: heartsDraw 7.2s cubic-bezier(.2,.8,.2,1) infinite;
-      animation-delay: .22s;
     }
     @keyframes heartsPulse{
-      0%, 55%, 100% { transform: translateZ(0) scale(1); opacity: .92; }
-      62% { transform: translateZ(0) scale(1.018); opacity: 1; }
-      70% { transform: translateZ(0) scale(1.006); opacity: .98; }
-    }
-    @keyframes heartsDraw{
-      0%, 35%   { stroke-dashoffset: 30; opacity: .86; }
-      55%       { stroke-dashoffset: 10; opacity: 1; }
-      75%       { stroke-dashoffset: 18; opacity: .96; }
-      100%      { stroke-dashoffset: 30; opacity: .86; }
+      0%, 60%, 100% { transform: translateZ(0) scale(1); opacity: .92; }
+      70% { transform: translateZ(0) scale(1.016); opacity: 1; }
+      82% { transform: translateZ(0) scale(1.006); opacity: .98; }
     }
 
-    /* album nav */
+    /* overlay nav */
     .navBtn{
       position:absolute;
       top:50%;
@@ -452,7 +417,6 @@
       .title{ font-size: 34px; }
       .lead{ font-size: 15px; }
       .spread{ aspect-ratio: 9/16; }
-      .spread-inner{ padding: 14px; }
       .photo{ padding: 14px; }
       .navBtn{ width: 40px; height: 40px; border-radius: 14px; }
     }
@@ -460,14 +424,14 @@
     @media (prefers-reduced-motion: reduce){
       *{ scroll-behavior:auto !important; }
       .scroll-hint .mouse::after{ animation:none !important; }
-      .album-empty-text{ animation:none !important; }
-      .hearts, .hearts path{ animation:none !important; }
+      .hearts{ animation:none !important; }
     }
   </style>
 </head>
+
 <body>
-  <div class="topbar">
-    <div class="dots" aria-label="Навигация по экранам">
+  <div class="topbar" aria-hidden="true">
+    <div class="dots">
       <div class="dot active" data-to="0"></div>
       <div class="dot" data-to="1"></div>
       <div class="dot" data-to="2"></div>
@@ -521,9 +485,25 @@
     </section>
 
     <!-- Screen 3-5 placeholders -->
-    <section class="page" data-index="2"><div class="card"><div class="card-inner" style="grid-template-columns:1fr;min-height:420px;"><div class="content" style="padding:56px;"><div class="kicker">дальше</div><h2 class="title" style="font-size:42px;">Экран 3</h2><p class="lead">Скоро добавим контент.</p></div></div></div><div class="scroll-hint"><span class="mouse"></span><span>листай вниз</span></div></section>
-    <section class="page" data-index="3"><div class="card"><div class="card-inner" style="grid-template-columns:1fr;min-height:420px;"><div class="content" style="padding:56px;"><div class="kicker">дальше</div><h2 class="title" style="font-size:42px;">Экран 4</h2><p class="lead">Скоро добавим контент.</p></div></div></div><div class="scroll-hint"><span class="mouse"></span><span>листай вниз</span></div></section>
-    <section class="page" data-index="4"><div class="card"><div class="card-inner" style="grid-template-columns:1fr;min-height:420px;"><div class="content" style="padding:56px;"><div class="kicker">финал</div><h2 class="title" style="font-size:42px;">Экран 5</h2><p class="lead">Скоро добавим контент.</p></div></div></div></section>
+    <section class="page" data-index="2">
+      <div class="card"><div class="card-inner" style="grid-template-columns:1fr;min-height:420px;">
+        <div class="content" style="padding:56px;"><div class="kicker">дальше</div><h2 class="title" style="font-size:42px;">Экран 3</h2><p class="lead">Скоро добавим контент.</p></div>
+      </div></div>
+      <div class="scroll-hint"><span class="mouse"></span><span>листай вниз</span></div>
+    </section>
+
+    <section class="page" data-index="3">
+      <div class="card"><div class="card-inner" style="grid-template-columns:1fr;min-height:420px;">
+        <div class="content" style="padding:56px;"><div class="kicker">дальше</div><h2 class="title" style="font-size:42px;">Экран 4</h2><p class="lead">Скоро добавим контент.</p></div>
+      </div></div>
+      <div class="scroll-hint"><span class="mouse"></span><span>листай вниз</span></div>
+    </section>
+
+    <section class="page" data-index="4">
+      <div class="card"><div class="card-inner" style="grid-template-columns:1fr;min-height:420px;">
+        <div class="content" style="padding:56px;"><div class="kicker">финал</div><h2 class="title" style="font-size:42px;">Экран 5</h2><p class="lead">Скоро добавим контент.</p></div>
+      </div></div>
+    </section>
   </main>
 
   <!-- Album Overlay -->
@@ -540,27 +520,32 @@
           <div class="photo-bg" id="bgL"></div>
           <img class="photo" id="imgL" alt="">
         </div>
+
         <div class="pageSide right">
           <div class="photo-bg" id="bgR"></div>
           <img class="photo" id="imgR" alt="">
           <div class="album-empty" id="emptyR" aria-hidden="true">
             <div class="album-empty-text">Место для наших новых счастливых,<br>семейных фотокарточек</div>
-            <svg class="hearts" viewBox="0 0 120 70" aria-hidden="true">
-              <path d="M36 14
-                       C24 -2, 4 8, 14 28
-                       C22 46, 40 56, 60 66
-                       C80 56, 98 46, 106 28
-                       C116 8, 96 -2, 84 14
-                       C76 22, 70 30, 60 40
-                       C50 30, 44 22, 36 14 Z" />
-              <path d="M62 14
-                       C50 -2, 30 8, 40 28
-                       C48 46, 66 56, 86 66
-                       C106 56, 124 46, 132 28
-                       C142 8, 122 -2, 110 14
-                       C102 22, 96 30, 86 40
-                       C76 30, 70 22, 62 14 Z"
-                    transform="translate(-22,0)" />
+
+            <!-- ДВА пересекающихся сердца -->
+            <svg class="hearts" viewBox="0 0 140 80" aria-hidden="true">
+              <!-- Left heart -->
+              <path d="M48 18
+                       C36 2, 14 10, 20 30
+                       C26 48, 44 58, 70 72
+                       C96 58, 114 48, 120 30
+                       C126 10, 104 2, 92 18
+                       C84 26, 78 34, 70 42
+                       C62 34, 56 26, 48 18 Z"/>
+              <!-- Right heart (shifted) -->
+              <path d="M72 18
+                       C60 2, 38 10, 44 30
+                       C50 48, 68 58, 94 72
+                       C120 58, 138 48, 144 30
+                       C150 10, 128 2, 116 18
+                       C108 26, 102 34, 94 42
+                       C86 34, 80 26, 72 18 Z"
+                    transform="translate(-18,0)"/>
             </svg>
           </div>
         </div>
@@ -574,46 +559,21 @@
   const dots = Array.from(document.querySelectorAll('.dot'));
   const sections = Array.from(document.querySelectorAll('.page[data-index]'));
 
-  // snap "assist" – responsive
-  let isSnapping = false;
-  let snapTimer = null;
+  // Dots click
+  dots.forEach(d => d.addEventListener('click', () => {
+    const idx = Number(d.dataset.to);
+    pages.scrollTo({ top: sections[idx].offsetTop, behavior: 'smooth' });
+  }));
 
-  const setActiveDot = (idx) => {
-    dots.forEach(d => d.classList.toggle('active', Number(d.dataset.to) === idx));
-  };
-
-  const snapToNearest = () => {
-    if (isSnapping) return;
-    const top = pages.scrollTop;
-    const vh = pages.clientHeight;
-    let best = 0, bestDist = Infinity;
-    sections.forEach((s,i) => {
-      const dist = Math.abs(s.offsetTop - top);
-      if (dist < bestDist){ bestDist = dist; best = i; }
-    });
-    isSnapping = true;
-    pages.scrollTo({ top: sections[best].offsetTop, behavior: 'smooth' });
-    setTimeout(() => { isSnapping = false; }, 380);
-  };
-
+  // Active dot on scroll (lightweight)
   pages.addEventListener('scroll', () => {
-    // active dot by center
     const mid = pages.scrollTop + pages.clientHeight * 0.5;
     let idx = 0;
     for (let i=0;i<sections.length;i++){
       if (sections[i].offsetTop <= mid) idx = i;
     }
-    setActiveDot(idx);
-
-    // assist after user stops scrolling
-    clearTimeout(snapTimer);
-    snapTimer = setTimeout(snapToNearest, 120);
+    dots.forEach(d => d.classList.toggle('active', Number(d.dataset.to) === idx));
   }, {passive:true});
-
-  dots.forEach(d => d.addEventListener('click', () => {
-    const idx = Number(d.dataset.to);
-    pages.scrollTo({ top: sections[idx].offsetTop, behavior: 'smooth' });
-  }));
 
   // ===== Album logic =====
   const openBtn = document.getElementById('openAlbum');
@@ -629,16 +589,14 @@
   const bgR  = document.getElementById('bgR');
   const emptyR = document.getElementById('emptyR');
 
-  // Build list of numeric photos automatically by probing sequential numbers.
-  // Works with adding new photos without changing code (just follow numeric naming).
+  // Numeric files auto-discovery (01.jpg / 01.JPG / 001.jpg ...)
   async function buildFiles(){
     const exts = ['jpg','JPG','jpeg','JPEG'];
-    const max = 300;               // upper bound
-    const stopAfterMisses = 10;    // stop after N consecutive misses
+    const max = 300;
+    const stopAfterMisses = 10;
     const files = [];
     let misses = 0;
 
-    // helper: try load url
     const tryUrl = (url) => new Promise((resolve) => {
       const im = new Image();
       im.decoding = 'async';
@@ -650,16 +608,14 @@
     for (let i=1; i<=max; i++){
       const n2 = String(i).padStart(2,'0');
       const n3 = String(i).padStart(3,'0');
-      let ok = false, picked = null;
+      let ok = false;
+      let picked = null;
 
       for (const name of [n2, n3]){
         for (const ext of exts){
           const url = `img/${name}.${ext}`;
           // eslint-disable-next-line no-await-in-loop
-          if (await tryUrl(url)){
-            ok = true; picked = url;
-            break;
-          }
+          if (await tryUrl(url)) { ok = true; picked = url; break; }
         }
         if (ok) break;
       }
@@ -667,12 +623,18 @@
       if (ok){
         files.push(picked);
         misses = 0;
-      }else{
+      } else {
         misses++;
-        if (misses >= stopAfterMisses && files.length>0) break;
+        if (misses >= stopAfterMisses && files.length > 0) break;
       }
     }
     return files;
+  }
+
+  function makePairs(list){
+    const out = [];
+    for (let i=0;i<list.length;i+=2) out.push([list[i], list[i+1] || null]);
+    return out;
   }
 
   let files = [];
@@ -680,25 +642,14 @@
   let idx = 0;
   let inited = false;
 
-  function makePairs(list){
-    const out = [];
-    for (let i=0;i<list.length;i+=2){
-      out.push([list[i], list[i+1] || null]);
-    }
-    return out;
-  }
-
-  function setPage(side, file){
-    const isRight = side === 'right';
+  function setSide(isRight, file){
     const img = isRight ? imgR : imgL;
     const bg  = isRight ? bgR  : bgL;
 
     if (!file){
       img.removeAttribute('src');
-      img.alt = '';
       bg.style.backgroundImage = '';
       if (isRight){
-        // show placeholder only when last pair has no right photo
         const showEmpty = pairs[idx] && !pairs[idx][1];
         emptyR.style.display = showEmpty ? 'flex' : 'none';
       }
@@ -707,29 +658,29 @@
 
     if (isRight) emptyR.style.display = 'none';
 
-    img.alt = '';
     img.src = file;
     bg.style.backgroundImage = `url('${file}')`;
+  }
+
+  function prefetchNext(){
+    const next = pairs[idx+1];
+    if (!next) return;
+    [next[0], next[1]].filter(Boolean).forEach(url => {
+      const im = new Image();
+      im.decoding='async';
+      im.src = url;
+    });
   }
 
   function render(){
     if (!pairs.length) return;
     const [L,R] = pairs[idx];
-    setPage('left', L);
-    setPage('right', R);
+    setSide(false, L);
+    setSide(true, R);
     counter.textContent = `${idx+1} / ${pairs.length}`;
     prevBtn.style.opacity = idx === 0 ? .35 : 1;
     nextBtn.style.opacity = idx === pairs.length-1 ? .35 : 1;
-
-    // prefetch next spread images for speed
-    const next = pairs[idx+1];
-    if (next){
-      [next[0], next[1]].filter(Boolean).forEach(url => {
-        const im = new Image();
-        im.decoding='async';
-        im.src = url;
-      });
-    }
+    prefetchNext();
   }
 
   async function openAlbum(){
@@ -741,11 +692,9 @@
       files = await buildFiles();
       pairs = makePairs(files);
       idx = 0;
-      inited = True = true;
-      render();
-    }else{
-      render();
+      inited = true;
     }
+    render();
   }
 
   function closeAlbum(){
@@ -761,6 +710,7 @@
   openBtn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openAlbum(); }});
   closeBtn.addEventListener('click', closeAlbum);
   overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeAlbum(); });
+
   document.addEventListener('keydown', (e)=>{
     if (!overlay.classList.contains('show')) return;
     if (e.key==='Escape') closeAlbum();
@@ -771,10 +721,21 @@
   prevBtn.addEventListener('click', prev);
   nextBtn.addEventListener('click', next);
 
-  // swipe on overlay
+  // Swipe on overlay
   let sx=0, sy=0;
-  overlay.addEventListener('touchstart', (e)=>{ if(!overlay.classList.contains('show')) return; const t=e.touches[0]; sx=t.clientX; sy=t.clientY; }, {passive:true});
-  overlay.addEventListener('touchend', (e)=>{ if(!overlay.classList.contains('show')) return; const t=e.changedTouches[0]; const dx=t.clientX-sx; const dy=t.clientY-sy; if(Math.abs(dx)>42 && Math.abs(dx)>Math.abs(dy)*1.2){ dx<0 ? next() : prev(); } }, {passive:true});
+  overlay.addEventListener('touchstart', (e)=>{
+    if(!overlay.classList.contains('show')) return;
+    const t=e.touches[0]; sx=t.clientX; sy=t.clientY;
+  }, {passive:true});
+
+  overlay.addEventListener('touchend', (e)=>{
+    if(!overlay.classList.contains('show')) return;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-sx, dy=t.clientY-sy;
+    if(Math.abs(dx)>42 && Math.abs(dx)>Math.abs(dy)*1.2){
+      dx<0 ? next() : prev();
+    }
+  }, {passive:true});
 })();
 </script>
 </body>
