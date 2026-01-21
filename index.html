@@ -691,6 +691,13 @@
       .album-spread{ border-radius: 26px; }
       .photo-frame{ border-radius: 22px; }
       .spine{ width: 16px; opacity:.55; }
+
+      .album-spread{ grid-template-columns: 1fr; }
+      .page.right{ display:none; }
+      .spine{ display:none; }
+      .album-spread::before{
+        background: radial-gradient(600px 420px at 50% 50%, rgba(0,0,0,.18), transparent 60%);
+      }
     }
 
 
@@ -941,6 +948,13 @@
 <div class="photo-frame">
 <div class="photo-backdrop"></div>
 <img alt="" class="photo"/>
+<div aria-hidden="true" class="album-empty">
+<div class="album-empty-text">Место для наших новых счастливых,<br/>семейных фотокарточек</div>
+<svg aria-hidden="true" class="hearts" viewbox="0 0 120 70">
+<path d="M34 14 C22 -2, 2 8, 12 28 C20 46, 38 56, 60 66 C82 56, 100 46, 108 28 C118 8, 98 -2, 86 14 C78 22, 72 30, 60 40 C48 30, 42 22, 34 14 Z"></path>
+<path d="M58 14 C46 -2, 26 8, 36 28 C44 46, 62 56, 84 66 C106 56, 124 46, 132 28 C142 8, 122 -2, 110 14 C102 22, 96 30, 84 40 C72 30, 66 22, 58 14 Z" transform="translate(-22,0)"></path>
+</svg>
+</div>
 </div>
 </div>
 <div class="page right">
@@ -1011,6 +1025,9 @@
       const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
       const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+      const albumMQ = window.matchMedia ? window.matchMedia('(max-width: 520px)') : null;
+      let singleAlbum = !!(albumMQ && albumMQ.matches);
+
       // =========================
       // Album (dynamic list + overlay)
       // =========================
@@ -1030,6 +1047,17 @@
       let isOpen = false;
       let loadedOnce = false;
 
+      if(albumMQ){
+        albumMQ.addEventListener('change', ()=>{
+          singleAlbum = albumMQ.matches;
+          if(loadedOnce){
+            pairs = buildPairs(files);
+            setDots(pairs.length);
+            render(0);
+          }
+        });
+      }
+
       function parseNumericJpg(name){
         const m = String(name).match(/^(\d+)\.(jpe?g)$/i);
         if(!m) return null;
@@ -1039,11 +1067,23 @@
       function buildPairs(list){
         const ordered = list.slice().sort((a,b)=>a.n-b.n);
         const out = [];
+
+        // Mobile: one photo per "spread" (page)
+        if(singleAlbum){
+          for(const it of ordered){
+            out.push([ it.name, null ]);
+          }
+          // Final empty page for the "new photos" message
+          out.push([ null, null ]);
+          return out;
+        }
+
+        // Desktop/large screens: two photos per spread
         for(let i=0;i<ordered.length;i+=2){
           out.push([ ordered[i]?.name || null, ordered[i+1]?.name || null ]);
         }
         return out;
-      }
+      }}
 
       function setDots(total){
         dotsEl.innerHTML = '';
@@ -1092,14 +1132,20 @@
         const bd  = page.querySelector('.photo-backdrop');
         const empty = page.querySelector('.album-empty');
 if(!file){
-          const isLastRight = (side === 'right' && pairs[idx] && !pairs[idx][1]);
-          if(empty) empty.style.display = isLastRight ? 'flex' : 'none';
+          const pair = pairs[idx] || [null, null];
+          const isFinalEmpty = (!pair[0] && !pair[1]);
+
+          const showEmpty =
+            (singleAlbum && isFinalEmpty && side === 'left') ||
+            (!singleAlbum && side === 'right' && pair[0] && !pair[1]);
+
+          if(empty) empty.style.display = showEmpty ? 'flex' : 'none';
 
           img.removeAttribute('src');
           img.alt = '';
           img.classList.remove('is-loaded');
           bd.style.backgroundImage = '';
-          page.style.opacity = isLastRight ? '1' : '0.25';
+          page.style.opacity = showEmpty ? '1' : '0.25';
           return;
         }
 
