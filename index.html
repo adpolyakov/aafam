@@ -350,21 +350,29 @@
     /* iPhone / small phones tuning (keeps desktop untouched) */
     @media (max-width: 520px){
       /* Isolate screens on mobile: no early peeking of next section */
-      main{
-        scroll-snap-type: y mandatory;
-        overscroll-behavior-y: contain;
-      }
-      .section{
-        height: calc(100dvh - (62px + env(safe-area-inset-top)));
-        min-height: unset;
-        scroll-snap-stop: always;
-        overflow: hidden;
-        padding: 22px var(--pad) 26px;
-      }
+main{
+  scroll-snap-type: y mandatory;
+  overscroll-behavior-y: contain;
+  /* Match iOS visible viewport (set via JS) */
+  height: calc(var(--app-vh, 1vh) * 100);
+}
+.section{
+  /* Center each screen and make it exactly one viewport tall */
+  height: calc((var(--app-vh, 1vh) * 100) - (62px + env(safe-area-inset-top)));
+  min-height: unset;
+  scroll-snap-stop: always;
+  overflow: hidden;
+
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 14px var(--pad) 18px;
+}
       #s1 .media{ padding: 12px; justify-content:center; }
       #s1 .media-card{
         aspect-ratio: 2 / 3;
-        height: 52vh;
+        height: 48vh;
         width: auto;
         max-width: 100%;
         border-radius: 28px;
@@ -583,6 +591,15 @@
       const ua = navigator.userAgent || "";
       const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
       const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+
+      // Fix iOS viewport height so sections don't "peek" into the next one
+      function setAppVh(){
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--app-vh', `${vh}px`);
+      }
+      setAppVh();
+      window.addEventListener('resize', setAppVh);
 
       // Keep desktop snap; on iOS we'll still allow the CSS mobile mandatory snap to handle isolation.
       if ((isIOS && window.innerWidth > 520) || reduceMotion) main.classList.remove('snap');
