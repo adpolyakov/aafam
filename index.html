@@ -431,15 +431,18 @@
 
     /* iPhone / small phones tuning (keeps desktop untouched) */
     @media (max-width: 520px){
-      /* Make the first screen fit without losing content */
+/* Make the first screen fit without losing content */
       #s1 .grid{ gap: 0; }
       #s1 .media{
         padding: 12px;
+        justify-content: center;
       }
       #s1 .media-card{
-        /* Match the actual image ratio to avoid ugly empty corners/bars */
+        /* Match the image ratio AND avoid side "air" */
         aspect-ratio: 2 / 3;
-        max-height: 52vh;
+        height: 52vh;
+        width: auto;
+        max-width: 100%;
         border-radius: 28px;
       }
       #s1 .content{
