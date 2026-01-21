@@ -1420,15 +1420,16 @@ if(!file){
       });
 
       // Snap-to-section “доводчики” (prevents half-cut content)
-      const SNAP_IDLE_MS = 130; // debounce after last scroll event
-      const SNAP_EPS_PX = 8;    // do nothing if already aligned
+      const SNAP_IDLE_MS = 90; // debounce after last scroll event (more responsive)
+      const SNAP_EPS_PX = 6;    // do nothing if already aligned
+      const PROBE_FACTOR = 0.40; // higher = easier to move to next section
       let snapTimer = null;
       let isSnapping = false;
 
       function nearestSection(){
         const top = main.scrollTop;
         const vh = main.clientHeight || window.innerHeight;
-        const probe = top + vh * 0.22; // reading bias
+        const probe = top + vh * PROBE_FACTOR; // snapping bias (tuned for light swipes)
 
         let best = sections[0];
         let bestDist = Infinity;
@@ -1457,7 +1458,7 @@ if(!file){
         isSnapping = true;
         main.scrollTo({ top: targetTop, behavior: reduceMotion ? 'auto' : 'smooth' });
 
-        window.setTimeout(() => { isSnapping = false; }, reduceMotion ? 0 : 650);
+        window.setTimeout(() => { isSnapping = false; }, reduceMotion ? 0 : 520);
       }
 
       function scheduleSnap(){
@@ -1468,7 +1469,7 @@ if(!file){
 
       main.addEventListener('scroll', scheduleSnap, { passive:true });
       main.addEventListener('wheel', scheduleSnap, { passive:true });
-      main.addEventListener('touchend', () => window.setTimeout(snapNow, 90), { passive:true });
+      main.addEventListener('touchend', () => window.setTimeout(snapNow, 40), { passive:true });
       main.addEventListener('keyup', (e) => {
         const keys = ['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '];
         if (keys.includes(e.key)) scheduleSnap();
