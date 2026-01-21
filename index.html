@@ -348,6 +348,23 @@
     }
     .reveal.is-in{ opacity:1; transform: translateY(0); }
 
+
+    /* Album cover styling */
+    #s2 .media-card{
+      padding: clamp(14px, 2.4vw, 26px);
+      background:
+        radial-gradient(520px 420px at 50% 35%, rgba(216,182,111,.18), transparent 62%),
+        radial-gradient(520px 420px at 55% 55%, rgba(123,211,255,.10), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    }
+    #s2 .media-card img{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transform: translateZ(0) scale(0.98);
+      filter: drop-shadow(0 24px 40px rgba(0,0,0,.45));
+    }
+
     /* Responsive layout */
     @media (max-width: 920px){
       .grid{
@@ -486,15 +503,14 @@
           <div class="grid">
             <div class="media">
               <div class="media-card reveal" data-reveal>
-                <img src="img/02.jpg" alt="Тёплый момент" loading="lazy" decoding="async" />
+                <img src="img/album.png" alt="Наш альбом" loading="lazy" decoding="async" />
               </div>
             </div>
             <div class="content">
-              <div class="kicker reveal" data-reveal>ты — про детали</div>
-              <h2 class="reveal" data-reveal>Ты умеешь делать красиво. И жизнь рядом с тобой — тоже.</h2>
+              <div class="kicker reveal" data-reveal>Моменты вместе</div>
+              <h2 class="reveal" data-reveal>Наш альбом</h2>
               <p class="reveal" data-reveal>
-                Ты замечаешь нюансы, чувствуешь форму, цвет, настроение.
-                И у тебя есть редкий талант — превращать «обычно» в «вау».
+                В этот альбом я собрал малую, но любимую часть тех моментов, которые привели нас к этому вечеру. Люблю тебя в каждом из них❣️
               </p>
               <div class="actions">
                 <button class="btn primary" data-scroll="#s3">
