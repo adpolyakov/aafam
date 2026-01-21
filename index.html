@@ -609,7 +609,35 @@
     }
 
 
+    
+        /* Delicate hearts micro-animation */
+        .empty-placeholder .hearts{
+          transform-origin: 50% 55%;
+          filter: drop-shadow(0 10px 24px rgba(255,255,255,.08));
+          animation: heartsPulse 3.6s cubic-bezier(.2,.8,.2,1) infinite;
+        }
+        .empty-placeholder .hearts path{
+          stroke-dasharray: 260;
+          stroke-dashoffset: 18;
+          animation: heartsDraw 7.2s cubic-bezier(.2,.8,.2,1) infinite;
+        }
+        @keyframes heartsPulse{
+          0%, 55%, 100% { transform: translateZ(0) scale(1); opacity: .92; }
+          62% { transform: translateZ(0) scale(1.018); opacity: 1; }
+          70% { transform: translateZ(0) scale(1.006); opacity: .98; }
+        }
+        @keyframes heartsDraw{
+          0%, 35%   { stroke-dashoffset: 26; opacity: .86; }
+          55%       { stroke-dashoffset: 12; opacity: 1; }
+          75%       { stroke-dashoffset: 18; opacity: .96; }
+          100%      { stroke-dashoffset: 26; opacity: .86; }
+        }
+
+
     @media (prefers-reduced-motion: reduce){
+      .empty-placeholder .hearts,
+      .empty-placeholder .hearts path{ animation: none !important; }
+
       main{ scroll-behavior:auto; }
       .mouse::after{ animation:none; }
       .reveal{ transition:none; transform:none; opacity:1; }
