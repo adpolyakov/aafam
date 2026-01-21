@@ -36,6 +36,8 @@
 
       --ease: cubic-bezier(.2,.8,.2,1);
       --topbar: 62px;
+      --mainTop: calc(var(--topbar) + env(safe-area-inset-top));
+      --mainBottom: calc(env(safe-area-inset-bottom) + 14px);
     }
 
     *{ box-sizing:border-box; }
@@ -104,9 +106,9 @@
       height: 100dvh;         /* dynamic viewport */
       overflow-y:auto;
       scroll-behavior:smooth;
-      padding-top: calc(var(--topbar) + env(safe-area-inset-top));
-      padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
-    }
+      padding-top: var(--mainTop);
+      padding-bottom: var(--mainBottom);
+}
 
     /* CSS snap for desktop; iOS will be disabled via JS to avoid fighting momentum */
     main.snap{ scroll-snap-type: y proximity; }
@@ -115,9 +117,9 @@
       content-visibility: auto;
       contain-intrinsic-size: 900px;
 
-      min-height: calc(100vh - (var(--topbar) + env(safe-area-inset-top)) - env(safe-area-inset-bottom));
-      min-height: calc(100svh - (var(--topbar) + env(safe-area-inset-top)) - env(safe-area-inset-bottom));
-      min-height: calc(100dvh - (var(--topbar) + env(safe-area-inset-top)) - env(safe-area-inset-bottom));
+      min-height: calc(100vh - var(--mainTop) - var(--mainBottom));
+      min-height: calc(100svh - var(--mainTop) - var(--mainBottom));
+      min-height: calc(100dvh - var(--mainTop) - var(--mainBottom));
       display:flex;
       align-items:center;
       justify-content:center;
@@ -346,6 +348,23 @@
     }
     .reveal.is-in{ opacity:1; transform: translateY(0); }
 
+
+    /* Album cover styling */
+    #s2 .media-card{
+      padding: clamp(14px, 2.4vw, 26px);
+      background:
+        radial-gradient(520px 420px at 50% 35%, rgba(216,182,111,.18), transparent 62%),
+        radial-gradient(520px 420px at 55% 55%, rgba(123,211,255,.10), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    }
+    #s2 .media-card img{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transform: translateZ(0) scale(0.98);
+      filter: drop-shadow(0 24px 40px rgba(0,0,0,.45));
+    }
+
     /* Responsive layout */
     @media (max-width: 920px){
       .grid{
@@ -368,6 +387,13 @@
 
     /* iPhone / small phones tuning (keeps desktop untouched) */
     @media (max-width: 520px){
+      /* prevent next screen peeking + add top air */
+      .section{
+        min-height: calc(100dvh - var(--mainTop) - var(--mainBottom));
+        padding-top: 34px;
+        padding-bottom: 34px;
+      }
+
       #s1 .media{
         padding: 12px;
         justify-content: center;
@@ -390,12 +416,19 @@
         letter-spacing: -0.8px;
       }
       #s1 .actions{ display:none; }
+      #s1 .panel{ margin-bottom: 54px; }
+
 
       .hint{
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(var(--mainBottom) + 8px);
         display:flex;
-        bottom: 10px;
         font-size: 11px;
-        opacity: .8;
+        opacity: .82;
+        z-index: 60;
+        pointer-events: none;
       }
       .mouse{ width: 16px; height: 24px; }
 
@@ -470,15 +503,14 @@
           <div class="grid">
             <div class="media">
               <div class="media-card reveal" data-reveal>
-                <img src="img/02.jpg" alt="Тёплый момент" loading="lazy" decoding="async" />
+                <img src="img/album.png" alt="Наш альбом" loading="lazy" decoding="async" />
               </div>
             </div>
             <div class="content">
-              <div class="kicker reveal" data-reveal>ты — про детали</div>
-              <h2 class="reveal" data-reveal>Ты умеешь делать красиво. И жизнь рядом с тобой — тоже.</h2>
+              <div class="kicker reveal" data-reveal>Моменты вместе</div>
+              <h2 class="reveal" data-reveal>Наш альбом</h2>
               <p class="reveal" data-reveal>
-                Ты замечаешь нюансы, чувствуешь форму, цвет, настроение.
-                И у тебя есть редкий талант — превращать «обычно» в «вау».
+                В этот альбом я собрал малую, но любимую часть тех моментов, которые привели нас к этому вечеру. Люблю тебя в каждом из них❣️
               </p>
               <div class="actions">
                 <button class="btn primary" data-scroll="#s3">
@@ -771,304 +803,6 @@
 
 
       
-
-      
-      // =========================
-      // Album (dynamic list + overlay)
-      // =========================
-      const overlay = document.getElementById('albumOverlay');
-      const spreadEl = document.getElementById('albumSpread');
-      const counterEl = document.getElementById('albumCounter');
-      const dotsEl = document.getElementById('albumDots');
-
-      const openTriggers = Array.from(document.querySelectorAll('[data-open-album="true"]'));
-      const closeTriggers = Array.from(document.querySelectorAll('[data-album-close="true"]'));
-      const prevBtn = document.querySelector('[data-album-prev="true"]');
-      const nextBtn = document.querySelector('[data-album-next="true"]');
-
-      let albumFiles = []; // [{n, name}]
-      let spreadPairs = []; // [[left,right],...]
-      let spreadIndex = 0;
-      let overlayOpen = false;
-
-      function parseNumericJpg(name){
-        const m = String(name).match(/^(\d+)\.(jpe?g)$/i);
-        if(!m) return null;
-        return { n: parseInt(m[1], 10), name };
-      }
-
-      function buildPairs(files){
-        const ordered = files.slice().sort((a,b)=>a.n-b.n);
-        const pairs = [];
-        for(let i=0;i<ordered.length;i+=2){
-          pairs.push([ ordered[i]?.name || null, ordered[i+1]?.name || null ]);
-        }
-        return pairs;
-      }
-
-      function setDots(total){
-        dotsEl.innerHTML = '';
-        const maxDots = 9;
-        const show = Math.min(total, maxDots);
-        for(let i=0;i<show;i++){
-          const s = document.createElement('span');
-          dotsEl.appendChild(s);
-        }
-      }
-
-      function updateDots(i){
-        const items = Array.from(dotsEl.children);
-        if(items.length === 0) return;
-
-        const total = spreadPairs.length;
-        const maxDots = items.length;
-
-        let start = 0;
-        if(total > maxDots){
-          start = Math.max(0, Math.min(i - Math.floor(maxDots/2), total - maxDots));
-        }
-
-        items.forEach((el, idx)=>{
-          const real = start + idx;
-          el.classList.toggle('is-on', real === i);
-          el.style.opacity = real < total ? '1' : '0';
-        });
-      }
-
-      function lockMainScroll(lock){
-        if(lock){
-          main.dataset._scrollTop = String(main.scrollTop);
-          main.style.overflow = 'hidden';
-          main.style.touchAction = 'none';
-          document.body.style.overflow = 'hidden';
-        }else{
-          main.style.overflow = '';
-          main.style.touchAction = '';
-          document.body.style.overflow = '';
-          const st = parseInt(main.dataset._scrollTop || '0', 10);
-          if(!Number.isNaN(st)) main.scrollTop = st;
-        }
-      }
-
-      function setPage(side, file){
-        const page = spreadEl.querySelector('.page.' + side);
-        if(!page) return;
-
-        const img = page.querySelector('img.photo');
-        const bd = page.querySelector('.photo-backdrop');
-
-        if(!file){
-          img.removeAttribute('src');
-          img.alt = '';
-          img.classList.remove('is-loaded');
-          bd.style.backgroundImage = '';
-          page.style.opacity = '0.25';
-          return;
-        }
-
-        page.style.opacity = '1';
-        img.classList.remove('is-loaded');
-
-        const url = 'img/' + file;
-        bd.style.backgroundImage = `url(${url})`;
-
-        img.src = url;
-        img.decoding = 'async';
-        img.loading = 'eager';
-        img.alt = 'Фото ' + file.replace(/\.[^.]+$/,'');
-
-        const onload = async ()=>{
-          try{ await img.decode(); }catch(e){}
-          img.classList.add('is-loaded');
-        };
-        if(img.complete && img.naturalWidth > 0) onload();
-        else img.addEventListener('load', onload, { once:true });
-      }
-
-      function preloadAround(i){
-        const want = [];
-        for(const j of [i-1, i, i+1]){
-          if(j<0 || j>=spreadPairs.length) continue;
-          const [a,b] = spreadPairs[j];
-          if(a) want.push('img/'+a);
-          if(b) want.push('img/'+b);
-        }
-        want.forEach(src=>{
-          const im = new Image();
-          im.decoding = 'async';
-          im.src = src;
-        });
-      }
-
-      function renderSpread(i){
-        spreadIndex = Math.max(0, Math.min(i, spreadPairs.length-1));
-        const [left,right] = spreadPairs[spreadIndex] || [null,null];
-
-        setPage('left', left);
-        setPage('right', right);
-
-        counterEl.textContent = `${spreadIndex+1} / ${spreadPairs.length}`;
-        updateDots(spreadIndex);
-        preloadAround(spreadIndex);
-      }
-
-      function go(delta){
-        const ni = spreadIndex + delta;
-        if(ni < 0 || ni >= spreadPairs.length) return;
-
-        spreadEl.animate([
-          { transform: 'translateZ(0) scale(1)', filter: 'brightness(1)' },
-          { transform: `translateZ(0) scale(.992) translateX(${delta>0?'-6px':'6px'})`, filter: 'brightness(.98)' },
-          { transform: 'translateZ(0) scale(1)', filter: 'brightness(1)' }
-        ], { duration: reduceMotion ? 0 : 260, easing: 'cubic-bezier(.2,.8,.2,1)' });
-
-        renderSpread(ni);
-      }
-
-      async function fetchAlbumList(){
-        // Use GitHub Contents API to list /img without hardcoding filenames.
-        // Accepts only files named like 01.jpg / 2.JPG / 003.jpeg etc (numbers-only base name).
-        try{
-          const host = window.location.host; // username.github.io
-          const user = host.split('.')[0];
-
-          const parts = window.location.pathname.split('/').filter(Boolean);
-          // User pages: repo = username.github.io. Project pages: repo = first path segment.
-          const repo = (parts.length >= 1 && parts[0].includes('.html') === false) ? parts[0] : (user + '.github.io');
-
-          async function tryRef(ref){
-            const api = `https://api.github.com/repos/${user}/${repo}/contents/img?ref=${ref}`;
-            const res = await fetch(api, { headers: { 'Accept': 'application/vnd.github+json' } });
-            if(!res.ok) throw new Error('API fail ' + ref);
-            const items = await res.json();
-            const files = [];
-            for(const it of items){
-              if(!it || it.type !== 'file' || !it.name) continue;
-              const parsed = parseNumericJpg(it.name);
-              if(parsed) files.push(parsed);
-            }
-            if(files.length === 0) throw new Error('No numeric jpg in img');
-            return files;
-          }
-
-          // Try main then master
-          albumFiles = await tryRef('main').catch(()=> tryRef('master'));
-          spreadPairs = buildPairs(albumFiles);
-          setDots(spreadPairs.length);
-          updateDots(0);
-          if(spreadPairs.length > 0) renderSpread(0);
-        }catch(err){
-          spreadPairs = [];
-          counterEl.textContent = 'Фото не загрузились';
-        }
-      }
-
-      function makeClone(el){
-        const r = el.getBoundingClientRect();
-        const clone = el.cloneNode(true);
-        clone.classList.add('album-clone');
-        clone.removeAttribute('data-open-album');
-        clone.style.left = r.left + 'px';
-        clone.style.top = r.top + 'px';
-        clone.style.width = r.width + 'px';
-        clone.style.height = r.height + 'px';
-        clone.style.transformOrigin = 'center center';
-        document.body.appendChild(clone);
-        return { clone, rect: r };
-      }
-
-      function openAlbum(fromEl){
-        if(overlayOpen) return;
-        overlayOpen = true;
-
-        overlay.classList.add('is-open');
-        overlay.setAttribute('aria-hidden','false');
-        lockMainScroll(true);
-
-        // FLIP open animation from album cover
-        const { clone, rect } = makeClone(fromEl);
-        const target = spreadEl.getBoundingClientRect();
-
-        const dx = (target.left + target.width/2) - (rect.left + rect.width/2);
-        const dy = (target.top + target.height/2) - (rect.top + rect.height/2);
-        const sx = target.width / rect.width;
-        const sy = target.height / rect.height;
-
-        spreadEl.style.opacity = '0';
-
-        overlay.querySelector('.album-backdrop').animate(
-          [{ opacity: 0 }, { opacity: 1 }],
-          { duration: reduceMotion ? 0 : 220, easing: 'linear', fill:'forwards' }
-        );
-
-        clone.animate([
-          { transform: 'translate3d(0,0,0) scale(1)', borderRadius: '26px' },
-          { transform: `translate3d(${dx}px,${dy}px,0) scale(${sx},${sy})`, borderRadius: '30px' }
-        ], { duration: reduceMotion ? 0 : 520, easing: 'cubic-bezier(.2,.8,.2,1)', fill:'forwards' })
-        .onfinish = () => {
-          clone.remove();
-          spreadEl.style.opacity = '1';
-        };
-
-        // Load list once
-        if(spreadPairs.length === 0){
-          fetchAlbumList();
-        }else{
-          renderSpread(0);
-        }
-      }
-
-      function closeAlbum(){
-        if(!overlayOpen) return;
-        overlayOpen = false;
-        overlay.classList.remove('is-open');
-        overlay.setAttribute('aria-hidden','true');
-        lockMainScroll(false);
-      }
-
-      openTriggers.forEach(el=>{
-        el.addEventListener('click', ()=> openAlbum(el));
-        el.addEventListener('keydown', (e)=>{
-          if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAlbum(el); }
-        });
-      });
-      closeTriggers.forEach(el=> el.addEventListener('click', closeAlbum));
-      prevBtn && prevBtn.addEventListener('click', ()=> go(-1));
-      nextBtn && nextBtn.addEventListener('click', ()=> go(1));
-
-      window.addEventListener('keydown', (e)=>{
-        if(!overlayOpen) return;
-        if(e.key === 'Escape') closeAlbum();
-        if(e.key === 'ArrowLeft') go(-1);
-        if(e.key === 'ArrowRight') go(1);
-      });
-
-      // Swipe / drag inside spread
-      let startX = 0, startY = 0, dragging = false;
-      spreadEl.addEventListener('pointerdown', (e)=>{
-        if(!overlayOpen) return;
-        dragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        try{ spreadEl.setPointerCapture(e.pointerId); }catch(_){}
-      });
-      spreadEl.addEventListener('pointerup', (e)=>{
-        if(!overlayOpen || !dragging) return;
-        dragging = false;
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-
-        if(Math.abs(dx) > 46 && Math.abs(dx) > Math.abs(dy) * 1.2){
-          if(dx < 0) go(1);
-          else go(-1);
-        }
-      });
-      spreadEl.addEventListener('pointercancel', ()=>{ dragging = false; });
-
-      // Prevent page bounce/scroll while swiping on iOS
-      spreadEl.addEventListener('touchmove', (e)=>{
-        if(overlayOpen) e.preventDefault();
-      }, { passive:false });
 
       // Prevent “horizontal jiggle” on iOS overscroll
       main.addEventListener('scroll', ()=>{
