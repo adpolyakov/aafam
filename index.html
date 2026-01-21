@@ -35,6 +35,7 @@
       --small: clamp(12px, 1.15vw, 14px);
 
       --ease: cubic-bezier(.2,.8,.2,1);
+      --topbar: 62px;
     }
 
     *{ box-sizing:border-box; }
@@ -73,6 +74,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      justify-content:center;
       gap:12px;
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
@@ -97,10 +99,13 @@
 
     /* Main scroll container */
     main{
-      height:100vh;
+      height: 100vh;          /* fallback */
+      height: 100svh;         /* small viewport (iOS) */
+      height: 100dvh;         /* dynamic viewport */
       overflow-y:auto;
       scroll-behavior:smooth;
-      padding-top: calc(62px + env(safe-area-inset-top));
+      padding-top: calc(var(--topbar) + env(safe-area-inset-top));
+      padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
     }
 
     /* CSS snap for desktop; iOS will be disabled via JS to avoid fighting momentum */
@@ -110,9 +115,12 @@
       content-visibility: auto;
       contain-intrinsic-size: 900px;
 
-      min-height: calc(100vh - (62px + env(safe-area-inset-top)));
+      min-height: calc(100vh - (var(--topbar) + env(safe-area-inset-top)) - env(safe-area-inset-bottom));
+      min-height: calc(100svh - (var(--topbar) + env(safe-area-inset-top)) - env(safe-area-inset-bottom));
+      min-height: calc(100dvh - (var(--topbar) + env(safe-area-inset-top)) - env(safe-area-inset-bottom));
       display:flex;
       align-items:center;
+      justify-content:center;
       padding: 64px var(--pad) 44px;
       scroll-snap-align: start;
       position:relative;
@@ -149,6 +157,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      justify-content:center;
     }
 
     .media-card{
@@ -165,6 +174,7 @@
       position:relative;
       display:flex;
       align-items:center;
+      justify-content:center;
       justify-content:center;
     }
 
@@ -295,6 +305,7 @@
       transform: translateX(-50%);
       display:flex;
       align-items:center;
+      justify-content:center;
       gap:10px;
       color: rgba(238,240,246,.68);
       font-size: 12px;
