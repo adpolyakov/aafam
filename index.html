@@ -1,16 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0c10" />
-  <meta name="description" content="Личный сайт-продолжение предложения для Арины." />
-  <title>Для Арины</title>
-
-  <!-- Speed-up first screen image -->
-  <link rel="preload" as="image" href="img/lotte.jpg" fetchpriority="high" />
-
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<meta content="#0b0c10" name="theme-color"/>
+<meta content="Личный сайт-продолжение предложения для Арины." name="description"/>
+<title>Для Арины</title>
+<!-- Speed-up first screen image -->
+<link as="image" fetchpriority="high" href="img/lotte.jpg" rel="preload"/>
+<style>
     :root{
       --bg0:#07080b;
       --bg1:#0b0c10;
@@ -21,6 +20,12 @@
 
       --r2:26px;
       --r3:34px;
+
+      /* dynamic UI heights (set by JS) */
+      --topbarH: 62px;
+      --hintH: 0px;
+      /* vertical breathing room per section */
+      --secPadY: clamp(18px, 3.8vh, 46px);
 
       --shadow: 0 18px 60px rgba(0,0,0,.45);
       --shadow2: 0 10px 30px rgba(0,0,0,.38);
@@ -114,17 +119,26 @@
       content-visibility: auto;
       contain-intrinsic-size: 900px;
 
-      min-height: calc(100dvh - (62px + env(safe-area-inset-top)));
+      /* Full visible viewport height; padding accounts for fixed UI */
+      min-height: 100dvh;
+
       display:flex;
+      flex-direction:column;
+      justify-content:center;
       align-items:center;
-      padding: 44px var(--pad);
+
+      padding-left: var(--pad);
+      padding-right: var(--pad);
+      padding-top: calc(var(--secPadY) + var(--topbarH) + env(safe-area-inset-top));
+      padding-bottom: calc(var(--secPadY) + var(--hintH) + env(safe-area-inset-bottom));
+
       scroll-snap-align: start;
       position:relative;
     }
 
     /* dvh fallback for older browsers */
     @supports not (height: 100dvh){
-      .section{ min-height: calc(100vh - (62px + env(safe-area-inset-top))); }
+      .section{ min-height: 100vh; }
     }
 
     .container{
@@ -372,8 +386,7 @@
         height:auto;
       }
       .panel{ border-radius: 28px; }
-      .section{ padding: 34px var(--pad); }
-      .hint{ display:none; }
+      :root{ --secPadY: clamp(18px, 3.6vh, 34px); }
     }
 
     /* iPhone / small phones tuning (keeps desktop untouched) */
@@ -410,9 +423,24 @@
       .hint.hint-fixed{ bottom: calc(10px + env(safe-area-inset-bottom)); }
       .mouse{ width: 16px; height: 24px; }
 
-      .section{ padding: 20px var(--pad); }
+      :root{ --secPadY: clamp(16px, 3.2vh, 22px); }
       .panel{ border-radius: 28px; }
-    }
+    
+      /* Keep album cover compact so the whole card can truly center */
+      #s2 .media{ padding: 12px; }
+      #s2 .media-card{ max-height: clamp(220px, 36dvh, 340px); }
+      #s2 .media-card img{
+        flex: 1 1 auto;
+        max-height: 100%;
+        object-fit: contain;
+      }
+      #s2 .album-cta{
+        padding-top: 10px;
+        padding-bottom: 2px;
+        font-size: 12px;
+        opacity: .78;
+      }
+}
 
 
     
@@ -727,244 +755,256 @@
     }
   </style>
 </head>
-
 <body>
-  <header class="topbar">
-    <nav class="nav" aria-label="Навигация по экранам">
-      <button class="dot" data-to="s1" aria-label="Экран 1" aria-current="true"></button>
-      <button class="dot" data-to="s2" aria-label="Экран 2"></button>
-      <button class="dot" data-to="s3" aria-label="Экран 3"></button>
-      <button class="dot" data-to="s4" aria-label="Экран 4"></button>
-      <button class="dot" data-to="s5" aria-label="Экран 5"></button>
-    </nav>
-  </header>
-
-  <main id="main" class="snap" aria-label="Основной контент">
-    <!-- SECTION 1 -->
-    <section id="s1" class="section">
-      <div class="container">
-        <div class="panel">
-          <div class="grid">
-            <div class="media">
-              <div class="media-card reveal" data-reveal>
-                <img src="img/lotte.jpg" alt="Иллюстрация предложения" loading="eager" decoding="async" fetchpriority="high" />
-              </div>
-            </div>
-            <div class="content">
-              <div class="kicker reveal" data-reveal>Сайт с частичкой нашей любви</div>
-              <h1 class="reveal" data-reveal>Начало чего-то нового</h1>
-              <p class="reveal" data-reveal>
+<header class="topbar">
+<nav aria-label="Навигация по экранам" class="nav">
+<button aria-current="true" aria-label="Экран 1" class="dot" data-to="s1"></button>
+<button aria-label="Экран 2" class="dot" data-to="s2"></button>
+<button aria-label="Экран 3" class="dot" data-to="s3"></button>
+<button aria-label="Экран 4" class="dot" data-to="s4"></button>
+<button aria-label="Экран 5" class="dot" data-to="s5"></button>
+</nav>
+</header>
+<main aria-label="Основной контент" class="snap" id="main">
+<!-- SECTION 1 -->
+<section class="section" id="s1">
+<div class="container">
+<div class="panel">
+<div class="grid">
+<div class="media">
+<div class="media-card reveal" data-reveal="">
+<img alt="Иллюстрация предложения" decoding="async" fetchpriority="high" loading="eager" src="img/lotte.jpg"/>
+</div>
+</div>
+<div class="content">
+<div class="kicker reveal" data-reveal="">Сайт с частичкой нашей любви</div>
+<h1 class="reveal" data-reveal="">Начало чего-то нового</h1>
+<p class="reveal" data-reveal="">
                 Любимая, бесконечное спасибо тебе за то, что выбрала меня и согласилась на моё странное предложение.
                 Сейчас расскажу тебе, что я задумал...
               </p>
-
-              <div class="actions">
-                <button class="btn primary" data-scroll="#s2" aria-label="Листать дальше">
-                  <span class="icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M12 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                      <path d="M7 14l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                  <span>Листать дальше</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- SECTION 2 -->
-    <section id="s2" class="section">
-      <div class="container">
-        <div class="panel">
-          <div class="grid">
-            <div class="media">
-              <div class="media-card reveal" data-reveal data-open-album="true" role="button" tabindex="0" aria-label="Открыть альбом">
-                <img src="img/album.png" alt="Наш альбом" loading="lazy" decoding="async" />
-                <div class="album-cta">Нажми, чтобы посмотреть</div>
-              </div>
-            </div>
-            <div class="content">
-              <div class="kicker reveal" data-reveal>Моменты вместе</div>
-              <h2 class="reveal" data-reveal>Наш альбом</h2>
-              <p class="reveal" data-reveal>
+<div class="actions">
+<button aria-label="Листать дальше" class="btn primary" data-scroll="#s2">
+<span aria-hidden="true" class="icon">
+<svg fill="none" viewbox="0 0 24 24">
+<path d="M12 5v14" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+<path d="M7 14l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+<span>Листать дальше</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2 -->
+<section class="section" id="s2">
+<div class="container">
+<div class="panel">
+<div class="grid">
+<div class="media">
+<div aria-label="Открыть альбом" class="media-card reveal" data-open-album="true" data-reveal="" role="button" tabindex="0">
+<img alt="Наш альбом" decoding="async" loading="lazy" src="img/album.png"/>
+<div class="album-cta">Нажми, чтобы посмотреть</div>
+</div>
+</div>
+<div class="content">
+<div class="kicker reveal" data-reveal="">Моменты вместе</div>
+<h2 class="reveal" data-reveal="">Наш альбом</h2>
+<p class="reveal" data-reveal="">
                 В этот альбом я собрал малую, но любимую часть тех моментов, которые привели нас к этому вечеру. Люблю тебя в каждом из них❣️
               </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION 3 -->
-    <section id="s3" class="section">
-      <div class="container">
-        <div class="panel">
-          <div class="grid">
-            <div class="media">
-              <div class="media-card reveal" data-reveal>
-                <img src="img/03.jpg" alt="Наши моменты" loading="lazy" decoding="async" />
-              </div>
-            </div>
-            <div class="content">
-              <div class="kicker reveal" data-reveal>то, что я люблю</div>
-              <h2 class="reveal" data-reveal>С тобой спокойно. И одновременно — хочется жить громче.</h2>
-              <p class="reveal" data-reveal>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3 -->
+<section class="section" id="s3">
+<div class="container">
+<div class="panel">
+<div class="grid">
+<div class="media">
+<div class="media-card reveal" data-reveal="">
+<img alt="Наши моменты" decoding="async" loading="lazy" src="img/03.jpg"/>
+</div>
+</div>
+<div class="content">
+<div class="kicker reveal" data-reveal="">то, что я люблю</div>
+<h2 class="reveal" data-reveal="">С тобой спокойно. И одновременно — хочется жить громче.</h2>
+<p class="reveal" data-reveal="">
                 Я люблю наши привычки, наши «внутренние шутки», наши планы.
                 Люблю, что рядом с тобой я становлюсь лучше — без давления, просто потому что хочу.
               </p>
-              <div class="actions">
-                <button class="btn primary" data-scroll="#s4">
-                  <span class="icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M12 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                      <path d="M7 14l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                  <span>Ещё чуть-чуть</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION 4 -->
-    <section id="s4" class="section">
-      <div class="container">
-        <div class="panel">
-          <div class="grid">
-            <div class="media">
-              <div class="media-card reveal" data-reveal>
-                <img src="img/04.jpg" alt="Будущее" loading="lazy" decoding="async" />
-              </div>
-            </div>
-            <div class="content">
-              <div class="kicker reveal" data-reveal>простое обещание</div>
-              <h2 class="reveal" data-reveal>Я хочу быть твоим домом. И твоим приключением.</h2>
-              <p class="reveal" data-reveal>
+<div class="actions">
+<button class="btn primary" data-scroll="#s4">
+<span aria-hidden="true" class="icon">
+<svg fill="none" viewbox="0 0 24 24">
+<path d="M12 5v14" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+<path d="M7 14l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+<span>Ещё чуть-чуть</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4 -->
+<section class="section" id="s4">
+<div class="container">
+<div class="panel">
+<div class="grid">
+<div class="media">
+<div class="media-card reveal" data-reveal="">
+<img alt="Будущее" decoding="async" loading="lazy" src="img/04.jpg"/>
+</div>
+</div>
+<div class="content">
+<div class="kicker reveal" data-reveal="">простое обещание</div>
+<h2 class="reveal" data-reveal="">Я хочу быть твоим домом. И твоим приключением.</h2>
+<p class="reveal" data-reveal="">
                 Поддерживать тебя в твоих мечтах. Беречь нас в сложные дни.
                 И делать так, чтобы через годы мы всё так же выбирали друг друга — каждый день.
               </p>
-              <div class="actions">
-                <button class="btn primary" data-scroll="#s5">
-                  <span class="icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M12 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                      <path d="M7 14l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                  <span>Дальше</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION 5 -->
-    <section id="s5" class="section">
-      <div class="container">
-        <div class="panel">
-          <div class="grid">
-            <div class="media">
-              <div class="media-card reveal" data-reveal>
-                <img src="img/05-final.jpg" alt="Финал" loading="lazy" decoding="async" />
-              </div>
-            </div>
-            <div class="content">
-              <div class="kicker reveal" data-reveal>продолжение</div>
-              <h1 class="reveal" data-reveal>Поехали дальше.</h1>
-              <p class="reveal" data-reveal>
+<div class="actions">
+<button class="btn primary" data-scroll="#s5">
+<span aria-hidden="true" class="icon">
+<svg fill="none" viewbox="0 0 24 24">
+<path d="M12 5v14" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+<path d="M7 14l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+<span>Дальше</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 5 -->
+<section class="section" id="s5">
+<div class="container">
+<div class="panel">
+<div class="grid">
+<div class="media">
+<div class="media-card reveal" data-reveal="">
+<img alt="Финал" decoding="async" loading="lazy" src="img/05-final.jpg"/>
+</div>
+</div>
+<div class="content">
+<div class="kicker reveal" data-reveal="">продолжение</div>
+<h1 class="reveal" data-reveal="">Поехали дальше.</h1>
+<p class="reveal" data-reveal="">
                 Сейчас будет план, шаг за шагом — чтобы этот день стал началом нашей новой главы.
               </p>
-              <div class="actions">
-                <button class="btn primary" data-scroll="#s1" aria-label="Вернуться к началу">
-                  <span class="icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M3 12a9 9 0 1 0 3-6.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                      <path d="M3 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                  <span>Ещё раз</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-
-  <!-- Album overlay -->
-  <div id="albumOverlay" class="album-overlay" aria-hidden="true">
-    <div class="album-backdrop" data-album-close="true"></div>
-
-    <div class="album-shell" role="dialog" aria-modal="true" aria-label="Наш альбом">
-      <button class="album-close" type="button" data-album-close="true" aria-label="Закрыть альбом">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
-
-      <div class="album-book" role="group" aria-label="Разворот альбома">
-        <button class="album-nav prev" type="button" data-album-prev="true" aria-label="Предыдущий разворот">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-
-        <div class="album-spread" id="albumSpread">
-          <div class="page left">
-            <div class="photo-frame">
-              <div class="photo-backdrop"></div>
-              <img class="photo" alt="" />
-            </div>
-          </div>
-          <div class="page right">
-            <div class="photo-frame">
-              <div class="photo-backdrop"></div>
-              <img class="photo" alt="" />
-              <div class="album-empty" aria-hidden="true">
-                <div class="album-empty-text">Место для наших новых счастливых,<br>семейных фотокарточек</div>
-                <svg class="hearts" viewBox="0 0 120 70" aria-hidden="true">
-                  <path d="M34 14 C22 -2, 2 8, 12 28 C20 46, 38 56, 60 66 C82 56, 100 46, 108 28 C118 8, 98 -2, 86 14 C78 22, 72 30, 60 40 C48 30, 42 22, 34 14 Z" />
-                  <path d="M58 14 C46 -2, 26 8, 36 28 C44 46, 62 56, 84 66 C106 56, 124 46, 132 28 C142 8, 122 -2, 110 14 C102 22, 96 30, 84 40 C72 30, 66 22, 58 14 Z" transform="translate(-22,0)" />
-                </svg>
-              </div>
-            </div>
-          </div>
-          <div class="spine" aria-hidden="true"></div>
-        </div>
-
-        <button class="album-nav next" type="button" data-album-next="true" aria-label="Следующий разворот">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
-
-      <div class="album-meta">
-        <div class="album-counter" id="albumCounter">—</div>
-        <div class="album-dots" id="albumDots" aria-hidden="true"></div>
-      </div>
-    </div>
-  </div>
-
-
-  <script>
+<div class="actions">
+<button aria-label="Вернуться к началу" class="btn primary" data-scroll="#s1">
+<span aria-hidden="true" class="icon">
+<svg fill="none" viewbox="0 0 24 24">
+<path d="M3 12a9 9 0 1 0 3-6.7" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+<path d="M3 4v6h6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+<span>Ещё раз</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Album overlay -->
+<div aria-hidden="true" class="album-overlay" id="albumOverlay">
+<div class="album-backdrop" data-album-close="true"></div>
+<div aria-label="Наш альбом" aria-modal="true" class="album-shell" role="dialog">
+<button aria-label="Закрыть альбом" class="album-close" data-album-close="true" type="button">
+<svg aria-hidden="true" fill="none" viewbox="0 0 24 24">
+<path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</button>
+<div aria-label="Разворот альбома" class="album-book" role="group">
+<button aria-label="Предыдущий разворот" class="album-nav prev" data-album-prev="true" type="button">
+<svg aria-hidden="true" fill="none" viewbox="0 0 24 24">
+<path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<div class="album-spread" id="albumSpread">
+<div class="page left">
+<div class="photo-frame">
+<div class="photo-backdrop"></div>
+<img alt="" class="photo"/>
+</div>
+</div>
+<div class="page right">
+<div class="photo-frame">
+<div class="photo-backdrop"></div>
+<img alt="" class="photo"/>
+<div aria-hidden="true" class="album-empty">
+<div class="album-empty-text">Место для наших новых счастливых,<br/>семейных фотокарточек</div>
+<svg aria-hidden="true" class="hearts" viewbox="0 0 120 70">
+<path d="M34 14 C22 -2, 2 8, 12 28 C20 46, 38 56, 60 66 C82 56, 100 46, 108 28 C118 8, 98 -2, 86 14 C78 22, 72 30, 60 40 C48 30, 42 22, 34 14 Z"></path>
+<path d="M58 14 C46 -2, 26 8, 36 28 C44 46, 62 56, 84 66 C106 56, 124 46, 132 28 C142 8, 122 -2, 110 14 C102 22, 96 30, 84 40 C72 30, 66 22, 58 14 Z" transform="translate(-22,0)"></path>
+</svg>
+</div>
+</div>
+</div>
+<div aria-hidden="true" class="spine"></div>
+</div>
+<button aria-label="Следующий разворот" class="album-nav next" data-album-next="true" type="button">
+<svg aria-hidden="true" fill="none" viewbox="0 0 24 24">
+<path d="M9 6l6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<div class="album-meta">
+<div class="album-counter" id="albumCounter">—</div>
+<div aria-hidden="true" class="album-dots" id="albumDots"></div>
+</div>
+</div>
+</div>
+<script>
     (function(){
       const main = document.getElementById('main');
       const dots = Array.from(document.querySelectorAll('.dot'));
       const scrollHint = document.getElementById('scrollHint');
       const revealEls = Array.from(document.querySelectorAll('[data-reveal]'));
       const sections = Array.from(document.querySelectorAll('.section'));
+      const topbar = document.querySelector('.topbar');
+
+      let uiVarsRaf = 0;
+      function scheduleUIVars(){
+        if(uiVarsRaf) cancelAnimationFrame(uiVarsRaf);
+        uiVarsRaf = requestAnimationFrame(updateUIVars);
+      }
+
+      function updateUIVars(){
+        const root = document.documentElement;
+        // Top bar height (varies with fonts / device)
+        if(topbar){
+          const h = Math.round(topbar.getBoundingClientRect().height);
+          if(h) root.style.setProperty('--topbarH', h + 'px');
+        }
+
+        // Scroll hint height — reserve space only when it's actually visible
+        if(scrollHint){
+          const cs = getComputedStyle(scrollHint);
+          const hidden = scrollHint.classList.contains('is-hidden') || cs.display === 'none' || cs.opacity === '0';
+          if(hidden){
+            root.style.setProperty('--hintH', '0px');
+          }else{
+            const hh = Math.round(scrollHint.getBoundingClientRect().height) || 0;
+            root.style.setProperty('--hintH', hh + 'px');
+          }
+        }
+      }
+
 
       const ua = navigator.userAgent || "";
       const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -1260,9 +1300,19 @@ if(!file){
       // Disable CSS snap on iOS Safari (we use JS “доводчики” below)
       if (isIOS || reduceMotion) main.classList.remove('snap');
 
+      // Measure UI and keep CSS vars in sync for perfect centering on mobile (especially iOS Safari)
+      scheduleUIVars();
+      window.addEventListener('resize', scheduleUIVars, { passive: true });
+      window.addEventListener('orientationchange', () => setTimeout(scheduleUIVars, 220), { passive: true });
+      if(document.fonts && document.fonts.ready){
+        document.fonts.ready.then(scheduleUIVars).catch(()=>{});
+      }
+
+
       function setHintFor(id){
         if(!scrollHint) return;
         scrollHint.classList.toggle('is-hidden', id === 's5');
+        scheduleUIVars();
       }
 
       function scrollToId(id){
@@ -1382,12 +1432,10 @@ if(!file){
       }, {passive:true});
     })();
   </script>
-
-  <!-- Global scroll hint (shown on all sections except the last) -->
-  <div id="scrollHint" class="hint hint-fixed" aria-hidden="true">
-    <div class="mouse"></div>
-    <div>листай вниз</div>
-  </div>
-
+<!-- Global scroll hint (shown on all sections except the last) -->
+<div aria-hidden="true" class="hint hint-fixed" id="scrollHint">
+<div class="mouse"></div>
+<div>листай вниз</div>
+</div>
 </body>
 </html>
