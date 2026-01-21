@@ -460,7 +460,7 @@
     }
 
     /* Album mobile: one photo per view */
-    @media (max-width: 520px){
+    @media (max-width: 520px) and (pointer: coarse){
       .album-stage{ padding: 14px; }
       .album-shell{ inset: 10px; border-radius: 26px; }
       .album-spread{
@@ -665,31 +665,41 @@
       const countEl = document.getElementById('albumCount');
       const dotsEl = document.getElementById('albumDots');
 
-      const mqlMobile = window.matchMedia('(max-width: 520px)');
-      let isMobile = mqlMobile.matches;
+      const mqlW = window.matchMedia('(max-width: 520px)');
+      const mqlP = window.matchMedia('(pointer: coarse)');
+      let isMobile = mqlW.matches && mqlP.matches;
 
       let files = [];     // real images (sorted)
       let pairs = [];     // desktop spreads
       let pages = [];     // mobile pages (one photo per page, optional last placeholder)
       let idx = 0;
 
-      mqlMobile.addEventListener?.('change', (e)=>{
-        isMobile = e.matches;
+      function recomputeMobile(){
+        isMobile = (mqlW.matches && mqlP.matches);
+      }
+
+      function handleModeChange(){
+        const prevMode = isMobile;
+        recomputeMobile();
+        if(prevMode === isMobile) return;
+
         if(overlay.classList.contains('is-open')){
-          // rebuild view mode, keep approximate position
-          const currentFile = isMobile ? pages[idx] : (pairs[idx] ? pairs[idx][0] : null);
+          // keep approximate position while switching mode
+          const currentFile = prevMode ? pages[idx] : (pairs[idx] ? pairs[idx][0] : null);
           buildStructures();
           if(isMobile){
             idx = Math.max(0, pages.findIndex(x=>x===currentFile));
             if(idx < 0) idx = 0;
           } else {
-            // find nearest spread containing the file
             const sp = pairs.findIndex(p=>p && (p[0]===currentFile || p[1]===currentFile));
             idx = Math.max(0, sp >= 0 ? sp : 0);
           }
           render();
         }
-      });
+      }
+
+      mqlW.addEventListener?.('change', handleModeChange);
+      mqlP.addEventListener?.('change', handleModeChange);
 
       function pad2(n){ return String(n).padStart(2,'0'); }
 
