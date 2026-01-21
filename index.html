@@ -113,7 +113,7 @@
       min-height: calc(100vh - (62px + env(safe-area-inset-top)));
       display:flex;
       align-items:center;
-      padding: 44px var(--pad);
+      padding: 64px var(--pad) 44px;
       scroll-snap-align: start;
       position:relative;
     }
@@ -351,7 +351,7 @@
         height:auto;
       }
       .panel{ border-radius: 28px; }
-      .section{ padding: 34px var(--pad); }
+      .section{ padding: 48px var(--pad) 34px; }
       .hint{ display:none; }
     }
 
@@ -388,7 +388,7 @@
       }
       .mouse{ width: 16px; height: 24px; }
 
-      .section{ padding: 22px var(--pad) 26px; }
+      .section{ padding: 32px var(--pad) 26px; }
       .panel{ border-radius: 28px; }
     }
 
@@ -656,61 +656,110 @@
 
         img.addEventListener('error', () => { markLoaded(); }, { once:true });
       });
-
       // Snap-to-section “доводчики” (prevents half-cut content)
-      const SNAP_IDLE_MS = 130; // debounce after last scroll event
-      const SNAP_EPS_PX = 8;    // do nothing if already aligned
+      // More responsive: a small swipe advances to next/prev section.
+      const SNAP_IDLE_MS = 95;   // faster response
+      const SNAP_EPS_PX  = 8;    // do nothing if already aligned
+      const SWIPE_PX     = 48;   // how much scroll counts as "intent to change screen"
       let snapTimer = null;
       let isSnapping = false;
 
-      function nearestSection(){
+      let scrollStartTop = 0;
+      let scrollStartIdx = 0;
+      let lastTop = 0;
+      let lastT = performance.now();
+
+      function indexAt(top){
+        let idx = 0;
+        for (let i = 0; i < sections.length; i++){
+          if (sections[i].offsetTop <= top + 1) idx = i;
+        }
+        return idx;
+      }
+
+      function interactionStart(){
+        scrollStartTop = main.scrollTop;
+        scrollStartIdx = indexAt(scrollStartTop);
+      }
+
+      function nearestIndex(){
         const top = main.scrollTop;
         const vh = main.clientHeight || window.innerHeight;
-        const probe = top + vh * 0.22; // reading bias
-
-        let best = sections[0];
+        const probe = top + vh * 0.28; // bias a bit down so it changes screens easier
+        let best = 0;
         let bestDist = Infinity;
-
-        for (const s of sections){
-          const y = s.offsetTop;
+        for (let i = 0; i < sections.length; i++){
+          const y = sections[i].offsetTop;
           const dist = Math.abs(y - probe);
           if (dist < bestDist){
             bestDist = dist;
-            best = s;
+            best = i;
           }
         }
         return best;
       }
 
-      function snapNow(){
-        if (isSnapping) return;
-        const s = nearestSection();
+      function snapToIndex(idx){
+        const s = sections[Math.max(0, Math.min(sections.length - 1, idx))];
         if (!s) return;
-
         const targetTop = s.offsetTop;
         const curTop = main.scrollTop;
-
         if (Math.abs(curTop - targetTop) <= SNAP_EPS_PX) return;
 
         isSnapping = true;
         main.scrollTo({ top: targetTop, behavior: reduceMotion ? 'auto' : 'smooth' });
+        window.setTimeout(() => { isSnapping = false; }, reduceMotion ? 0 : 520);
+      }
 
-        window.setTimeout(() => { isSnapping = false; }, reduceMotion ? 0 : 650);
+      function snapNow(forceFromSwipe = false){
+        if (isSnapping) return;
+
+        const curTop = main.scrollTop;
+        const delta = curTop - scrollStartTop;
+
+        // If user clearly swiped, go next/prev from the screen where swipe started
+        if (forceFromSwipe && Math.abs(delta) >= SWIPE_PX){
+          if (delta > 0) return snapToIndex(scrollStartIdx + 1);
+          if (delta < 0) return snapToIndex(scrollStartIdx - 1);
+        }
+
+        // Otherwise pick nearest (still prevents half-cut content)
+        return snapToIndex(nearestIndex());
       }
 
       function scheduleSnap(){
         if (isSnapping) return;
         if (snapTimer) window.clearTimeout(snapTimer);
-        snapTimer = window.setTimeout(snapNow, SNAP_IDLE_MS);
+        snapTimer = window.setTimeout(() => snapNow(false), SNAP_IDLE_MS);
       }
 
-      main.addEventListener('scroll', scheduleSnap, { passive:true });
-      main.addEventListener('wheel', scheduleSnap, { passive:true });
-      main.addEventListener('touchend', () => window.setTimeout(snapNow, 90), { passive:true });
+      // Track scroll for subtle responsiveness (and future tuning)
+      main.addEventListener('scroll', () => {
+        if (isSnapping) return;
+        const now = performance.now();
+        lastTop = main.scrollTop;
+        lastT = now;
+        scheduleSnap();
+      }, { passive:true });
+
+      // Start markers for intent
+      main.addEventListener('wheel', () => { if (!isSnapping) interactionStart(); }, { passive:true });
+      main.addEventListener('touchstart', () => { if (!isSnapping) interactionStart(); }, { passive:true });
+
+      // On touch end — treat as intent, snap to next/prev if swipe was enough
+      main.addEventListener('touchend', () => {
+        if (isSnapping) return;
+        window.setTimeout(() => snapNow(true), 70);
+      }, { passive:true });
+
+      // On mouse wheel end we usually rely on debounced scheduleSnap
       main.addEventListener('keyup', (e) => {
         const keys = ['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '];
         if (keys.includes(e.key)) scheduleSnap();
       });
+
+
+      
 
       // Prevent “horizontal jiggle” on iOS overscroll
       main.addEventListener('scroll', ()=>{
