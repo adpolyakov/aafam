@@ -1,30 +1,24 @@
 <!doctype html>
 <html lang="ru">
-<head data-build-stamp="2026-01-21 10:51:27 UTC">
+<head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0c10" />
   <meta name="description" content="Личный сайт-продолжение предложения для Арины." />
-
   <title>Для Арины</title>
 
+  <!-- Hero preload (helps iPhone) -->
   <link rel="preload" as="image" href="img/lotte.jpg" fetchpriority="high" />
 
   <style>
     :root{
-      /* Premium palette */
       --bg0:#07080b;
       --bg1:#0b0c10;
-      --card:#0f1118;
-      --card2:#0c0e14;
       --text:#eef0f6;
       --muted:rgba(238,240,246,.72);
-      --soft:rgba(238,240,246,.14);
-      --soft2:rgba(238,240,246,.08);
-      --accent:#d8b66f;          /* warm gold */
-      --accent2:#7bd3ff;         /* cool highlight */
+      --accent:#d8b66f;
+      --accent2:#7bd3ff;
 
-      --r1:18px;
       --r2:26px;
       --r3:34px;
 
@@ -48,16 +42,17 @@
     body{
       margin:0;
       color:var(--text);
-      background: radial-gradient(1200px 900px at 20% -10%, rgba(216,182,111,.22), transparent 55%),
-                  radial-gradient(900px 700px at 90% 10%, rgba(123,211,255,.16), transparent 52%),
-                  radial-gradient(1100px 900px at 50% 110%, rgba(216,182,111,.14), transparent 55%),
-                  linear-gradient(180deg, var(--bg0), var(--bg1));
+      background:
+        radial-gradient(1200px 900px at 20% -10%, rgba(216,182,111,.22), transparent 55%),
+        radial-gradient(900px 700px at 90% 10%, rgba(123,211,255,.16), transparent 52%),
+        radial-gradient(1100px 900px at 50% 110%, rgba(216,182,111,.14), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
       letter-spacing: .2px;
       overflow-x:hidden;
     }
 
-    /* Subtle premium noise overlay (very light) */
+    /* Subtle premium noise */
     body::before{
       content:"";
       position:fixed;
@@ -69,24 +64,16 @@
       transform:translateZ(0);
     }
 
-    a{ color:inherit; text-decoration:none; }
-    .sr{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-
-    /* Top bar */
+    /* Top bar (dots only) */
     .topbar{
-
-    /* Header layout tweak (no title / no CTA) */
-    .topbar{
-      justify-content:center;
-    }
-          position:fixed;
+      position:fixed;
       left:0; right:0;
       top: env(safe-area-inset-top);
       z-index:50;
       padding: 14px var(--pad);
       display:flex;
       align-items:center;
-      justify-content:space-between;
+      justify-content:center;
       gap:12px;
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
@@ -111,34 +98,6 @@
       transform: scale(1.25);
     }
 
-    .cta{
-      display:flex; align-items:center; gap:10px;
-      min-width: 180px;
-      justify-content:flex-end;
-    }
-    .pill{
-      display:inline-flex; align-items:center; gap:10px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      box-shadow: 0 12px 30px rgba(0,0,0,.28);
-      transition: transform .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease);
-      user-select:none;
-    }
-    .pill:hover{
-      transform: translateY(-1px);
-      border-color: rgba(255,255,255,.22);
-      background: rgba(255,255,255,.08);
-    }
-    .pill i{
-      width:9px; height:9px; border-radius:999px;
-      background: var(--accent);
-      box-shadow: 0 0 0 6px rgba(216,182,111,.12);
-      display:inline-block;
-    }
-    .pill span{ font-size: 12px; color: var(--muted); letter-spacing:.3px; }
-
     /* Main scroll container */
     main{
       height:100vh;
@@ -146,14 +105,12 @@
       scroll-behavior:smooth;
       padding-top: calc(62px + env(safe-area-inset-top));
     }
+    main.snap{ scroll-snap-type: y proximity; }
 
-    /* Gentle snap (disabled on iPhone via JS) */
-    main.snap{
-      scroll-snap-type: y proximity;
-    }
     .section{
       content-visibility: auto;
       contain-intrinsic-size: 900px;
+
       min-height: calc(100vh - (62px + env(safe-area-inset-top)));
       display:flex;
       align-items:center;
@@ -219,21 +176,15 @@
       object-fit: contain;
       display:block;
       transform: translateZ(0);
-      filter: saturate(1.02) contrast(1.03);
     }
-
 
     /* Progressive image loading (perceived performance) */
-    .media-card{
-      --sk: rgba(255,255,255,.08);
-      --sk2: rgba(255,255,255,.02);
-    }
     .media-card::after{
       content:"";
       position:absolute;
       inset:0;
       background:
-        linear-gradient(110deg, transparent 0%, rgba(255,255,255,.07) 10%, transparent 20%) ,
+        linear-gradient(110deg, transparent 0%, rgba(255,255,255,.07) 10%, transparent 20%),
         radial-gradient(600px 420px at 20% 20%, rgba(216,182,111,.10), transparent 60%),
         radial-gradient(600px 420px at 80% 40%, rgba(123,211,255,.08), transparent 60%);
       opacity: .55;
@@ -242,40 +193,21 @@
       pointer-events:none;
       transition: opacity .55s var(--ease);
     }
-    .media-card.is-loaded::after{
-      opacity: 0;
-      animation: none;
-    }
-    @keyframes shimmer{
-      0%{ transform: translateX(-30%); }
-      100%{ transform: translateX(30%); }
-    }
+    .media-card.is-loaded::after{ opacity:0; animation:none; }
+
+    @keyframes shimmer{ 0%{ transform:translateX(-30%);} 100%{ transform:translateX(30%);} }
+
     .media-card img{
-      opacity: 0;
+      opacity:0;
       filter: blur(14px) saturate(1.05);
       transform: scale(1.02) translateZ(0);
       transition: opacity .65s var(--ease), filter .85s var(--ease), transform .85s var(--ease);
     }
     .media-card.is-loaded img{
-      opacity: 1;
+      opacity:1;
       filter: blur(0) saturate(1.02) contrast(1.03);
       transform: scale(1.0) translateZ(0);
     }
-
-.media-badge{
-      position:absolute;
-      left: 16px; top: 16px;
-      display:inline-flex; align-items:center; gap:8px;
-      padding: 9px 12px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.28);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .media-badge b{ color: var(--text); font-weight:650; letter-spacing:.2px; }
 
     .content{
       padding: clamp(22px, 3vw, 34px);
@@ -304,10 +236,7 @@
       opacity:.9;
     }
 
-    h1, h2{
-      margin:0;
-      letter-spacing: -0.6px;
-    }
+    h1, h2{ margin:0; letter-spacing:-0.6px; }
     h1{ font-size: var(--h1); line-height: 1.02; }
     h2{ font-size: var(--h2); line-height: 1.1; }
 
@@ -357,224 +286,104 @@
     .btn span{ font-size: 13px; color: rgba(238,240,246,.88); letter-spacing:.2px; }
 
     /* Scroll hint */
-    
-    .mobile-hint.show{ opacity: .85; }
-
-
-
-    /* Mobile section snapping (prevents seeing the next screen without a swipe) */
-    @media (max-width: 520px){
-
-      /* Make the first screen fit without losing content */
-      #s1 .grid{ gap: 0; }
-      #s1 .media{
-        padding: 12px;
-        justify-content: center;
-      }
-      #s1 .media-card{
-        /* Match the image ratio AND avoid side "air" */
-        aspect-ratio: 2 / 3;
-        height: 48vh;           /* slightly smaller so the hint never collides */
-        width: auto;
-        max-width: 100%;
-        border-radius: 28px;
-      }
-      #s1 .content{
-        padding: 16px 18px 22px;
-        gap: 12px;
-      }
-      #s1 h1{
-        /* Slightly smaller and keep in one line */
-        font-size: clamp(26px, 6.6vw, 34px);
-        white-space: nowrap;
-        letter-spacing: -0.8px;
-      }
-
-      /* Hide the button on phones (keep it on desktop/tablet) */
-      #s1 .actions{ display:none; }
-
-      /* Restore the original in-section hint on phones */
-      .hint{
-        display:flex;
-        bottom: calc(env(safe-area-inset-bottom) + 18px);
-        font-size: 11px;
-        opacity: .82;
-        padding: 6px 10px;
-        border-radius: 999px;
-        background: rgba(0,0,0,.16);
-        border: 1px solid rgba(255,255,255,.07);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        pointer-events: none;
-      }
-
-      /* Keep enough space so Safari UI never clips content */
-      main{
-        height: 100dvh;
-        padding-bottom: calc(env(safe-area-inset-bottom) + 18px);
-      }
-      .section{
-        min-height: calc(100dvh - (62px + env(safe-area-inset-top)));
-        padding: 22px var(--pad) calc(56px + env(safe-area-inset-bottom)); /* extra room for hint */
-      }
-      .panel{
-        border-radius: 28px;
-      }
-
+    .hint{
+      position:absolute;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color: rgba(238,240,246,.68);
+      font-size: 12px;
+      letter-spacing:.3px;
+      user-select:none;
+      opacity:.9;
     }
-      .section{
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
-      }
+    .mouse{
+      width: 18px;
+      height: 28px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.28);
+      position:relative;
+    }
+    .mouse::after{
+      content:"";
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      position:absolute;
+      left:50%;
+      top: 7px;
+      transform: translateX(-50%);
+      animation: wheel 1.55s var(--ease) infinite;
+    }
+    @keyframes wheel{
+      0%{ transform: translate(-50%, 0); opacity:.9; }
+      70%{ transform: translate(-50%, 10px); opacity:.25; }
+      100%{ transform: translate(-50%, 10px); opacity:.15; }
     }
 
-    /* Responsive layout */
+    /* Reveal animations */
+    .reveal{
+      opacity:0;
+      transform: translateY(14px);
+      transition: opacity .7s var(--ease), transform .7s var(--ease);
+    }
+    .reveal.is-in{ opacity:1; transform: translateY(0); }
+
+    /* Tablet / general responsive */
     @media (max-width: 920px){
-      .brand, .cta{ min-width: unset; }
-      .grid{
-        grid-template-columns: 1fr;
-        min-height: unset;
-      }
+      .grid{ grid-template-columns: 1fr; min-height: unset; }
       .media{
         border-right: none;
         border-bottom: 1px solid rgba(255,255,255,.07);
         padding: 14px;
       }
-      .media-card{
-        aspect-ratio: 4 / 5;
-        height:auto;
-      }
+      .media-card{ aspect-ratio: 4 / 5; height:auto; }
       .panel{ border-radius: 28px; }
       .section{ padding: 34px var(--pad); }
       .hint{ display:none; }
     }
 
-
     /* iPhone / small phones tuning (keeps desktop untouched) */
-    /* mobile-fix: hint-safe-area */
     @media (max-width: 520px){
-
-      /* Make the first screen fit without losing content */
-      #s1 .grid{ gap: 0; }
-      #s1 .media{
-        padding: 12px;
-        justify-content: center;
-      }
-      #s1 .media-card{
-        /* Match the image ratio AND avoid side "air" */
-        aspect-ratio: 2 / 3;
-        height: 52vh;
-        width: auto;
-        max-width: 100%;
-        border-radius: 28px;
-      }
-      #s1 .content{
-        padding: 16px 18px 22px;
-        gap: 12px;
-      }
-      #s1 h1{
-        /* Slightly smaller and keep in one line */
-        font-size: clamp(26px, 6.6vw, 34px);
-        white-space: nowrap;
-        letter-spacing: -0.8px;
-      }
-
-      /* Hide the button on phones (keep it on desktop/tablet) */
-      #s1 .actions{ display:none; }
-
-      /* Hide the in-section hint on phones (we use overlay hint instead) */
-      
-
-      /* Keep enough space so Safari UI never clips content */
+      /* Isolate screens on mobile: no early peeking of next section */
       main{
-        height: 100dvh;
-        padding-bottom: calc(env(safe-area-inset-bottom) + 18px);
+        scroll-snap-type: y mandatory;
+        overscroll-behavior-y: contain;
       }
       .section{
-        min-height: calc(100dvh - (62px + env(safe-area-inset-top)));
-        padding: 22px var(--pad) calc(26px + env(safe-area-inset-bottom));
+        height: calc(100dvh - (62px + env(safe-area-inset-top)));
+        min-height: unset;
+        scroll-snap-stop: always;
+        overflow: hidden;
+        padding: 22px var(--pad) 26px;
       }
-      .panel{
-        border-radius: 28px;
-      }
-
-      /* Show overlay hint only on phones */
-      .mobile-hint{ display:flex; }
-
-    }
-
-/* Make the first screen fit without losing content */
-      #s1 .grid{ gap: 0; }
-      #s1 .media{
-        padding: 12px;
-        justify-content: center;
-      .hint{
-        display:flex;
-        bottom: calc(env(safe-area-inset-bottom) + 72px);
-        padding: 6px 10px;
-        border-radius: 999px;
-        background: rgba(0,0,0,.18);
-        border: 1px solid rgba(255,255,255,.08);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        font-size: 11px;
-        opacity: .8;
-      #s1 .content{ padding-bottom: 34px; }
-
-      }
-
-      #s1 .panel{
-        margin-bottom: 60px;
-      }
-
-      }
+      #s1 .media{ padding: 12px; justify-content:center; }
       #s1 .media-card{
-        /* Match the image ratio AND avoid side "air" */
         aspect-ratio: 2 / 3;
         height: 52vh;
         width: auto;
         max-width: 100%;
         border-radius: 28px;
       }
-      #s1 .content{
-        padding: 16px 18px 22px;
-        gap: 12px;
-      }
+      #s1 .content{ padding: 16px 18px 22px; gap: 12px; }
       #s1 h1{
-        /* Slightly smaller and keep in one line */
         font-size: clamp(26px, 6.6vw, 34px);
         white-space: nowrap;
         letter-spacing: -0.8px;
       }
-
-      /* Hide the button on phones (keep it on desktop/tablet) */
       #s1 .actions{ display:none; }
 
-      /* Bring back the bottom hint on phones */
       .hint{
         display:flex;
         bottom: 10px;
         font-size: 11px;
         opacity: .8;
       }
-      .mouse{
-        width: 16px;
-        height: 24px;
-      }
-
-      /* Reduce section padding a bit to avoid clipping under iOS browser UI */
-      .section{
-        padding: 22px var(--pad) 26px;
-      }
-      .panel{
-        border-radius: 28px;
-      }
-    }
-
-
-    @supports (height: 100dvh){
-      main{ height: 100dvh; }
-      .section{ min-height: calc(100dvh - (62px + env(safe-area-inset-top))); }
+      .mouse{ width:16px; height:24px; }
     }
 
     /* Reduced motion */
@@ -588,8 +397,6 @@
 
 <body>
   <header class="topbar">
-</div>
-
     <nav class="nav" aria-label="Навигация по экранам">
       <button class="dot" data-to="s1" aria-label="Экран 1" aria-current="true"></button>
       <button class="dot" data-to="s2" aria-label="Экран 2"></button>
@@ -597,7 +404,7 @@
       <button class="dot" data-to="s4" aria-label="Экран 4"></button>
       <button class="dot" data-to="s5" aria-label="Экран 5"></button>
     </nav>
-</header>
+  </header>
 
   <main id="main" class="snap" aria-label="Основной контент">
     <!-- SECTION 1 -->
@@ -607,9 +414,8 @@
           <div class="grid">
             <div class="media">
               <div class="media-card reveal" data-reveal>
-                <!-- Картинка первого окна: img/lotte.jpg -->
                 <img src="img/lotte.jpg" alt="Иллюстрация предложения" loading="eager" decoding="async" fetchpriority="high" />
-</div>
+              </div>
             </div>
             <div class="content">
               <div class="kicker reveal" data-reveal>Сайт с частичкой нашей любви</div>
@@ -648,16 +454,13 @@
           <div class="grid">
             <div class="media">
               <div class="media-card reveal" data-reveal>
-                <img src="img/02.jpg" alt="Тёплый момент" loading="lazy" decoding="async" />
-</div>
+                <img src="img/02.jpg" alt="Шаг 2" loading="lazy" decoding="async" />
+              </div>
             </div>
             <div class="content">
-              <div class="kicker reveal" data-reveal>ты — про детали</div>
-              <h2 class="reveal" data-reveal>Ты умеешь делать красиво. И жизнь рядом с тобой — тоже.</h2>
-              <p class="reveal" data-reveal>
-                Ты замечаешь нюансы, чувствуешь форму, цвет, настроение.
-                И у тебя есть редкий талант — превращать «обычно» в «вау».
-              </p>
+              <div class="kicker reveal" data-reveal>дальше</div>
+              <h2 class="reveal" data-reveal>Экран 2</h2>
+              <p class="reveal" data-reveal>Тут будет следующий шаг и контент, который мы проработаем дальше.</p>
               <div class="actions">
                 <button class="btn primary" data-scroll="#s3">
                   <span class="icon" aria-hidden="true">
@@ -682,16 +485,13 @@
           <div class="grid">
             <div class="media">
               <div class="media-card reveal" data-reveal>
-                <img src="img/03.jpg" alt="Наши моменты" loading="lazy" decoding="async" />
-</div>
+                <img src="img/03.jpg" alt="Шаг 3" loading="lazy" decoding="async" />
+              </div>
             </div>
             <div class="content">
-              <div class="kicker reveal" data-reveal>то, что я люблю</div>
-              <h2 class="reveal" data-reveal>С тобой спокойно. И одновременно — хочется жить громче.</h2>
-              <p class="reveal" data-reveal>
-                Я люблю наши привычки, наши «внутренние шутки», наши планы.
-                Люблю, что рядом с тобой я становлюсь лучше — без давления, просто потому что хочу.
-              </p>
+              <div class="kicker reveal" data-reveal>план</div>
+              <h2 class="reveal" data-reveal>Экран 3</h2>
+              <p class="reveal" data-reveal>Здесь будет следующий блок и детали продолжения.</p>
               <div class="actions">
                 <button class="btn primary" data-scroll="#s4">
                   <span class="icon" aria-hidden="true">
@@ -700,7 +500,7 @@
                       <path d="M7 14l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <span>Ещё чуть-чуть</span>
+                  <span>Дальше</span>
                 </button>
               </div>
             </div>
@@ -716,16 +516,13 @@
           <div class="grid">
             <div class="media">
               <div class="media-card reveal" data-reveal>
-                <img src="img/04.jpg" alt="Будущее" loading="lazy" decoding="async" />
-</div>
+                <img src="img/04.jpg" alt="Шаг 4" loading="lazy" decoding="async" />
+              </div>
             </div>
             <div class="content">
-              <div class="kicker reveal" data-reveal>простое обещание</div>
-              <h2 class="reveal" data-reveal>Я хочу быть твоим домом. И твоим приключением.</h2>
-              <p class="reveal" data-reveal>
-                Поддерживать тебя в твоих мечтах. Беречь нас в сложные дни.
-                И делать так, чтобы через годы мы всё так же выбирали друг друга — каждый день.
-              </p>
+              <div class="kicker reveal" data-reveal>ещё</div>
+              <h2 class="reveal" data-reveal>Экран 4</h2>
+              <p class="reveal" data-reveal>Здесь будет следующий шаг и оформим его красиво.</p>
               <div class="actions">
                 <button class="btn primary" data-scroll="#s5">
                   <span class="icon" aria-hidden="true">
@@ -751,24 +548,21 @@
             <div class="media">
               <div class="media-card reveal" data-reveal>
                 <img src="img/05-final.jpg" alt="Финал" loading="lazy" decoding="async" />
-</div>
+              </div>
             </div>
             <div class="content">
-              <div class="kicker reveal" data-reveal>продолжение</div>
-              <h1 class="reveal" data-reveal>Поехали дальше.</h1>
-              <p class="reveal" data-reveal>
-                Сейчас будет план, шаг за шагом — чтобы этот день стал началом нашей новой главы.
-              </p>
-
+              <div class="kicker reveal" data-reveal>финал</div>
+              <h2 class="reveal" data-reveal>Экран 5</h2>
+              <p class="reveal" data-reveal>Тут будет QR и дальнейший план действий.</p>
               <div class="actions">
-                <button class="btn primary" data-scroll="#s1" aria-label="Вернуться к началу">
+                <button class="btn primary" data-scroll="#s1">
                   <span class="icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
                       <path d="M3 12a9 9 0 1 0 3-6.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                       <path d="M3 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <span>Ещё раз</span>
+                  <span>Наверх</span>
                 </button>
               </div>
             </div>
@@ -778,9 +572,6 @@
     </section>
 
   </main>
-<div>листай вниз</div>
-  </div>
-
 
   <script>
     (function(){
@@ -789,13 +580,13 @@
       const revealEls = Array.from(document.querySelectorAll('[data-reveal]'));
       const sections = Array.from(document.querySelectorAll('.section'));
 
-      // Disable snap on iPhone/iOS Safari to avoid “fight” with native momentum
       const ua = navigator.userAgent || "";
       const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
       const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (isIOS || reduceMotion) main.classList.remove('snap');
 
-      // Dot navigation
+      // Keep desktop snap; on iOS we'll still allow the CSS mobile mandatory snap to handle isolation.
+      if ((isIOS && window.innerWidth > 520) || reduceMotion) main.classList.remove('snap');
+
       function scrollToId(id){
         const el = document.getElementById(id);
         if(!el) return;
@@ -810,16 +601,15 @@
         });
       });
 
-      // Reveal on view
+      // Reveal
       const io = new IntersectionObserver((entries)=>{
         entries.forEach(e=>{
           if(e.isIntersecting) e.target.classList.add('is-in');
         });
       }, { root: main, threshold: 0.18 });
-
       revealEls.forEach(el => io.observe(el));
 
-      // Active dot by section
+      // Active dot
       const so = new IntersectionObserver((entries)=>{
         entries.forEach(e=>{
           if(!e.isIntersecting) return;
@@ -827,11 +617,9 @@
           dots.forEach(d => d.setAttribute('aria-current', d.dataset.to === id ? 'true' : 'false'));
         });
       }, { root: main, threshold: 0.55 });
-
       sections.forEach(s => so.observe(s));
 
-
-      // Progressive image: remove shimmer + fade-in once decoded
+      // Progressive image: fade-in when decoded
       const imgs = Array.from(document.querySelectorAll('.media-card img'));
       imgs.forEach(async (img) => {
         const card = img.closest('.media-card');
@@ -839,7 +627,6 @@
 
         const markLoaded = () => card.classList.add('is-loaded');
 
-        // If cached and already complete
         if (img.complete && img.naturalWidth > 0) {
           try { await img.decode(); } catch(e){}
           markLoaded();
@@ -851,13 +638,10 @@
           markLoaded();
         }, { once:true });
 
-        img.addEventListener('error', () => {
-          // If something goes wrong, still remove shimmer to avoid infinite loading state
-          markLoaded();
-        }, { once:true });
+        img.addEventListener('error', () => markLoaded(), { once:true });
       });
 
-      // Prevent “horizontal jiggle” on iOS overscroll
+      // Prevent horizontal jiggle on iOS overscroll
       main.addEventListener('scroll', ()=>{
         if(main.scrollLeft !== 0) main.scrollLeft = 0;
       }, {passive:true});
