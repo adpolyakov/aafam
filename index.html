@@ -35,9 +35,6 @@
       --small: clamp(12px, 1.15vw, 14px);
 
       --ease: cubic-bezier(.2,.8,.2,1);
-      --topbar: 62px;
-      --mainTop: calc(var(--topbar) + env(safe-area-inset-top));
-      --mainBottom: calc(env(safe-area-inset-bottom) + 14px);
     }
 
     *{ box-sizing:border-box; }
@@ -76,7 +73,6 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      justify-content:center;
       gap:12px;
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
@@ -101,14 +97,11 @@
 
     /* Main scroll container */
     main{
-      height: 100vh;          /* fallback */
-      height: 100svh;         /* small viewport (iOS) */
-      height: 100dvh;         /* dynamic viewport */
+      height:100vh;
       overflow-y:auto;
       scroll-behavior:smooth;
-      padding-top: var(--mainTop);
-      padding-bottom: var(--mainBottom);
-}
+      padding-top: calc(62px + env(safe-area-inset-top));
+    }
 
     /* CSS snap for desktop; iOS will be disabled via JS to avoid fighting momentum */
     main.snap{ scroll-snap-type: y proximity; }
@@ -117,13 +110,10 @@
       content-visibility: auto;
       contain-intrinsic-size: 900px;
 
-      min-height: calc(100vh - var(--mainTop) - var(--mainBottom));
-      min-height: calc(100svh - var(--mainTop) - var(--mainBottom));
-      min-height: calc(100dvh - var(--mainTop) - var(--mainBottom));
+      min-height: calc(100vh - (62px + env(safe-area-inset-top)));
       display:flex;
       align-items:center;
-      justify-content:center;
-      padding: 64px var(--pad) 44px;
+      padding: 44px var(--pad);
       scroll-snap-align: start;
       position:relative;
     }
@@ -159,7 +149,6 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      justify-content:center;
     }
 
     .media-card{
@@ -176,7 +165,6 @@
       position:relative;
       display:flex;
       align-items:center;
-      justify-content:center;
       justify-content:center;
     }
 
@@ -307,7 +295,6 @@
       transform: translateX(-50%);
       display:flex;
       align-items:center;
-      justify-content:center;
       gap:10px;
       color: rgba(238,240,246,.68);
       font-size: 12px;
@@ -348,23 +335,6 @@
     }
     .reveal.is-in{ opacity:1; transform: translateY(0); }
 
-
-    /* Album cover styling */
-    #s2 .media-card{
-      padding: clamp(14px, 2.4vw, 26px);
-      background:
-        radial-gradient(520px 420px at 50% 35%, rgba(216,182,111,.18), transparent 62%),
-        radial-gradient(520px 420px at 55% 55%, rgba(123,211,255,.10), transparent 62%),
-        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-    }
-    #s2 .media-card img{
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      transform: translateZ(0) scale(0.98);
-      filter: drop-shadow(0 24px 40px rgba(0,0,0,.45));
-    }
-
     /* Responsive layout */
     @media (max-width: 920px){
       .grid{
@@ -381,19 +351,12 @@
         height:auto;
       }
       .panel{ border-radius: 28px; }
-      .section{ padding: 48px var(--pad) 34px; }
+      .section{ padding: 34px var(--pad); }
       .hint{ display:none; }
     }
 
     /* iPhone / small phones tuning (keeps desktop untouched) */
     @media (max-width: 520px){
-      /* prevent next screen peeking + add top air */
-      .section{
-        min-height: calc(100dvh - var(--mainTop) - var(--mainBottom));
-        padding-top: 34px;
-        padding-bottom: 34px;
-      }
-
       #s1 .media{
         padding: 12px;
         justify-content: center;
@@ -416,25 +379,232 @@
         letter-spacing: -0.8px;
       }
       #s1 .actions{ display:none; }
-      #s1 .panel{ margin-bottom: 54px; }
-
 
       .hint{
-        position: fixed;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: calc(var(--mainBottom) + 8px);
         display:flex;
+        bottom: 10px;
         font-size: 11px;
-        opacity: .82;
-        z-index: 60;
-        pointer-events: none;
+        opacity: .8;
       }
       .mouse{ width: 16px; height: 24px; }
 
-      .section{ padding: 32px var(--pad) 26px; }
+      .section{ padding: 22px var(--pad) 26px; }
       .panel{ border-radius: 28px; }
     }
+
+
+    /* Tap hint */
+    .tap-hint{
+      position:absolute;
+      right: 14px;
+      top: 14px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: .2px;
+      color: rgba(238,240,246,.86);
+      background: rgba(0,0,0,.28);
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+      opacity: .92;
+      transition: transform .35s var(--ease), opacity .35s var(--ease);
+      pointer-events:none;
+    }
+    #s2 .media-card[data-open-album="true"]{
+      cursor: pointer;
+      outline: none;
+      transform: translateZ(0);
+      transition: transform .35s var(--ease), border-color .35s var(--ease);
+    }
+    #s2 .media-card[data-open-album="true"]:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,.18);
+    }
+    #s2 .media-card[data-open-album="true"]:active{ transform: translateY(0); }
+
+    /* Album overlay (premium book) */
+    .album-overlay{ position: fixed; inset: 0; z-index: 120; display: none; }
+    .album-overlay.is-open{ display:block; }
+    .album-backdrop{
+      position:absolute; inset:0;
+      background: rgba(4,5,8,.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .album-shell{
+      position:absolute; inset: 0;
+      padding: calc(var(--mainTop, 0px) + 14px) var(--pad) calc(var(--mainBottom, 0px) + 18px);
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      gap: 14px;
+    }
+    .album-book{
+      width: min(1100px, 100%);
+      flex: 1 1 auto;
+      display:grid;
+      grid-template-columns: 54px 1fr 54px;
+      align-items:center;
+      gap: 12px;
+    }
+    .album-spread{
+      position: relative;
+      width: 100%;
+      height: min(76vh, 720px);
+      max-height: calc(100dvh - var(--mainTop, 0px) - var(--mainBottom, 0px) - 120px);
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,.10);
+      background:
+        radial-gradient(900px 520px at 25% 20%, rgba(216,182,111,.14), transparent 55%),
+        radial-gradient(860px 520px at 75% 35%, rgba(123,211,255,.10), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      box-shadow: 0 22px 70px rgba(0,0,0,.55);
+      overflow:hidden;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      transform: translateZ(0);
+    }
+    .album-spread::before{
+      content:"";
+      position:absolute; inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(600px 420px at 50% 50%, rgba(0,0,0,.18), transparent 60%),
+        linear-gradient(90deg, rgba(0,0,0,.18), transparent 18%, transparent 82%, rgba(0,0,0,.18));
+      opacity:.9;
+    }
+    .page{
+      position: relative;
+      padding: clamp(14px, 2vw, 22px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .page.left{ border-right: 1px solid rgba(255,255,255,.07); }
+    .spine{
+      position:absolute;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      width: 22px;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(0,0,0,.42), rgba(255,255,255,.06), rgba(0,0,0,.42));
+      opacity:.65;
+      pointer-events:none;
+    }
+    .photo-frame{
+      width: 100%;
+      height: 100%;
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      box-shadow: 0 18px 46px rgba(0,0,0,.40);
+      overflow:hidden;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .photo-backdrop{
+      position:absolute; inset:-12px;
+      background-size: cover;
+      background-position: center;
+      filter: blur(18px) saturate(1.05);
+      transform: scale(1.08);
+      opacity:.55;
+    }
+    .photo-frame::after{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(500px 320px at 50% 20%, rgba(255,255,255,.10), transparent 55%);
+      pointer-events:none;
+      opacity:.75;
+    }
+    .photo{
+      position:relative;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      filter: blur(10px);
+      transition: opacity .45s var(--ease), filter .65s var(--ease);
+    }
+    .photo.is-loaded{ opacity: 1; filter: blur(0); }
+
+    .album-nav{
+      width: 54px; height: 54px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      display:grid; place-items:center;
+      cursor:pointer;
+      transition: transform .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease);
+      user-select:none;
+    }
+    .album-nav:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.20); }
+    .album-nav:active{ transform: translateY(0); }
+    .album-nav svg{ width: 22px; height: 22px; opacity:.92; }
+
+    .album-close{
+      position:absolute;
+      top: calc(var(--mainTop, 0px) + 14px);
+      right: var(--pad);
+      width: 46px; height: 46px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      display:grid; place-items:center;
+      cursor:pointer;
+      transition: transform .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease);
+    }
+    .album-close:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.20); }
+    .album-close svg{ width: 20px; height: 20px; opacity:.92; }
+
+    .album-meta{
+      width: min(1100px, 100%);
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      color: rgba(238,240,246,.78);
+      font-size: 13px;
+      letter-spacing:.2px;
+      padding: 0 4px;
+    }
+    .album-dots{ display:flex; gap:6px; align-items:center; opacity:.85; }
+    .album-dots span{
+      width: 7px; height: 7px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.08);
+      transition: transform .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease);
+    }
+    .album-dots span.is-on{
+      background: linear-gradient(135deg, rgba(216,182,111,.90), rgba(123,211,255,.70));
+      border-color: rgba(255,255,255,.42);
+      transform: scale(1.2);
+    }
+
+    .album-clone{
+      position: fixed;
+      z-index: 130;
+      border-radius: var(--r2);
+      overflow:hidden;
+      box-shadow: 0 22px 70px rgba(0,0,0,.55);
+      border: 1px solid rgba(255,255,255,.12);
+      will-change: transform, width, height, left, top;
+      background: rgba(0,0,0,.12);
+    }
+
+    @media (max-width: 520px){
+      .album-book{ grid-template-columns: 1fr; }
+      .album-nav{ display:none; }
+      .album-meta{ justify-content:center; gap: 14px; }
+      .album-dots{ display:none; }
+      .album-spread{ border-radius: 26px; }
+      .photo-frame{ border-radius: 22px; }
+      .spine{ width: 16px; opacity:.55; }
+    }
+
 
     @media (prefers-reduced-motion: reduce){
       main{ scroll-behavior:auto; }
@@ -502,7 +672,8 @@
         <div class="panel">
           <div class="grid">
             <div class="media">
-              <div class="media-card reveal" data-reveal>
+              <div class="media-card reveal" data-reveal data-open-album="true" role="button" tabindex="0" aria-label="Открыть альбом">
+                <span class="tap-hint" aria-hidden="true">Открыть</span>
                 <img src="img/album.png" alt="Наш альбом" loading="lazy" decoding="async" />
               </div>
             </div>
@@ -512,17 +683,6 @@
               <p class="reveal" data-reveal>
                 В этот альбом я собрал малую, но любимую часть тех моментов, которые привели нас к этому вечеру. Люблю тебя в каждом из них❣️
               </p>
-              <div class="actions">
-                <button class="btn primary" data-scroll="#s3">
-                  <span class="icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M12 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                      <path d="M7 14l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                  <span>Дальше</span>
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -631,6 +791,56 @@
     </section>
   </main>
 
+
+  <!-- Album overlay -->
+  <div id="albumOverlay" class="album-overlay" aria-hidden="true">
+    <div class="album-backdrop" data-album-close="true"></div>
+
+    <div class="album-shell" role="dialog" aria-modal="true" aria-label="Наш альбом">
+      <button class="album-close" type="button" data-album-close="true" aria-label="Закрыть альбом">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <div class="album-book" role="group" aria-label="Разворот альбома">
+        <button class="album-nav prev" type="button" data-album-prev="true" aria-label="Предыдущий разворот">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <div class="album-spread" id="albumSpread">
+          <div class="page left">
+            <div class="photo-frame">
+              <div class="photo-backdrop"></div>
+              <img class="photo" alt="" />
+            </div>
+          </div>
+          <div class="page right">
+            <div class="photo-frame">
+              <div class="photo-backdrop"></div>
+              <img class="photo" alt="" />
+            </div>
+          </div>
+          <div class="spine" aria-hidden="true"></div>
+        </div>
+
+        <button class="album-nav next" type="button" data-album-next="true" aria-label="Следующий разворот">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="album-meta">
+        <div class="album-counter" id="albumCounter">—</div>
+        <div class="album-dots" id="albumDots" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+
   <script>
     (function(){
       const main = document.getElementById('main');
@@ -641,6 +851,289 @@
       const ua = navigator.userAgent || "";
       const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
       const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // =========================
+      // Album (dynamic list + overlay)
+      // =========================
+      const overlay = document.getElementById('albumOverlay');
+      const spreadEl = document.getElementById('albumSpread');
+      const counterEl = document.getElementById('albumCounter');
+      const dotsEl = document.getElementById('albumDots');
+
+      const openTriggers = Array.from(document.querySelectorAll('[data-open-album="true"]'));
+      const closeTriggers = Array.from(document.querySelectorAll('[data-album-close="true"]'));
+      const prevBtn = document.querySelector('[data-album-prev="true"]');
+      const nextBtn = document.querySelector('[data-album-next="true"]');
+
+      let files = [];       // [{n,name}]
+      let pairs = [];       // [[a,b],...]
+      let idx = 0;
+      let isOpen = false;
+      let loadedOnce = false;
+
+      function parseNumericJpg(name){
+        const m = String(name).match(/^(\d+)\.(jpe?g)$/i);
+        if(!m) return null;
+        return { n: parseInt(m[1], 10), name };
+      }
+
+      function buildPairs(list){
+        const ordered = list.slice().sort((a,b)=>a.n-b.n);
+        const out = [];
+        for(let i=0;i<ordered.length;i+=2){
+          out.push([ ordered[i]?.name || null, ordered[i+1]?.name || null ]);
+        }
+        return out;
+      }
+
+      function setDots(total){
+        dotsEl.innerHTML = '';
+        const maxDots = 9;
+        const show = Math.min(total, maxDots);
+        for(let i=0;i<show;i++){
+          dotsEl.appendChild(document.createElement('span'));
+        }
+      }
+      function updateDots(i){
+        const items = Array.from(dotsEl.children);
+        if(items.length === 0) return;
+        const total = pairs.length;
+        const maxDots = items.length;
+
+        let start = 0;
+        if(total > maxDots){
+          start = Math.max(0, Math.min(i - Math.floor(maxDots/2), total - maxDots));
+        }
+        items.forEach((el, k)=>{
+          const real = start + k;
+          el.classList.toggle('is-on', real === i);
+          el.style.opacity = real < total ? '1' : '0';
+        });
+      }
+
+      function lockBackground(lock){
+        if(lock){
+          main.dataset._scrollTop = String(main.scrollTop);
+          main.style.overflow = 'hidden';
+          main.style.touchAction = 'none';
+          document.body.style.overflow = 'hidden';
+        }else{
+          main.style.overflow = '';
+          main.style.touchAction = '';
+          document.body.style.overflow = '';
+          const st = parseInt(main.dataset._scrollTop || '0', 10);
+          if(!Number.isNaN(st)) main.scrollTop = st;
+        }
+      }
+
+      function setPage(side, file){
+        const page = spreadEl.querySelector('.page.' + side);
+        if(!page) return;
+        const img = page.querySelector('img.photo');
+        const bd  = page.querySelector('.photo-backdrop');
+
+        if(!file){
+          img.removeAttribute('src');
+          img.alt = '';
+          img.classList.remove('is-loaded');
+          bd.style.backgroundImage = '';
+          page.style.opacity = '0.25';
+          return;
+        }
+
+        page.style.opacity = '1';
+        img.classList.remove('is-loaded');
+
+        const url = 'img/' + file;
+        bd.style.backgroundImage = `url(${url})`;
+
+        img.src = url;
+        img.decoding = 'async';
+        img.loading = 'eager';
+        img.alt = 'Фото ' + file.replace(/\.[^.]+$/,'');
+
+        const onload = async ()=>{
+          try{ await img.decode(); }catch(e){}
+          img.classList.add('is-loaded');
+        };
+        if(img.complete && img.naturalWidth > 0) onload();
+        else img.addEventListener('load', onload, { once:true });
+      }
+
+      function preloadAround(i){
+        const want = [];
+        for(const j of [i-1, i, i+1]){
+          if(j<0 || j>=pairs.length) continue;
+          const [a,b] = pairs[j];
+          if(a) want.push('img/'+a);
+          if(b) want.push('img/'+b);
+        }
+        want.forEach(src=>{
+          const im = new Image();
+          im.decoding = 'async';
+          im.src = src;
+        });
+      }
+
+      function render(i){
+        if(pairs.length === 0){
+          counterEl.textContent = 'Фото не найдены';
+          return;
+        }
+        idx = Math.max(0, Math.min(i, pairs.length-1));
+        const [a,b] = pairs[idx];
+        setPage('left', a);
+        setPage('right', b);
+        counterEl.textContent = `${idx+1} / ${pairs.length}`;
+        updateDots(idx);
+        preloadAround(idx);
+      }
+
+      function go(d){
+        const ni = idx + d;
+        if(ni<0 || ni>=pairs.length) return;
+        spreadEl.animate([
+          { transform: 'translateZ(0) scale(1)', filter:'brightness(1)' },
+          { transform: `translateZ(0) scale(.992) translateX(${d>0?'-6px':'6px'})`, filter:'brightness(.98)' },
+          { transform: 'translateZ(0) scale(1)', filter:'brightness(1)' }
+        ], { duration: reduceMotion ? 0 : 260, easing: 'cubic-bezier(.2,.8,.2,1)' });
+        render(ni);
+      }
+
+      async function fetchList(){
+        // GitHub Pages can't list directories напрямую.
+        // Берём список через GitHub Contents API: /repos/{user}/{repo}/contents/img
+        try{
+          const host = window.location.host; // username.github.io
+          const user = host.split('.')[0];
+          const pathParts = window.location.pathname.split('/').filter(Boolean);
+
+          // User pages: repo = username.github.io. Project pages: repo = first segment.
+          let repo = user + '.github.io';
+          if(pathParts.length >= 1 && !pathParts[0].endsWith('.html')) repo = pathParts[0];
+
+          async function tryRef(ref){
+            const api = `https://api.github.com/repos/${user}/${repo}/contents/img?ref=${ref}`;
+            const res = await fetch(api, { headers: { 'Accept': 'application/vnd.github+json' } });
+            if(!res.ok) throw new Error('api fail');
+            const items = await res.json();
+            const out = [];
+            for(const it of items){
+              if(!it || it.type !== 'file' || !it.name) continue;
+              const parsed = parseNumericJpg(it.name);
+              if(parsed) out.push(parsed);
+            }
+            if(out.length === 0) throw new Error('no numeric jpg');
+            return out;
+          }
+
+          files = await tryRef('main').catch(()=> tryRef('master'));
+          pairs = buildPairs(files);
+          setDots(pairs.length);
+          render(0);
+          loadedOnce = true;
+        }catch(err){
+          pairs = [];
+          counterEl.textContent = 'Фото не загрузились';
+        }
+      }
+
+      function makeClone(el){
+        const r = el.getBoundingClientRect();
+        const c = el.cloneNode(true);
+        c.classList.add('album-clone');
+        c.style.left = r.left + 'px';
+        c.style.top = r.top + 'px';
+        c.style.width = r.width + 'px';
+        c.style.height = r.height + 'px';
+        document.body.appendChild(c);
+        return { c, r };
+      }
+
+      function openAlbum(fromEl){
+        if(isOpen) return;
+        isOpen = true;
+
+        overlay.classList.add('is-open');
+        overlay.setAttribute('aria-hidden','false');
+        lockBackground(true);
+
+        // FLIP from cover into spread
+        const { c, r } = makeClone(fromEl);
+        const t = spreadEl.getBoundingClientRect();
+
+        const dx = (t.left + t.width/2) - (r.left + r.width/2);
+        const dy = (t.top + t.height/2) - (r.top + r.height/2);
+        const sx = t.width / r.width;
+        const sy = t.height / r.height;
+
+        spreadEl.style.opacity = '0';
+
+        overlay.querySelector('.album-backdrop').animate(
+          [{opacity:0},{opacity:1}],
+          { duration: reduceMotion?0:220, easing:'linear', fill:'forwards' }
+        );
+
+        c.animate([
+          { transform:'translate3d(0,0,0) scale(1)', borderRadius:'26px' },
+          { transform:`translate3d(${dx}px,${dy}px,0) scale(${sx},${sy})`, borderRadius:'30px' }
+        ], { duration: reduceMotion?0:520, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards' })
+        .onfinish = ()=>{
+          c.remove();
+          spreadEl.style.opacity = '1';
+        };
+
+        if(!loadedOnce) fetchList();
+        else render(0);
+      }
+
+      function closeAlbum(){
+        if(!isOpen) return;
+        isOpen = false;
+        overlay.classList.remove('is-open');
+        overlay.setAttribute('aria-hidden','true');
+        lockBackground(false);
+      }
+
+      openTriggers.forEach(el=>{
+        el.addEventListener('click', ()=> openAlbum(el));
+        el.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAlbum(el); }
+        });
+      });
+
+      closeTriggers.forEach(el=> el.addEventListener('click', closeAlbum));
+      prevBtn && prevBtn.addEventListener('click', ()=> go(-1));
+      nextBtn && nextBtn.addEventListener('click', ()=> go(1));
+
+      window.addEventListener('keydown', (e)=>{
+        if(!isOpen) return;
+        if(e.key === 'Escape') closeAlbum();
+        if(e.key === 'ArrowLeft') go(-1);
+        if(e.key === 'ArrowRight') go(1);
+      });
+
+      // Swipe inside spread
+      let sx0=0, sy0=0, dragging=false;
+      spreadEl.addEventListener('pointerdown', (e)=>{
+        if(!isOpen) return;
+        dragging=true;
+        sx0=e.clientX; sy0=e.clientY;
+        try{ spreadEl.setPointerCapture(e.pointerId); }catch(_){}
+      });
+      spreadEl.addEventListener('pointerup', (e)=>{
+        if(!isOpen || !dragging) return;
+        dragging=false;
+        const dx = e.clientX - sx0;
+        const dy = e.clientY - sy0;
+        if(Math.abs(dx) > 46 && Math.abs(dx) > Math.abs(dy)*1.2){
+          if(dx<0) go(1); else go(-1);
+        }
+      });
+      spreadEl.addEventListener('pointercancel', ()=> dragging=false);
+
+      spreadEl.addEventListener('touchmove', (e)=>{ if(isOpen) e.preventDefault(); }, { passive:false });
+
 
       // Disable CSS snap on iOS Safari (we use JS “доводчики” below)
       if (isIOS || reduceMotion) main.classList.remove('snap');
@@ -699,110 +1192,61 @@
 
         img.addEventListener('error', () => { markLoaded(); }, { once:true });
       });
+
       // Snap-to-section “доводчики” (prevents half-cut content)
-      // More responsive: a small swipe advances to next/prev section.
-      const SNAP_IDLE_MS = 95;   // faster response
-      const SNAP_EPS_PX  = 8;    // do nothing if already aligned
-      const SWIPE_PX     = 48;   // how much scroll counts as "intent to change screen"
+      const SNAP_IDLE_MS = 130; // debounce after last scroll event
+      const SNAP_EPS_PX = 8;    // do nothing if already aligned
       let snapTimer = null;
       let isSnapping = false;
 
-      let scrollStartTop = 0;
-      let scrollStartIdx = 0;
-      let lastTop = 0;
-      let lastT = performance.now();
-
-      function indexAt(top){
-        let idx = 0;
-        for (let i = 0; i < sections.length; i++){
-          if (sections[i].offsetTop <= top + 1) idx = i;
-        }
-        return idx;
-      }
-
-      function interactionStart(){
-        scrollStartTop = main.scrollTop;
-        scrollStartIdx = indexAt(scrollStartTop);
-      }
-
-      function nearestIndex(){
+      function nearestSection(){
         const top = main.scrollTop;
         const vh = main.clientHeight || window.innerHeight;
-        const probe = top + vh * 0.28; // bias a bit down so it changes screens easier
-        let best = 0;
+        const probe = top + vh * 0.22; // reading bias
+
+        let best = sections[0];
         let bestDist = Infinity;
-        for (let i = 0; i < sections.length; i++){
-          const y = sections[i].offsetTop;
+
+        for (const s of sections){
+          const y = s.offsetTop;
           const dist = Math.abs(y - probe);
           if (dist < bestDist){
             bestDist = dist;
-            best = i;
+            best = s;
           }
         }
         return best;
       }
 
-      function snapToIndex(idx){
-        const s = sections[Math.max(0, Math.min(sections.length - 1, idx))];
+      function snapNow(){
+        if (isSnapping) return;
+        const s = nearestSection();
         if (!s) return;
+
         const targetTop = s.offsetTop;
         const curTop = main.scrollTop;
+
         if (Math.abs(curTop - targetTop) <= SNAP_EPS_PX) return;
 
         isSnapping = true;
         main.scrollTo({ top: targetTop, behavior: reduceMotion ? 'auto' : 'smooth' });
-        window.setTimeout(() => { isSnapping = false; }, reduceMotion ? 0 : 520);
-      }
 
-      function snapNow(forceFromSwipe = false){
-        if (isSnapping) return;
-
-        const curTop = main.scrollTop;
-        const delta = curTop - scrollStartTop;
-
-        // If user clearly swiped, go next/prev from the screen where swipe started
-        if (forceFromSwipe && Math.abs(delta) >= SWIPE_PX){
-          if (delta > 0) return snapToIndex(scrollStartIdx + 1);
-          if (delta < 0) return snapToIndex(scrollStartIdx - 1);
-        }
-
-        // Otherwise pick nearest (still prevents half-cut content)
-        return snapToIndex(nearestIndex());
+        window.setTimeout(() => { isSnapping = false; }, reduceMotion ? 0 : 650);
       }
 
       function scheduleSnap(){
         if (isSnapping) return;
         if (snapTimer) window.clearTimeout(snapTimer);
-        snapTimer = window.setTimeout(() => snapNow(false), SNAP_IDLE_MS);
+        snapTimer = window.setTimeout(snapNow, SNAP_IDLE_MS);
       }
 
-      // Track scroll for subtle responsiveness (and future tuning)
-      main.addEventListener('scroll', () => {
-        if (isSnapping) return;
-        const now = performance.now();
-        lastTop = main.scrollTop;
-        lastT = now;
-        scheduleSnap();
-      }, { passive:true });
-
-      // Start markers for intent
-      main.addEventListener('wheel', () => { if (!isSnapping) interactionStart(); }, { passive:true });
-      main.addEventListener('touchstart', () => { if (!isSnapping) interactionStart(); }, { passive:true });
-
-      // On touch end — treat as intent, snap to next/prev if swipe was enough
-      main.addEventListener('touchend', () => {
-        if (isSnapping) return;
-        window.setTimeout(() => snapNow(true), 70);
-      }, { passive:true });
-
-      // On mouse wheel end we usually rely on debounced scheduleSnap
+      main.addEventListener('scroll', scheduleSnap, { passive:true });
+      main.addEventListener('wheel', scheduleSnap, { passive:true });
+      main.addEventListener('touchend', () => window.setTimeout(snapNow, 90), { passive:true });
       main.addEventListener('keyup', (e) => {
         const keys = ['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '];
         if (keys.includes(e.key)) scheduleSnap();
       });
-
-
-      
 
       // Prevent “horizontal jiggle” on iOS overscroll
       main.addEventListener('scroll', ()=>{
