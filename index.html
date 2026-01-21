@@ -432,6 +432,15 @@
     }
 
 
+
+    /* iPhone: make the album cover frame a bit shorter to add air under the top dots */
+    @media (max-width: 520px){
+      #s2 .media-card{
+        height: 44vh;          /* shorter than the default 4:5 block */
+        aspect-ratio: auto;    /* override global 4/5 on small screens */
+      }
+    }
+
     /* Tap hint */
     .tap-hint{
       position:absolute;
