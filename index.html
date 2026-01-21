@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ru">
-<head data-build-stamp="2026-01-21 10:21 UTC">
+<head data-build-stamp="2026-01-21 10:31:46 UTC">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0c10" />
@@ -431,7 +431,11 @@
 
     /* iPhone / small phones tuning (keeps desktop untouched) */
     /* mobile-fix: hint-safe-area */
-    @media (max-width: 520px){
+    @media (max-width: 520px){      main{
+        height: 100dvh;
+        padding-bottom: calc(env(safe-area-inset-bottom) + 140px);
+      }
+
 /* Make the first screen fit without losing content */
       #s1 .grid{ gap: 0; }
       #s1 .media{
@@ -448,6 +452,8 @@
         -webkit-backdrop-filter: blur(10px);
         font-size: 11px;
         opacity: .8;
+      #s1 .content{ padding-bottom: 34px; }
+
       }
 
       #s1 .panel{
