@@ -428,7 +428,8 @@
     
       /* Keep album cover compact so the whole card can truly center */
       #s2 .media{ padding: 12px; }
-      #s2 .media-card{ max-height: clamp(220px, 36dvh, 340px); }
+      /* Match the visual weight of the first screen image frame */
+      #s2 .media-card{ max-height: clamp(320px, 52dvh, 540px); }
       #s2 .media-card img{
         flex: 1 1 auto;
         max-height: 100%;
@@ -469,10 +470,10 @@
 
 
 
-    /* iPhone: make the album cover frame a bit shorter to add air under the top dots */
+    /* iPhone: size the album cover frame similarly to the first page */
     @media (max-width: 520px){
       #s2 .media-card{
-        height: 44vh;          /* shorter than the default 4:5 block */
+        height: 52vh;          /* matches #s1 visual scale */
         aspect-ratio: auto;    /* override global 4/5 on small screens */
       }
     }
