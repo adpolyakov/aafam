@@ -349,6 +349,28 @@
 
     /* iPhone / small phones tuning (keeps desktop untouched) */
     @media (max-width: 520px){
+      /* Isolate screens on iPhone: prevent early peek + center content */
+      main{
+        /* On iOS, padding-top + section-height subtraction causes peeking.
+           For phones we remove main padding and account for header inside section padding. */
+        padding-top: 0 !important;
+        scroll-snap-type: y mandatory;
+        overscroll-behavior-y: contain;
+        scroll-padding-top: calc(62px + env(safe-area-inset-top));
+        -webkit-overflow-scrolling: touch;
+      }
+      .section{
+        height: 100dvh;
+        min-height: unset;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        overflow: hidden;
+        /* Air top/bottom + safe areas + header space */
+        padding-top: calc(18px + 62px + env(safe-area-inset-top));
+        padding-bottom: calc(20px + env(safe-area-inset-bottom));
+        justify-content: center;
+      }
+
       /* Isolate screens on mobile: no early peeking of next section */
 main{
   scroll-snap-type: y mandatory;
@@ -387,11 +409,26 @@ main{
 
       .hint{
         display:flex;
-        bottom: 10px;
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(10px + env(safe-area-inset-bottom));
         font-size: 11px;
-        opacity: .8;
+        opacity: .78;
+        z-index: 40;
       }
       .mouse{ width:16px; height:24px; }
+      /* Subtle separation cue while swiping */
+      .section::after{
+        content:"";
+        position:absolute;
+        left:0; right:0; bottom:0;
+        height: 18px;
+        background: linear-gradient(180deg, transparent, rgba(0,0,0,.55));
+        pointer-events:none;
+        opacity:.65;
+      }
+
     }
 
     /* Reduced motion */
@@ -657,6 +694,34 @@ main{
 
         img.addEventListener('error', () => markLoaded(), { once:true });
       });
+
+
+      // Mobile “dovodchiki”: if iOS leaves you between screens, gently snap to nearest section
+      const isPhone = window.matchMedia && window.matchMedia('(max-width: 520px)').matches;
+      if(isPhone){
+        let t = null;
+        const snapToNearest = () => {
+          const top = main.scrollTop;
+          let best = sections[0];
+          let bestDist = Infinity;
+          for (const s of sections){
+            const dist = Math.abs(s.offsetTop - top);
+            if (dist < bestDist){ bestDist = dist; best = s; }
+          }
+          // Only snap if we're meaningfully between screens
+          if(best && bestDist > 24){
+            main.scrollTo({ top: best.offsetTop, behavior: reduceMotion ? 'auto' : 'smooth' });
+          }
+        };
+        main.addEventListener('scroll', ()=>{
+          if(t) clearTimeout(t);
+          t = setTimeout(snapToNearest, 120);
+        }, {passive:true});
+        window.addEventListener('resize', ()=>{
+          if(t) clearTimeout(t);
+          t = setTimeout(snapToNearest, 60);
+        });
+      }
 
       // Prevent horizontal jiggle on iOS overscroll
       main.addEventListener('scroll', ()=>{
