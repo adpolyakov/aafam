@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ru">
-<head data-build-stamp="2026-01-21 10:31:46 UTC">
+<head data-build-stamp="2026-01-21 10:38:11 UTC">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0c10" />
@@ -357,55 +357,9 @@
     .btn span{ font-size: 13px; color: rgba(238,240,246,.88); letter-spacing:.2px; }
 
     /* Scroll hint */
-    .hint{
-      position:absolute;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      display:flex;
-      align-items:center;
-      gap:10px;
-      color: rgba(238,240,246,.68);
-      font-size: 12px;
-      letter-spacing:.3px;
-      user-select:none;
-      opacity:.9;
-    }
-    .mouse{
-      width: 18px;
-      height: 28px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.28);
-      position:relative;
-    }
-    .mouse::after{
-      content:"";
-      width: 4px;
-      height: 4px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.72);
-      position:absolute;
-      left:50%;
-      top: 7px;
-      transform: translateX(-50%);
-      animation: wheel 1.55s var(--ease) infinite;
-    }
-    @keyframes wheel{
-      0%{ transform: translate(-50%, 0); opacity:.9; }
-      70%{ transform: translate(-50%, 10px); opacity:.25; }
-      100%{ transform: translate(-50%, 10px); opacity:.15; }
-    }
+    
+    .mobile-hint.show{ opacity: .85; }
 
-    /* Reveal animations */
-    .reveal{
-      opacity:0;
-      transform: translateY(14px);
-      transition: opacity .7s var(--ease), transform .7s var(--ease);
-    }
-    .reveal.is-in{
-      opacity:1;
-      transform: translateY(0);
-    }
 
     /* Responsive layout */
     @media (max-width: 920px){
@@ -431,10 +385,56 @@
 
     /* iPhone / small phones tuning (keeps desktop untouched) */
     /* mobile-fix: hint-safe-area */
-    @media (max-width: 520px){      main{
-        height: 100dvh;
-        padding-bottom: calc(env(safe-area-inset-bottom) + 140px);
+    @media (max-width: 520px){
+
+      /* Make the first screen fit without losing content */
+      #s1 .grid{ gap: 0; }
+      #s1 .media{
+        padding: 12px;
+        justify-content: center;
       }
+      #s1 .media-card{
+        /* Match the image ratio AND avoid side "air" */
+        aspect-ratio: 2 / 3;
+        height: 52vh;
+        width: auto;
+        max-width: 100%;
+        border-radius: 28px;
+      }
+      #s1 .content{
+        padding: 16px 18px 22px;
+        gap: 12px;
+      }
+      #s1 h1{
+        /* Slightly smaller and keep in one line */
+        font-size: clamp(26px, 6.6vw, 34px);
+        white-space: nowrap;
+        letter-spacing: -0.8px;
+      }
+
+      /* Hide the button on phones (keep it on desktop/tablet) */
+      #s1 .actions{ display:none; }
+
+      /* Hide the in-section hint on phones (we use overlay hint instead) */
+      .hint{ display:none !important; }
+
+      /* Keep enough space so Safari UI never clips content */
+      main{
+        height: 100dvh;
+        padding-bottom: calc(env(safe-area-inset-bottom) + 18px);
+      }
+      .section{
+        min-height: calc(100dvh - (62px + env(safe-area-inset-top)));
+        padding: 22px var(--pad) calc(26px + env(safe-area-inset-bottom));
+      }
+      .panel{
+        border-radius: 28px;
+      }
+
+      /* Show overlay hint only on phones */
+      .mobile-hint{ display:flex; }
+
+    }
 
 /* Make the first screen fit without losing content */
       #s1 .grid{ gap: 0; }
@@ -712,6 +712,13 @@
 
   </main>
 
+  <!-- Mobile overlay hint (kept outside the scroll container to avoid iOS fixed bugs) -->
+  <div id="mobileHint" class="mobile-hint" aria-hidden="true">
+    <div class="mouse" aria-hidden="true"></div>
+    <div>листай вниз</div>
+  </div>
+
+
   <script>
     (function(){
       const main = document.getElementById('main');
@@ -759,6 +766,53 @@
       }, { root: main, threshold: 0.55 });
 
       sections.forEach(s => so.observe(s));
+
+      // Mobile overlay hint visibility (only on screen 1)
+      const mobileHint = document.getElementById('mobileHint');
+      if (mobileHint){
+        const hIO = new IntersectionObserver((entries)=>{
+          entries.forEach(e=>{
+            if (e.target.id !== 's1') return;
+            if (e.isIntersecting) mobileHint.classList.add('show');
+            else mobileHint.classList.remove('show');
+          });
+        }, { root: main, threshold: 0.55 });
+        const s1 = document.getElementById('s1');
+        if (s1) hIO.observe(s1);
+      }
+
+      // iOS: prevent "between sections" resting by gently snapping after scroll end
+      if (isIOS){
+        let t = null;
+        const snap = () => {
+          const y = main.scrollTop;
+          let best = null;
+          let bestDist = Infinity;
+          sections.forEach(s=>{
+            const top = s.offsetTop;
+            const dist = Math.abs(top - y);
+            if (dist < bestDist){
+              bestDist = dist;
+              best = s;
+            }
+          });
+          // Only snap if close enough (avoids fighting the user)
+          if (best && bestDist > 0 && bestDist < 90){
+            best.scrollIntoView({ behavior: 'auto', block: 'start' });
+          }
+        };
+
+        // Ensure we start exactly at s1 on load
+        requestAnimationFrame(()=>{ scrollToId('s1'); });
+
+        main.addEventListener('scroll', ()=>{
+          if (t) clearTimeout(t);
+          t = setTimeout(snap, 120);
+        }, {passive:true});
+
+        window.addEventListener('orientationchange', ()=> setTimeout(()=>scrollToId('s1'), 250));
+      }
+
 
       // Progressive image: remove shimmer + fade-in once decoded
       const imgs = Array.from(document.querySelectorAll('.media-card img'));
