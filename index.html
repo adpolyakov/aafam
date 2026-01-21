@@ -301,6 +301,7 @@
       letter-spacing:.3px;
       user-select:none;
       opacity:.9;
+          transition: opacity .35s var(--ease), transform .35s var(--ease);
     }
     .mouse{
       width: 18px;
@@ -325,6 +326,18 @@
       0%{ transform: translate(-50%, 0); opacity:.9; }
       70%{ transform: translate(-50%, 10px); opacity:.25; }
       100%{ transform: translate(-50%, 10px); opacity:.15; }
+    }
+
+
+    .hint.hint-fixed{
+      position:fixed;
+      bottom: calc(18px + env(safe-area-inset-bottom));
+      z-index:40;
+    }
+    .hint.is-hidden{
+      opacity:0;
+      transform: translateX(-50%) translateY(10px);
+      pointer-events:none;
     }
 
     /* Reveal animations */
@@ -386,6 +399,7 @@
         font-size: 11px;
         opacity: .8;
       }
+      .hint.hint-fixed{ bottom: calc(10px + env(safe-area-inset-bottom)); }
       .mouse{ width: 16px; height: 24px; }
 
       .section{ padding: 22px var(--pad) 26px; }
@@ -743,10 +757,6 @@
         </div>
       </div>
 
-      <div class="hint" aria-hidden="true">
-        <div class="mouse"></div>
-        <div>листай вниз</div>
-      </div>
     </section>
 
     <!-- SECTION 2 -->
@@ -935,6 +945,7 @@
     (function(){
       const main = document.getElementById('main');
       const dots = Array.from(document.querySelectorAll('.dot'));
+      const scrollHint = document.getElementById('scrollHint');
       const revealEls = Array.from(document.querySelectorAll('[data-reveal]'));
       const sections = Array.from(document.querySelectorAll('.section'));
 
@@ -1232,6 +1243,11 @@ if(!file){
       // Disable CSS snap on iOS Safari (we use JS “доводчики” below)
       if (isIOS || reduceMotion) main.classList.remove('snap');
 
+      function setHintFor(id){
+        if(!scrollHint) return;
+        scrollHint.classList.toggle('is-hidden', id === 's5');
+      }
+
       function scrollToId(id){
         const el = document.getElementById(id);
         if(!el) return;
@@ -1261,6 +1277,7 @@ if(!file){
           if(!e.isIntersecting) return;
           const id = e.target.id;
           dots.forEach(d => d.setAttribute('aria-current', d.dataset.to === id ? 'true' : 'false'));
+          setHintFor(id);
         });
       }, { root: main, threshold: 0.55 });
       sections.forEach(s => so.observe(s));
@@ -1348,5 +1365,12 @@ if(!file){
       }, {passive:true});
     })();
   </script>
+
+  <!-- Global scroll hint (shown on all sections except the last) -->
+  <div id="scrollHint" class="hint hint-fixed" aria-hidden="true">
+    <div class="mouse"></div>
+    <div>листай вниз</div>
+  </div>
+
 </body>
 </html>
