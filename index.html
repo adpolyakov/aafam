@@ -417,6 +417,7 @@
       .media{
         border-right: none;
         border-bottom: 1px solid rgba(255,255,255,.07);
+        padding: 14px;
       }
       .media-card{
         aspect-ratio: 4 / 5;
@@ -425,6 +426,55 @@
       .panel{ border-radius: 28px; }
       .section{ padding: 34px var(--pad); }
       .hint{ display:none; }
+    }
+
+
+    /* iPhone / small phones tuning (keeps desktop untouched) */
+    @media (max-width: 520px){
+      /* Make the first screen fit without losing content */
+      #s1 .grid{ gap: 0; }
+      #s1 .media{
+        padding: 12px;
+      }
+      #s1 .media-card{
+        /* Match the actual image ratio to avoid ugly empty corners/bars */
+        aspect-ratio: 2 / 3;
+        max-height: 52vh;
+        border-radius: 28px;
+      }
+      #s1 .content{
+        padding: 16px 18px 22px;
+        gap: 12px;
+      }
+      #s1 h1{
+        /* Slightly smaller and keep in one line */
+        font-size: clamp(26px, 6.6vw, 34px);
+        white-space: nowrap;
+        letter-spacing: -0.8px;
+      }
+
+      /* Hide the button on phones (keep it on desktop/tablet) */
+      #s1 .actions{ display:none; }
+
+      /* Bring back the bottom hint on phones */
+      .hint{
+        display:flex;
+        bottom: 10px;
+        font-size: 11px;
+        opacity: .8;
+      }
+      .mouse{
+        width: 16px;
+        height: 24px;
+      }
+
+      /* Reduce section padding a bit to avoid clipping under iOS browser UI */
+      .section{
+        padding: 22px var(--pad) 26px;
+      }
+      .panel{
+        border-radius: 28px;
+      }
     }
 
     /* Reduced motion */
