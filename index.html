@@ -4,41 +4,58 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0c10" />
+  <meta name="description" content="Личный сайт-продолжение предложения для Арины." />
   <title>Для Арины</title>
+
+  <!-- Speed-up first screen image -->
+  <link rel="preload" as="image" href="img/lotte.jpg" fetchpriority="high" />
 
   <style>
     :root{
-      --bg:#0b0c10;
-      --panel: rgba(255,255,255,.06);
-      --panel2: rgba(255,255,255,.04);
-      --stroke: rgba(255,255,255,.10);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.68);
-      --muted2: rgba(255,255,255,.52);
-      --r: 28px;
-      --r2: 22px;
-      --shadow: 0 30px 120px rgba(0,0,0,.55);
-      --shadow2: 0 10px 40px rgba(0,0,0,.35);
-      --safe-top: env(safe-area-inset-top);
-      --safe-btm: env(safe-area-inset-bottom);
+      --bg0:#07080b;
+      --bg1:#0b0c10;
+      --text:#eef0f6;
+      --muted:rgba(238,240,246,.72);
+      --accent:#d8b66f;
+      --accent2:#7bd3ff;
+
+      --r2:26px;
+      --r3:34px;
+
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --shadow2: 0 10px 30px rgba(0,0,0,.38);
+      --stroke: 1px solid rgba(255,255,255,.08);
+
+      --max: 1120px;
+      --pad: clamp(16px, 3vw, 28px);
+
+      --h1: clamp(34px, 4.8vw, 58px);
+      --h2: clamp(22px, 3.2vw, 34px);
+      --p: clamp(15px, 1.35vw, 18px);
+      --small: clamp(12px, 1.15vw, 14px);
+
+      --ease: cubic-bezier(.2,.8,.2,1);
     }
 
     *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    html, body{ height:100%; }
     body{
       margin:0;
       color:var(--text);
-      font: 16px/1.45 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background:
-        radial-gradient(1200px 900px at 20% 10%, rgba(255,255,255,.07), transparent 55%),
-        radial-gradient(900px 700px at 85% 15%, rgba(120,170,255,.10), transparent 60%),
-        radial-gradient(800px 700px at 30% 85%, rgba(255,210,140,.08), transparent 60%),
-        var(--bg);
+      background: radial-gradient(1200px 900px at 20% -10%, rgba(216,182,111,.22), transparent 55%),
+                  radial-gradient(900px 700px at 90% 10%, rgba(123,211,255,.16), transparent 52%),
+                  radial-gradient(1100px 900px at 50% 110%, rgba(216,182,111,.14), transparent 55%),
+                  linear-gradient(180deg, var(--bg0), var(--bg1));
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      letter-spacing: .2px;
       overflow-x:hidden;
     }
+
+    /* Subtle premium noise overlay */
     body::before{
       content:"";
-      position:fixed; inset:0;
+      position:fixed;
+      inset:0;
       pointer-events:none;
       opacity:.06;
       mix-blend-mode:overlay;
@@ -46,697 +63,1265 @@
       transform:translateZ(0);
     }
 
-    /* Pages (native snap; without extra JS “hard snapping”) */
-    .pages{
-      height:100svh;
-      overflow-y:auto;
-      scroll-snap-type:y mandatory;
-      scroll-behavior:smooth;
-      overscroll-behavior-y: contain;
-    }
-    .page{
-      min-height:100svh;
-      scroll-snap-align:start;
-      scroll-snap-stop:always;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: calc(18px + var(--safe-top)) 18px calc(22px + var(--safe-btm));
-      position:relative;
-    }
-
-    /* Top dots */
+    /* Top bar (only dots) */
     .topbar{
       position:fixed;
       left:0; right:0;
-      top: calc(10px + var(--safe-top));
+      top: env(safe-area-inset-top);
       z-index:50;
+      padding: 14px var(--pad);
       display:flex;
+      align-items:center;
       justify-content:center;
-    }
-    .dots{
-      display:flex; gap:10px;
-      padding:10px 14px;
-      border-radius: 999px;
-      background: rgba(0,0,0,.20);
-      border: 1px solid rgba(255,255,255,.08);
+      gap:12px;
       backdrop-filter: blur(14px);
-      box-shadow: 0 10px 35px rgba(0,0,0,.35);
+      -webkit-backdrop-filter: blur(14px);
+      background: rgba(8,9,12,.42);
+      border-bottom: 1px solid rgba(255,255,255,.06);
     }
+
+    .nav{ display:flex; align-items:center; gap:8px; }
     .dot{
       width:10px; height:10px;
       border-radius:999px;
-      border: 1px solid rgba(255,255,255,.22);
-      background: rgba(255,255,255,.07);
-      opacity:.8;
-      transition: transform .25s ease, background .25s ease, opacity .25s ease;
+      border:1px solid rgba(255,255,255,.24);
+      background: rgba(255,255,255,.08);
+      transition: transform .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease);
       cursor:pointer;
     }
-    .dot.active{
-      background: rgba(255,255,255,.65);
-      opacity:1;
-      transform: scale(1.15);
+    .dot[aria-current="true"]{
+      background: linear-gradient(135deg, rgba(216,182,111,.95), rgba(123,211,255,.8));
+      border-color: rgba(255,255,255,.42);
+      transform: scale(1.25);
     }
 
-    /* Card */
-    .card{
-      width:min(1120px, 94vw);
-      border-radius: var(--r);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-      overflow:hidden;
+    /* Main scroll container */
+    main{
+      height:100vh;
+      overflow-y:auto;
+      scroll-behavior:smooth;
+      padding-top: calc(62px + env(safe-area-inset-top));
+    }
+
+    /* CSS snap for desktop; iOS will be disabled via JS to avoid fighting momentum */
+    main.snap{ scroll-snap-type: y proximity; }
+
+    .section{
+      content-visibility: auto;
+      contain-intrinsic-size: 900px;
+
+      min-height: calc(100vh - (62px + env(safe-area-inset-top)));
+      display:flex;
+      align-items:center;
+      padding: 44px var(--pad);
+      scroll-snap-align: start;
       position:relative;
     }
-    .card::after{
-      content:"";
-      position:absolute; inset:-2px;
-      pointer-events:none;
+
+    .container{
+      width: min(var(--max), 100%);
+      margin: 0 auto;
+    }
+
+    .panel{
+      border-radius: var(--r3);
+      border: var(--stroke);
       background:
-        radial-gradient(800px 300px at 10% 10%, rgba(255,255,255,.10), transparent 60%),
-        radial-gradient(650px 240px at 90% 20%, rgba(120,170,255,.12), transparent 60%);
-      opacity:.55;
-    }
-    .card-inner{
-      position:relative;
-      z-index:1;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      min-height: 520px;
-    }
-    .divider{
-      position:absolute;
-      left:50%; top:16px; bottom:16px;
-      width:1px;
-      background: linear-gradient(180deg, transparent, rgba(255,255,255,.10), transparent);
-      transform: translateX(-.5px);
-      z-index:2;
+        radial-gradient(700px 420px at 10% 10%, rgba(216,182,111,.10), transparent 55%),
+        radial-gradient(680px 420px at 95% 30%, rgba(123,211,255,.10), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      box-shadow: var(--shadow);
+      overflow:hidden;
     }
 
-    /* Media side */
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 0;
+      min-height: clamp(520px, 72vh, 720px);
+    }
+
     .media{
-      padding: 24px;
+      position:relative;
+      background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.32));
+      border-right: 1px solid rgba(255,255,255,.07);
+      padding: clamp(14px, 2.4vw, 22px);
       display:flex;
       align-items:center;
       justify-content:center;
     }
+
     .media-card{
-      width: 100%;
-      max-width: 470px;
-      aspect-ratio: 4/5;
+      width:100%;
+      height:100%;
       border-radius: var(--r2);
-      background: rgba(0,0,0,.18);
-      border: 1px solid rgba(255,255,255,.09);
+      border:1px solid rgba(255,255,255,.10);
+      background:
+        radial-gradient(400px 320px at 20% 20%, rgba(216,182,111,.18), transparent 60%),
+        radial-gradient(420px 320px at 80% 40%, rgba(123,211,255,.14), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
       box-shadow: var(--shadow2);
       overflow:hidden;
+      position:relative;
       display:flex;
       align-items:center;
       justify-content:center;
     }
+
+    /* IMPORTANT: no cropping */
     .media-card img{
-      width:100%; height:100%;
-      object-fit: cover;
+      width:100%;
+      height:100%;
+      object-fit: contain;
       display:block;
     }
 
-    /* Content side */
+    /* Progressive image loading (perceived performance) */
+    .media-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(110deg, transparent 0%, rgba(255,255,255,.07) 10%, transparent 20%) ,
+        radial-gradient(600px 420px at 20% 20%, rgba(216,182,111,.10), transparent 60%),
+        radial-gradient(600px 420px at 80% 40%, rgba(123,211,255,.08), transparent 60%);
+      opacity: .55;
+      transform: translateX(-30%);
+      animation: shimmer 1.35s cubic-bezier(.2,.8,.2,1) infinite;
+      pointer-events:none;
+      transition: opacity .55s var(--ease);
+    }
+    .media-card.is-loaded::after{
+      opacity: 0;
+      animation: none;
+    }
+    @keyframes shimmer{
+      0%{ transform: translateX(-30%); }
+      100%{ transform: translateX(30%); }
+    }
+    .media-card img{
+      opacity: 0;
+      filter: blur(14px) saturate(1.05);
+      transform: scale(1.02) translateZ(0);
+      transition: opacity .65s var(--ease), filter .85s var(--ease), transform .85s var(--ease);
+    }
+    .media-card.is-loaded img{
+      opacity: 1;
+      filter: blur(0) saturate(1.02) contrast(1.03);
+      transform: scale(1.0) translateZ(0);
+    }
+
     .content{
-      padding: 56px 56px;
+      padding: clamp(22px, 3vw, 34px);
       display:flex;
       flex-direction:column;
       justify-content:center;
-      gap:14px;
+      gap: 18px;
+      background: linear-gradient(180deg, rgba(15,17,24,.72), rgba(12,14,20,.72));
     }
+
     .kicker{
-      display:flex;
+      display:inline-flex;
       align-items:center;
       gap:10px;
-      color: var(--muted2);
-      font-size: 12px;
-      letter-spacing: .22em;
+      color: var(--muted);
+      font-size: var(--small);
+      letter-spacing: .9px;
       text-transform: uppercase;
     }
     .kicker::before{
       content:"";
-      width:18px; height:2px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.18);
-    }
-    .title{
-      margin:0;
-      font-size: clamp(34px, 4.2vw, 56px);
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-    }
-    .lead{
-      margin:0;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.55;
-      max-width: 52ch;
+      width: 18px;
+      height: 2px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity:.9;
     }
 
-    /* Bottom hint */
-    .scroll-hint{
+    h1, h2{ margin:0; letter-spacing: -0.6px; }
+    h1{ font-size: var(--h1); line-height: 1.02; }
+    h2{ font-size: var(--h2); line-height: 1.1; }
+
+    p{
+      margin:0;
+      font-size: var(--p);
+      line-height: 1.55;
+      color: var(--muted);
+      max-width: 56ch;
+    }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top: 6px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      box-shadow: 0 14px 34px rgba(0,0,0,.28);
+      transition: transform .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease);
+      cursor:pointer;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.08); }
+    .btn.primary{
+      border-color: rgba(216,182,111,.34);
+      background: linear-gradient(135deg, rgba(216,182,111,.18), rgba(123,211,255,.10));
+    }
+    .btn .icon{
+      width:34px; height:34px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      display:grid;
+      place-items:center;
+      box-shadow: 0 12px 26px rgba(0,0,0,.24);
+      flex: 0 0 auto;
+    }
+    .btn .icon svg{ width:18px; height:18px; opacity:.92; }
+    .btn span{ font-size: 13px; color: rgba(238,240,246,.88); letter-spacing:.2px; }
+
+    /* Scroll hint */
+    .hint{
       position:absolute;
-      left:50%;
-      bottom: calc(16px + var(--safe-btm));
+      left: 50%;
+      bottom: 18px;
       transform: translateX(-50%);
       display:flex;
       align-items:center;
       gap:10px;
-      color: rgba(255,255,255,.40);
+      color: rgba(238,240,246,.68);
       font-size: 12px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
+      letter-spacing:.3px;
       user-select:none;
-      pointer-events:none;
-    }
-    .scroll-hint .mouse{
-      width: 18px; height: 26px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.25);
-      position:relative;
       opacity:.9;
     }
-    .scroll-hint .mouse::after{
+    .mouse{
+      width: 18px;
+      height: 28px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.28);
+      position:relative;
+    }
+    .mouse::after{
       content:"";
-      width: 2px; height: 6px;
-      border-radius: 99px;
-      background: rgba(255,255,255,.35);
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
       position:absolute;
-      left:50%; top:6px;
+      left:50%;
+      top: 7px;
       transform: translateX(-50%);
-      animation: wheel 1.6s ease-in-out infinite;
+      animation: wheel 1.55s var(--ease) infinite;
     }
-    @keyframes wheel{ 0%,100%{ transform:translate(-50%,0); opacity:.35;} 50%{ transform:translate(-50%,6px); opacity:.85;} }
-
-    /* Screen 2 album cover */
-    .album-wrap{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:14px;
-      width:100%;
-    }
-    .album-cover{
-      width:min(420px, 100%);
-      aspect-ratio: 1/1;
-      border-radius: 18px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
-      position:relative;
-      cursor:pointer;
-      transition: transform .25s ease, filter .25s ease;
-    }
-    .album-cover:hover{ transform: translateY(-2px); filter: brightness(1.02); }
-    .album-cover img{ width:100%; height:100%; object-fit: contain; display:block; padding: 14px; }
-    .album-caption{
-      font-size: 13px;
-      letter-spacing: .26px;
-      color: rgba(255,255,255,.62);
-      user-select:none;
+    @keyframes wheel{
+      0%{ transform: translate(-50%, 0); opacity:.9; }
+      70%{ transform: translate(-50%, 10px); opacity:.25; }
+      100%{ transform: translate(-50%, 10px); opacity:.15; }
     }
 
-    /* Album overlay */
-    .overlay{
-      position:fixed; inset:0;
-      z-index:200;
-      background: rgba(0,0,0,.72);
-      backdrop-filter: blur(14px);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: calc(18px + var(--safe-top)) 18px calc(18px + var(--safe-btm));
+    /* Reveal animations */
+    .reveal{
+      opacity:0;
+      transform: translateY(14px);
+      transition: opacity .7s var(--ease), transform .7s var(--ease);
     }
-    .overlay.show{ display:flex; }
+    .reveal.is-in{ opacity:1; transform: translateY(0); }
 
-    .overlay-close{
+    /* Responsive layout */
+    @media (max-width: 920px){
+      .grid{
+        grid-template-columns: 1fr;
+        min-height: unset;
+      }
+      .media{
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,.07);
+        padding: 14px;
+      }
+      .media-card{
+        aspect-ratio: 4 / 5;
+        height:auto;
+      }
+      .panel{ border-radius: 28px; }
+      .section{ padding: 34px var(--pad); }
+      .hint{ display:none; }
+    }
+
+    /* iPhone / small phones tuning (keeps desktop untouched) */
+    @media (max-width: 520px){
+      #s1 .media{
+        padding: 12px;
+        justify-content: center;
+      }
+      #s1 .media-card{
+        /* Match the image ratio AND avoid side "air" */
+        aspect-ratio: 2 / 3;
+        height: 52vh;
+        width: auto;
+        max-width: 100%;
+        border-radius: 28px;
+      }
+      #s1 .content{
+        padding: 16px 18px 22px;
+        gap: 12px;
+      }
+      #s1 h1{
+        font-size: clamp(26px, 6.6vw, 34px);
+        white-space: nowrap;
+        letter-spacing: -0.8px;
+      }
+      #s1 .actions{ display:none; }
+
+      .hint{
+        display:flex;
+        bottom: 10px;
+        font-size: 11px;
+        opacity: .8;
+      }
+      .mouse{ width: 16px; height: 24px; }
+
+      .section{ padding: 22px var(--pad) 26px; }
+      .panel{ border-radius: 28px; }
+    }
+
+
+    /* Tap hint */
+    .tap-hint{
       position:absolute;
-      top: calc(14px + var(--safe-top));
       right: 14px;
-      width: 38px; height: 38px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.80);
-      cursor:pointer;
-      display:grid;
-      place-items:center;
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      top: 14px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: .2px;
+      color: rgba(238,240,246,.86);
+      background: rgba(0,0,0,.28);
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+      opacity: .92;
+      transition: transform .35s var(--ease), opacity .35s var(--ease);
+      pointer-events:none;
     }
-    .overlay-close:hover{ background: rgba(255,255,255,.09); }
+    #s2 .media-card[data-open-album="true"]{
+      cursor: pointer;
+      outline: none;
+      transform: translateZ(0);
+      transition: transform .35s var(--ease), border-color .35s var(--ease);
+    }
+    #s2 .media-card[data-open-album="true"]:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,.18);
+    }
+    #s2 .media-card[data-open-album="true"]:active{ transform: translateY(0); }
 
-    .spread{
-      width: min(1180px, 96vw);
-      aspect-ratio: 16/9;
-      border-radius: var(--r);
-      border: 1px solid rgba(255,255,255,.10);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      box-shadow: var(--shadow);
-      position:relative;
-      overflow:hidden;
-    }
-    .spread-inner{
+    /* Album overlay (premium book) */
+    .album-overlay{ position: fixed; inset: 0; z-index: 120; display: none; }
+    .album-overlay.is-open{ display:block; }
+    .album-backdrop{
       position:absolute; inset:0;
+      background: rgba(4,5,8,.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .album-shell{
+      position:absolute; inset: 0;
+      padding: calc(var(--mainTop, 0px) + 14px) var(--pad) calc(var(--mainBottom, 0px) + 18px);
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      gap: 14px;
+    }
+    .album-book{
+      width: min(1100px, 100%);
+      flex: 1 1 auto;
+      display:grid;
+      grid-template-columns: 54px 1fr 54px;
+      align-items:center;
+      gap: 12px;
+    }
+    .album-spread{
+      position: relative;
+      width: 100%;
+      height: min(76vh, 720px);
+      max-height: calc(100dvh - var(--mainTop, 0px) - var(--mainBottom, 0px) - 120px);
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,.10);
+      background:
+        radial-gradient(900px 520px at 25% 20%, rgba(216,182,111,.14), transparent 55%),
+        radial-gradient(860px 520px at 75% 35%, rgba(123,211,255,.10), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      box-shadow: 0 22px 70px rgba(0,0,0,.55);
+      overflow:hidden;
       display:grid;
       grid-template-columns: 1fr 1fr;
-      padding: 16px;
-      gap: 16px;
+      transform: translateZ(0);
     }
-    .pageSide{
-      position:relative;
-      border-radius: calc(var(--r) - 10px);
-      background: rgba(0,0,0,.20);
-      border: 1px solid rgba(255,255,255,.08);
-      overflow:hidden;
-    }
-    .photo-bg{
+    .album-spread::before{
+      content:"";
       position:absolute; inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(600px 420px at 50% 50%, rgba(0,0,0,.18), transparent 60%),
+        linear-gradient(90deg, rgba(0,0,0,.18), transparent 18%, transparent 82%, rgba(0,0,0,.18));
+      opacity:.9;
+    }
+    .page{
+      position: relative;
+      padding: clamp(14px, 2vw, 22px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .page.left{ border-right: 1px solid rgba(255,255,255,.07); }
+    .spine{
+      position:absolute;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      width: 22px;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(0,0,0,.42), rgba(255,255,255,.06), rgba(0,0,0,.42));
+      opacity:.65;
+      pointer-events:none;
+    }
+    .photo-frame{
+      width: 100%;
+      height: auto;
+      max-height: 100%;
+      aspect-ratio: 4 / 5;
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      box-shadow: 0 18px 46px rgba(0,0,0,.40);
+      overflow:hidden;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .photo-backdrop{
+      position:absolute; inset:-12px;
       background-size: cover;
-      background-position:center;
-      filter: blur(18px) saturate(1.1);
+      background-position: center;
+      filter: blur(18px) saturate(1.05);
       transform: scale(1.08);
-      opacity:.42;
+      opacity:.55;
+    }
+    .photo-frame::after{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(500px 320px at 50% 20%, rgba(255,255,255,.10), transparent 55%);
+      pointer-events:none;
+      opacity:.75;
     }
     .photo{
-      position:absolute; inset:0;
-      width:100%; height:100%;
-      object-fit: cover; /* допускаем минимальную подрезку */
-      padding: 18px;
-      border-radius: calc(var(--r) - 14px);
-      background: rgba(0,0,0,.18);
-      display:block;
+      position:relative;
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* допускаем лёгкую подрезку, чтобы не было полос */
+      opacity: 0;
+      filter: blur(10px);
+      transition: opacity .45s var(--ease), filter .65s var(--ease);
+      transform: translateZ(0);
+    }
+    .photo.is-loaded{ opacity: 1; filter: blur(0); }
+
+    .album-nav{
+      width: 54px; height: 54px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      display:grid; place-items:center;
+      cursor:pointer;
+      transition: transform .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease);
+      user-select:none;
+    }
+    .album-nav:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.20); }
+    .album-nav:active{ transform: translateY(0); }
+    .album-nav svg{ width: 22px; height: 22px; opacity:.92; }
+
+    .album-close{
+      position:absolute;
+      top: calc(var(--mainTop, 0px) + 14px);
+      right: var(--pad);
+      width: 46px; height: 46px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      display:grid; place-items:center;
+      cursor:pointer;
+      transition: transform .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease);
+    }
+    .album-close:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.20); }
+    .album-close svg{ width: 20px; height: 20px; opacity:.92; }
+
+    .album-meta{
+      width: min(1100px, 100%);
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      color: rgba(238,240,246,.78);
+      font-size: 13px;
+      letter-spacing:.2px;
+      padding: 0 4px;
+    }
+    .album-dots{ display:flex; gap:6px; align-items:center; opacity:.85; }
+    .album-dots span{
+      width: 7px; height: 7px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.08);
+      transition: transform .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease);
+    }
+    .album-dots span.is-on{
+      background: linear-gradient(135deg, rgba(216,182,111,.90), rgba(123,211,255,.70));
+      border-color: rgba(255,255,255,.42);
+      transform: scale(1.2);
     }
 
-    /* Last page placeholder */
+    .album-clone{
+      position: fixed;
+      z-index: 130;
+      border-radius: var(--r2);
+      overflow:hidden;
+      box-shadow: 0 22px 70px rgba(0,0,0,.55);
+      border: 1px solid rgba(255,255,255,.12);
+      will-change: transform, width, height, left, top;
+      background: rgba(0,0,0,.12);
+    }
+
+    @media (max-width: 520px){
+      .album-book{ grid-template-columns: 1fr; }
+      .album-nav{ display:none; }
+      .album-meta{ justify-content:center; gap: 14px; }
+      .album-dots{ display:none; }
+      .album-spread{ border-radius: 26px; }
+      .photo-frame{ border-radius: 22px; }
+      .spine{ width: 16px; opacity:.55; }
+    }
+
+
+    
     .album-empty{
-      position:absolute; inset:0;
+      position:absolute;
+      inset: 0;
       display:none;
       align-items:center;
       justify-content:center;
       flex-direction:column;
       gap: 18px;
-      padding: 22px;
+      padding: clamp(18px, 2.2vw, 28px);
       text-align:center;
       color: rgba(255,255,255,.86);
       background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
     }
     .album-empty-text{
-      font-size: clamp(14px, 1.2vw, 18px);
+      font-size: clamp(14px, 1.55vw, 18px);
       line-height: 1.28;
       letter-spacing: .15px;
-      max-width: 32ch;
-      opacity: .92;
+      max-width: 24ch;
+      opacity: .95;
     }
-
-    /* Two interlocking hearts (no text animation) */
-    .hearts{
-      width: 120px;
-      height: 74px;
+    .album-empty .hearts{
+      width: 96px;
+      height: 96px;
       stroke: rgba(255,255,255,.95);
-      fill:none;
-      stroke-width: 2.4;
-      opacity:.92;
-      filter: drop-shadow(0 10px 24px rgba(255,255,255,.08));
+      fill: none;
+      stroke-width: 2.2;
+      opacity: .92;
       transform-origin: 50% 55%;
-      animation: heartsPulse 4.2s cubic-bezier(.2,.8,.2,1) infinite;
+      filter: drop-shadow(0 10px 24px rgba(255,255,255,.08));
+      animation: heartsPulse 3.6s cubic-bezier(.2,.8,.2,1) infinite;
     }
-    .hearts path{
+    .album-empty .hearts path{
       stroke-linecap: round;
       stroke-linejoin: round;
+      stroke-dasharray: 320;
+      stroke-dashoffset: 20;
+      animation: heartsDraw 7.2s cubic-bezier(.2,.8,.2,1) infinite;
     }
     @keyframes heartsPulse{
-      0%, 60%, 100% { transform: translateZ(0) scale(1); opacity: .92; }
-      70% { transform: translateZ(0) scale(1.016); opacity: 1; }
-      82% { transform: translateZ(0) scale(1.006); opacity: .98; }
+      0%, 55%, 100% { transform: translateZ(0) scale(1); opacity: .92; }
+      62% { transform: translateZ(0) scale(1.018); opacity: 1; }
+      70% { transform: translateZ(0) scale(1.006); opacity: .98; }
+    }
+    @keyframes heartsDraw{
+      0%, 35%   { stroke-dashoffset: 28; opacity: .86; }
+      55%       { stroke-dashoffset: 10; opacity: 1; }
+      75%       { stroke-dashoffset: 18; opacity: .96; }
+      100%      { stroke-dashoffset: 28; opacity: .86; }
     }
 
-    /* overlay nav */
-    .navBtn{
-      position:absolute;
-      top:50%;
-      transform: translateY(-50%);
-      width: 42px; height: 42px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      color: rgba(255,255,255,.80);
-      display:grid; place-items:center;
-      cursor:pointer;
-      box-shadow: 0 10px 28px rgba(0,0,0,.30);
-      user-select:none;
-    }
-    .navBtn:hover{ background: rgba(255,255,255,.08); }
-    .navPrev{ left: 14px; }
-    .navNext{ right: 14px; }
-    .counter{
-      position:absolute;
-      left: 18px;
-      bottom: 14px;
-      color: rgba(255,255,255,.45);
-      font-size: 12px;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-    }
-
-    /* Responsive */
-    @media (max-width: 980px){
-      .card-inner{ grid-template-columns: 1fr; }
-      .divider{ display:none; }
-      .content{ padding: 26px 26px 30px; }
-      .media{ padding: 22px 22px 10px; }
-      .media-card{ max-width: 520px; }
-    }
-    @media (max-width: 560px){
-      .page{ padding: calc(12px + var(--safe-top)) 14px calc(18px + var(--safe-btm)); }
-      .media-card{ aspect-ratio: 3/4; }
-      .title{ font-size: 34px; }
-      .lead{ font-size: 15px; }
-      .spread{ aspect-ratio: 9/16; }
-      .photo{ padding: 14px; }
-      .navBtn{ width: 40px; height: 40px; border-radius: 14px; }
-    }
 
     @media (prefers-reduced-motion: reduce){
-      *{ scroll-behavior:auto !important; }
-      .scroll-hint .mouse::after{ animation:none !important; }
-      .hearts{ animation:none !important; }
+      .album-empty .hearts,
+      .album-empty .hearts path{ animation: none !important; }
+
+      main{ scroll-behavior:auto; }
+      .mouse::after{ animation:none; }
+      .reveal{ transition:none; transform:none; opacity:1; }
     }
   </style>
 </head>
 
 <body>
-  <div class="topbar" aria-hidden="true">
-    <div class="dots">
-      <div class="dot active" data-to="0"></div>
-      <div class="dot" data-to="1"></div>
-      <div class="dot" data-to="2"></div>
-      <div class="dot" data-to="3"></div>
-      <div class="dot" data-to="4"></div>
-    </div>
-  </div>
+  <header class="topbar">
+    <nav class="nav" aria-label="Навигация по экранам">
+      <button class="dot" data-to="s1" aria-label="Экран 1" aria-current="true"></button>
+      <button class="dot" data-to="s2" aria-label="Экран 2"></button>
+      <button class="dot" data-to="s3" aria-label="Экран 3"></button>
+      <button class="dot" data-to="s4" aria-label="Экран 4"></button>
+      <button class="dot" data-to="s5" aria-label="Экран 5"></button>
+    </nav>
+  </header>
 
-  <main class="pages" id="pages">
-    <!-- Screen 1 -->
-    <section class="page" data-index="0">
-      <div class="card">
-        <div class="divider"></div>
-        <div class="card-inner">
-          <div class="media">
-            <div class="media-card">
-              <img src="img/lotte.jpg" alt="Мы" loading="eager" decoding="async">
-            </div>
-          </div>
-          <div class="content">
-            <div class="kicker">Сайт с частичкой нашей любви</div>
-            <h1 class="title">Начало чего-то нового</h1>
-            <p class="lead">Любимая, бесконечное спасибо тебе за то, что выбрала меня и согласилась на моё странное предложение. Сейчас расскажу тебе, что я задумал...</p>
-          </div>
-        </div>
-      </div>
-      <div class="scroll-hint"><span class="mouse"></span><span>листай вниз</span></div>
-    </section>
-
-    <!-- Screen 2 -->
-    <section class="page" data-index="1">
-      <div class="card">
-        <div class="divider"></div>
-        <div class="card-inner">
-          <div class="media">
-            <div class="album-wrap">
-              <div class="album-cover" id="openAlbum" role="button" tabindex="0" aria-label="Открыть альбом">
-                <img src="img/album.png" alt="Наш альбом" loading="lazy" decoding="async">
+  <main id="main" class="snap" aria-label="Основной контент">
+    <!-- SECTION 1 -->
+    <section id="s1" class="section">
+      <div class="container">
+        <div class="panel">
+          <div class="grid">
+            <div class="media">
+              <div class="media-card reveal" data-reveal>
+                <img src="img/lotte.jpg" alt="Иллюстрация предложения" loading="eager" decoding="async" fetchpriority="high" />
               </div>
-              <div class="album-caption">Нажми, чтобы открыть</div>
             </div>
-          </div>
-          <div class="content">
-            <div class="kicker">Моменты вместе</div>
-            <h2 class="title" style="font-size: clamp(30px, 3.6vw, 48px);">Наш альбом</h2>
-            <p class="lead">В этот альбом я собрал малую, но любимую часть тех моментов, которые привели нас к этому вечеру. Люблю тебя в каждом из них❣️</p>
+            <div class="content">
+              <div class="kicker reveal" data-reveal>Сайт с частичкой нашей любви</div>
+              <h1 class="reveal" data-reveal>Начало чего-то нового</h1>
+              <p class="reveal" data-reveal>
+                Любимая, бесконечное спасибо тебе за то, что выбрала меня и согласилась на моё странное предложение.
+                Сейчас расскажу тебе, что я задумал...
+              </p>
+
+              <div class="actions">
+                <button class="btn primary" data-scroll="#s2" aria-label="Листать дальше">
+                  <span class="icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M12 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <path d="M7 14l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                  <span>Листать дальше</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="scroll-hint"><span class="mouse"></span><span>листай вниз</span></div>
+
+      <div class="hint" aria-hidden="true">
+        <div class="mouse"></div>
+        <div>листай вниз</div>
+      </div>
     </section>
 
-    <!-- Screen 3-5 placeholders -->
-    <section class="page" data-index="2">
-      <div class="card"><div class="card-inner" style="grid-template-columns:1fr;min-height:420px;">
-        <div class="content" style="padding:56px;"><div class="kicker">дальше</div><h2 class="title" style="font-size:42px;">Экран 3</h2><p class="lead">Скоро добавим контент.</p></div>
-      </div></div>
-      <div class="scroll-hint"><span class="mouse"></span><span>листай вниз</span></div>
+    <!-- SECTION 2 -->
+    <section id="s2" class="section">
+      <div class="container">
+        <div class="panel">
+          <div class="grid">
+            <div class="media">
+              <div class="media-card reveal" data-reveal data-open-album="true" role="button" tabindex="0" aria-label="Открыть альбом">
+                <span class="tap-hint" aria-hidden="true">Открыть</span>
+                <img src="img/album.png" alt="Наш альбом" loading="lazy" decoding="async" />
+              </div>
+            </div>
+            <div class="content">
+              <div class="kicker reveal" data-reveal>Моменты вместе</div>
+              <h2 class="reveal" data-reveal>Наш альбом</h2>
+              <p class="reveal" data-reveal>
+                В этот альбом я собрал малую, но любимую часть тех моментов, которые привели нас к этому вечеру. Люблю тебя в каждом из них❣️
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="page" data-index="3">
-      <div class="card"><div class="card-inner" style="grid-template-columns:1fr;min-height:420px;">
-        <div class="content" style="padding:56px;"><div class="kicker">дальше</div><h2 class="title" style="font-size:42px;">Экран 4</h2><p class="lead">Скоро добавим контент.</p></div>
-      </div></div>
-      <div class="scroll-hint"><span class="mouse"></span><span>листай вниз</span></div>
+    <!-- SECTION 3 -->
+    <section id="s3" class="section">
+      <div class="container">
+        <div class="panel">
+          <div class="grid">
+            <div class="media">
+              <div class="media-card reveal" data-reveal>
+                <img src="img/03.jpg" alt="Наши моменты" loading="lazy" decoding="async" />
+              </div>
+            </div>
+            <div class="content">
+              <div class="kicker reveal" data-reveal>то, что я люблю</div>
+              <h2 class="reveal" data-reveal>С тобой спокойно. И одновременно — хочется жить громче.</h2>
+              <p class="reveal" data-reveal>
+                Я люблю наши привычки, наши «внутренние шутки», наши планы.
+                Люблю, что рядом с тобой я становлюсь лучше — без давления, просто потому что хочу.
+              </p>
+              <div class="actions">
+                <button class="btn primary" data-scroll="#s4">
+                  <span class="icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M12 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <path d="M7 14l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                  <span>Ещё чуть-чуть</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="page" data-index="4">
-      <div class="card"><div class="card-inner" style="grid-template-columns:1fr;min-height:420px;">
-        <div class="content" style="padding:56px;"><div class="kicker">финал</div><h2 class="title" style="font-size:42px;">Экран 5</h2><p class="lead">Скоро добавим контент.</p></div>
-      </div></div>
+    <!-- SECTION 4 -->
+    <section id="s4" class="section">
+      <div class="container">
+        <div class="panel">
+          <div class="grid">
+            <div class="media">
+              <div class="media-card reveal" data-reveal>
+                <img src="img/04.jpg" alt="Будущее" loading="lazy" decoding="async" />
+              </div>
+            </div>
+            <div class="content">
+              <div class="kicker reveal" data-reveal>простое обещание</div>
+              <h2 class="reveal" data-reveal>Я хочу быть твоим домом. И твоим приключением.</h2>
+              <p class="reveal" data-reveal>
+                Поддерживать тебя в твоих мечтах. Беречь нас в сложные дни.
+                И делать так, чтобы через годы мы всё так же выбирали друг друга — каждый день.
+              </p>
+              <div class="actions">
+                <button class="btn primary" data-scroll="#s5">
+                  <span class="icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M12 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <path d="M7 14l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                  <span>Дальше</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5 -->
+    <section id="s5" class="section">
+      <div class="container">
+        <div class="panel">
+          <div class="grid">
+            <div class="media">
+              <div class="media-card reveal" data-reveal>
+                <img src="img/05-final.jpg" alt="Финал" loading="lazy" decoding="async" />
+              </div>
+            </div>
+            <div class="content">
+              <div class="kicker reveal" data-reveal>продолжение</div>
+              <h1 class="reveal" data-reveal>Поехали дальше.</h1>
+              <p class="reveal" data-reveal>
+                Сейчас будет план, шаг за шагом — чтобы этот день стал началом нашей новой главы.
+              </p>
+              <div class="actions">
+                <button class="btn primary" data-scroll="#s1" aria-label="Вернуться к началу">
+                  <span class="icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M3 12a9 9 0 1 0 3-6.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <path d="M3 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                  <span>Ещё раз</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 
-  <!-- Album Overlay -->
-  <div class="overlay" id="albumOverlay" aria-hidden="true">
-    <button class="overlay-close" id="closeAlbum" aria-label="Закрыть">✕</button>
 
-    <div class="spread" role="dialog" aria-label="Наш альбом">
-      <button class="navBtn navPrev" id="prevBtn" aria-label="Назад">‹</button>
-      <button class="navBtn navNext" id="nextBtn" aria-label="Вперёд">›</button>
-      <div class="counter" id="counter">1 / 1</div>
+  <!-- Album overlay -->
+  <div id="albumOverlay" class="album-overlay" aria-hidden="true">
+    <div class="album-backdrop" data-album-close="true"></div>
 
-      <div class="spread-inner">
-        <div class="pageSide left">
-          <div class="photo-bg" id="bgL"></div>
-          <img class="photo" id="imgL" alt="">
-        </div>
+    <div class="album-shell" role="dialog" aria-modal="true" aria-label="Наш альбом">
+      <button class="album-close" type="button" data-album-close="true" aria-label="Закрыть альбом">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
 
-        <div class="pageSide right">
-          <div class="photo-bg" id="bgR"></div>
-          <img class="photo" id="imgR" alt="">
-          <div class="album-empty" id="emptyR" aria-hidden="true">
-            <div class="album-empty-text">Место для наших новых счастливых,<br>семейных фотокарточек</div>
+      <div class="album-book" role="group" aria-label="Разворот альбома">
+        <button class="album-nav prev" type="button" data-album-prev="true" aria-label="Предыдущий разворот">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
 
-            <!-- ДВА пересекающихся сердца -->
-            <svg class="hearts" viewBox="0 0 140 80" aria-hidden="true">
-              <!-- Left heart -->
-              <path d="M48 18
-                       C36 2, 14 10, 20 30
-                       C26 48, 44 58, 70 72
-                       C96 58, 114 48, 120 30
-                       C126 10, 104 2, 92 18
-                       C84 26, 78 34, 70 42
-                       C62 34, 56 26, 48 18 Z"/>
-              <!-- Right heart (shifted) -->
-              <path d="M72 18
-                       C60 2, 38 10, 44 30
-                       C50 48, 68 58, 94 72
-                       C120 58, 138 48, 144 30
-                       C150 10, 128 2, 116 18
-                       C108 26, 102 34, 94 42
-                       C86 34, 80 26, 72 18 Z"
-                    transform="translate(-18,0)"/>
-            </svg>
+        <div class="album-spread" id="albumSpread">
+          <div class="page left">
+            <div class="photo-frame">
+              <div class="photo-backdrop"></div>
+              <img class="photo" alt="" />
+            </div>
           </div>
+          <div class="page right">
+            <div class="photo-frame">
+              <div class="photo-backdrop"></div>
+              <img class="photo" alt="" />
+              <div class="album-empty" aria-hidden="true">
+                <div class="album-empty-text">Место для наших новых счастливых,<br>семейных фотокарточек</div>
+                <svg class="hearts" viewBox="0 0 120 70" aria-hidden="true">
+                  <path d="M34 14 C22 -2, 2 8, 12 28 C20 46, 38 56, 60 66 C82 56, 100 46, 108 28 C118 8, 98 -2, 86 14 C78 22, 72 30, 60 40 C48 30, 42 22, 34 14 Z" />
+                  <path d="M58 14 C46 -2, 26 8, 36 28 C44 46, 62 56, 84 66 C106 56, 124 46, 132 28 C142 8, 122 -2, 110 14 C102 22, 96 30, 84 40 C72 30, 66 22, 58 14 Z" transform="translate(-22,0)" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="spine" aria-hidden="true"></div>
         </div>
+
+        <button class="album-nav next" type="button" data-album-next="true" aria-label="Следующий разворот">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="album-meta">
+        <div class="album-counter" id="albumCounter">—</div>
+        <div class="album-dots" id="albumDots" aria-hidden="true"></div>
       </div>
     </div>
   </div>
 
-<script>
-(() => {
-  const pages = document.getElementById('pages');
-  const dots = Array.from(document.querySelectorAll('.dot'));
-  const sections = Array.from(document.querySelectorAll('.page[data-index]'));
 
-  // Dots click
-  dots.forEach(d => d.addEventListener('click', () => {
-    const idx = Number(d.dataset.to);
-    pages.scrollTo({ top: sections[idx].offsetTop, behavior: 'smooth' });
-  }));
+  <script>
+    (function(){
+      const main = document.getElementById('main');
+      const dots = Array.from(document.querySelectorAll('.dot'));
+      const revealEls = Array.from(document.querySelectorAll('[data-reveal]'));
+      const sections = Array.from(document.querySelectorAll('.section'));
 
-  // Active dot on scroll (lightweight)
-  pages.addEventListener('scroll', () => {
-    const mid = pages.scrollTop + pages.clientHeight * 0.5;
-    let idx = 0;
-    for (let i=0;i<sections.length;i++){
-      if (sections[i].offsetTop <= mid) idx = i;
-    }
-    dots.forEach(d => d.classList.toggle('active', Number(d.dataset.to) === idx));
-  }, {passive:true});
+      const ua = navigator.userAgent || "";
+      const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ===== Album logic =====
-  const openBtn = document.getElementById('openAlbum');
-  const overlay = document.getElementById('albumOverlay');
-  const closeBtn = document.getElementById('closeAlbum');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const counter = document.getElementById('counter');
+      // =========================
+      // Album (dynamic list + overlay)
+      // =========================
+      const overlay = document.getElementById('albumOverlay');
+      const spreadEl = document.getElementById('albumSpread');
+      const counterEl = document.getElementById('albumCounter');
+      const dotsEl = document.getElementById('albumDots');
 
-  const imgL = document.getElementById('imgL');
-  const imgR = document.getElementById('imgR');
-  const bgL  = document.getElementById('bgL');
-  const bgR  = document.getElementById('bgR');
-  const emptyR = document.getElementById('emptyR');
+      const openTriggers = Array.from(document.querySelectorAll('[data-open-album="true"]'));
+      const closeTriggers = Array.from(document.querySelectorAll('[data-album-close="true"]'));
+      const prevBtn = document.querySelector('[data-album-prev="true"]');
+      const nextBtn = document.querySelector('[data-album-next="true"]');
 
-  // Numeric files auto-discovery (01.jpg / 01.JPG / 001.jpg ...)
-  async function buildFiles(){
-    const exts = ['jpg','JPG','jpeg','JPEG'];
-    const max = 300;
-    const stopAfterMisses = 10;
-    const files = [];
-    let misses = 0;
+      let files = [];       // [{n,name}]
+      let pairs = [];       // [[a,b],...]
+      let idx = 0;
+      let isOpen = false;
+      let loadedOnce = false;
 
-    const tryUrl = (url) => new Promise((resolve) => {
-      const im = new Image();
-      im.decoding = 'async';
-      im.onload = () => resolve(true);
-      im.onerror = () => resolve(false);
-      im.src = url;
-    });
+      function parseNumericJpg(name){
+        const m = String(name).match(/^(\d+)\.(jpe?g)$/i);
+        if(!m) return null;
+        return { n: parseInt(m[1], 10), name };
+      }
 
-    for (let i=1; i<=max; i++){
-      const n2 = String(i).padStart(2,'0');
-      const n3 = String(i).padStart(3,'0');
-      let ok = false;
-      let picked = null;
-
-      for (const name of [n2, n3]){
-        for (const ext of exts){
-          const url = `img/${name}.${ext}`;
-          // eslint-disable-next-line no-await-in-loop
-          if (await tryUrl(url)) { ok = true; picked = url; break; }
+      function buildPairs(list){
+        const ordered = list.slice().sort((a,b)=>a.n-b.n);
+        const out = [];
+        for(let i=0;i<ordered.length;i+=2){
+          out.push([ ordered[i]?.name || null, ordered[i+1]?.name || null ]);
         }
-        if (ok) break;
+        return out;
       }
 
-      if (ok){
-        files.push(picked);
-        misses = 0;
-      } else {
-        misses++;
-        if (misses >= stopAfterMisses && files.length > 0) break;
+      function setDots(total){
+        dotsEl.innerHTML = '';
+        const maxDots = 9;
+        const show = Math.min(total, maxDots);
+        for(let i=0;i<show;i++){
+          dotsEl.appendChild(document.createElement('span'));
+        }
       }
-    }
-    return files;
-  }
+      function updateDots(i){
+        const items = Array.from(dotsEl.children);
+        if(items.length === 0) return;
+        const total = pairs.length;
+        const maxDots = items.length;
 
-  function makePairs(list){
-    const out = [];
-    for (let i=0;i<list.length;i+=2) out.push([list[i], list[i+1] || null]);
-    return out;
-  }
-
-  let files = [];
-  let pairs = [];
-  let idx = 0;
-  let inited = false;
-
-  function setSide(isRight, file){
-    const img = isRight ? imgR : imgL;
-    const bg  = isRight ? bgR  : bgL;
-
-    if (!file){
-      img.removeAttribute('src');
-      bg.style.backgroundImage = '';
-      if (isRight){
-        const showEmpty = pairs[idx] && !pairs[idx][1];
-        emptyR.style.display = showEmpty ? 'flex' : 'none';
+        let start = 0;
+        if(total > maxDots){
+          start = Math.max(0, Math.min(i - Math.floor(maxDots/2), total - maxDots));
+        }
+        items.forEach((el, k)=>{
+          const real = start + k;
+          el.classList.toggle('is-on', real === i);
+          el.style.opacity = real < total ? '1' : '0';
+        });
       }
-      return;
-    }
 
-    if (isRight) emptyR.style.display = 'none';
+      function lockBackground(lock){
+        if(lock){
+          main.dataset._scrollTop = String(main.scrollTop);
+          main.style.overflow = 'hidden';
+          main.style.touchAction = 'none';
+          document.body.style.overflow = 'hidden';
+        }else{
+          main.style.overflow = '';
+          main.style.touchAction = '';
+          document.body.style.overflow = '';
+          const st = parseInt(main.dataset._scrollTop || '0', 10);
+          if(!Number.isNaN(st)) main.scrollTop = st;
+        }
+      }
 
-    img.src = file;
-    bg.style.backgroundImage = `url('${file}')`;
-  }
+      function setPage(side, file){
+        const page = spreadEl.querySelector('.page.' + side);
+        if(!page) return;
+        const img = page.querySelector('img.photo');
+        const bd  = page.querySelector('.photo-backdrop');
+        const empty = page.querySelector('.album-empty');
+if(!file){
+          const isLastRight = (side === 'right' && pairs[idx] && !pairs[idx][1]);
+          if(empty) empty.style.display = isLastRight ? 'flex' : 'none';
 
-  function prefetchNext(){
-    const next = pairs[idx+1];
-    if (!next) return;
-    [next[0], next[1]].filter(Boolean).forEach(url => {
-      const im = new Image();
-      im.decoding='async';
-      im.src = url;
-    });
-  }
+          img.removeAttribute('src');
+          img.alt = '';
+          img.classList.remove('is-loaded');
+          bd.style.backgroundImage = '';
+          page.style.opacity = isLastRight ? '1' : '0.25';
+          return;
+        }
 
-  function render(){
-    if (!pairs.length) return;
-    const [L,R] = pairs[idx];
-    setSide(false, L);
-    setSide(true, R);
-    counter.textContent = `${idx+1} / ${pairs.length}`;
-    prevBtn.style.opacity = idx === 0 ? .35 : 1;
-    nextBtn.style.opacity = idx === pairs.length-1 ? .35 : 1;
-    prefetchNext();
-  }
+        if(empty) empty.style.display = 'none';
+        page.style.opacity = '1';
+        img.classList.remove('is-loaded');
 
-  async function openAlbum(){
-    overlay.classList.add('show');
-    overlay.setAttribute('aria-hidden','false');
-    document.body.style.overflow='hidden';
+        const url = 'img/' + file;
+        bd.style.backgroundImage = `url(${url})`;
 
-    if (!inited){
-      files = await buildFiles();
-      pairs = makePairs(files);
-      idx = 0;
-      inited = true;
-    }
-    render();
-  }
+        img.src = url;
+        img.decoding = 'async';
+        img.loading = 'eager';
+        img.alt = 'Фото ' + file.replace(/\.[^.]+$/,'');
 
-  function closeAlbum(){
-    overlay.classList.remove('show');
-    overlay.setAttribute('aria-hidden','true');
-    document.body.style.overflow='';
-  }
+        const onload = async ()=>{
+          try{ await img.decode(); }catch(e){}
+          img.classList.add('is-loaded');
+        };
+        if(img.complete && img.naturalWidth > 0) onload();
+        else img.addEventListener('load', onload, { once:true });
+      }
 
-  function prev(){ if (idx>0){ idx--; render(); } }
-  function next(){ if (idx<pairs.length-1){ idx++; render(); } }
+      function preloadAround(i){
+        const want = [];
+        for(const j of [i-1, i, i+1]){
+          if(j<0 || j>=pairs.length) continue;
+          const [a,b] = pairs[j];
+          if(a) want.push('img/'+a);
+          if(b) want.push('img/'+b);
+        }
+        want.forEach(src=>{
+          const im = new Image();
+          im.decoding = 'async';
+          im.src = src;
+        });
+      }
 
-  openBtn.addEventListener('click', openAlbum);
-  openBtn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openAlbum(); }});
-  closeBtn.addEventListener('click', closeAlbum);
-  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeAlbum(); });
+      function render(i){
+        if(pairs.length === 0){
+          counterEl.textContent = 'Фото не найдены';
+          return;
+        }
+        idx = Math.max(0, Math.min(i, pairs.length-1));
+        const [a,b] = pairs[idx];
+        setPage('left', a);
+        setPage('right', b);
+        counterEl.textContent = `${idx+1} / ${pairs.length}`;
+        updateDots(idx);
+        preloadAround(idx);
+      }
 
-  document.addEventListener('keydown', (e)=>{
-    if (!overlay.classList.contains('show')) return;
-    if (e.key==='Escape') closeAlbum();
-    if (e.key==='ArrowLeft') prev();
-    if (e.key==='ArrowRight') next();
-  });
+      function go(d){
+        const ni = idx + d;
+        if(ni<0 || ni>=pairs.length) return;
+        spreadEl.animate([
+          { transform: 'translateZ(0) scale(1)', filter:'brightness(1)' },
+          { transform: `translateZ(0) scale(.992) translateX(${d>0?'-6px':'6px'})`, filter:'brightness(.98)' },
+          { transform: 'translateZ(0) scale(1)', filter:'brightness(1)' }
+        ], { duration: reduceMotion ? 0 : 260, easing: 'cubic-bezier(.2,.8,.2,1)' });
+        render(ni);
+      }
 
-  prevBtn.addEventListener('click', prev);
-  nextBtn.addEventListener('click', next);
+      async function fetchList(){
+        // GitHub Pages can't list directories напрямую.
+        // Берём список через GitHub Contents API: /repos/{user}/{repo}/contents/img
+        try{
+          const host = window.location.host; // username.github.io
+          const user = host.split('.')[0];
+          const pathParts = window.location.pathname.split('/').filter(Boolean);
 
-  // Swipe on overlay
-  let sx=0, sy=0;
-  overlay.addEventListener('touchstart', (e)=>{
-    if(!overlay.classList.contains('show')) return;
-    const t=e.touches[0]; sx=t.clientX; sy=t.clientY;
-  }, {passive:true});
+          // User pages: repo = username.github.io. Project pages: repo = first segment.
+          let repo = user + '.github.io';
+          if(pathParts.length >= 1 && !pathParts[0].endsWith('.html')) repo = pathParts[0];
 
-  overlay.addEventListener('touchend', (e)=>{
-    if(!overlay.classList.contains('show')) return;
-    const t=e.changedTouches[0];
-    const dx=t.clientX-sx, dy=t.clientY-sy;
-    if(Math.abs(dx)>42 && Math.abs(dx)>Math.abs(dy)*1.2){
-      dx<0 ? next() : prev();
-    }
-  }, {passive:true});
-})();
-</script>
+          async function tryRef(ref){
+            const api = `https://api.github.com/repos/${user}/${repo}/contents/img?ref=${ref}`;
+            const res = await fetch(api, { headers: { 'Accept': 'application/vnd.github+json' } });
+            if(!res.ok) throw new Error('api fail');
+            const items = await res.json();
+            const out = [];
+            for(const it of items){
+              if(!it || it.type !== 'file' || !it.name) continue;
+              const parsed = parseNumericJpg(it.name);
+              if(parsed) out.push(parsed);
+            }
+            if(out.length === 0) throw new Error('no numeric jpg');
+            return out;
+          }
+
+          files = await tryRef('main').catch(()=> tryRef('master'));
+          pairs = buildPairs(files);
+          setDots(pairs.length);
+          render(0);
+          loadedOnce = true;
+        }catch(err){
+          pairs = [];
+          counterEl.textContent = 'Фото не загрузились';
+        }
+      }
+
+      function makeClone(el){
+        const r = el.getBoundingClientRect();
+        const c = el.cloneNode(true);
+        c.classList.add('album-clone');
+        c.style.left = r.left + 'px';
+        c.style.top = r.top + 'px';
+        c.style.width = r.width + 'px';
+        c.style.height = r.height + 'px';
+        document.body.appendChild(c);
+        return { c, r };
+      }
+
+      function openAlbum(fromEl){
+        if(isOpen) return;
+        isOpen = true;
+
+        overlay.classList.add('is-open');
+        overlay.setAttribute('aria-hidden','false');
+        lockBackground(true);
+
+        // FLIP from cover into spread
+        const { c, r } = makeClone(fromEl);
+        const t = spreadEl.getBoundingClientRect();
+
+        const dx = (t.left + t.width/2) - (r.left + r.width/2);
+        const dy = (t.top + t.height/2) - (r.top + r.height/2);
+        const sx = t.width / r.width;
+        const sy = t.height / r.height;
+
+        spreadEl.style.opacity = '0';
+
+        overlay.querySelector('.album-backdrop').animate(
+          [{opacity:0},{opacity:1}],
+          { duration: reduceMotion?0:220, easing:'linear', fill:'forwards' }
+        );
+
+        c.animate([
+          { transform:'translate3d(0,0,0) scale(1)', borderRadius:'26px' },
+          { transform:`translate3d(${dx}px,${dy}px,0) scale(${sx},${sy})`, borderRadius:'30px' }
+        ], { duration: reduceMotion?0:520, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards' })
+        .onfinish = ()=>{
+          c.remove();
+          spreadEl.style.opacity = '1';
+        };
+
+        if(!loadedOnce) fetchList();
+        else render(0);
+      }
+
+      function closeAlbum(){
+        if(!isOpen) return;
+        isOpen = false;
+        overlay.classList.remove('is-open');
+        overlay.setAttribute('aria-hidden','true');
+        lockBackground(false);
+      }
+
+      openTriggers.forEach(el=>{
+        el.addEventListener('click', ()=> openAlbum(el));
+        el.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAlbum(el); }
+        });
+      });
+
+      closeTriggers.forEach(el=> el.addEventListener('click', closeAlbum));
+      prevBtn && prevBtn.addEventListener('click', ()=> go(-1));
+      nextBtn && nextBtn.addEventListener('click', ()=> go(1));
+
+      window.addEventListener('keydown', (e)=>{
+        if(!isOpen) return;
+        if(e.key === 'Escape') closeAlbum();
+        if(e.key === 'ArrowLeft') go(-1);
+        if(e.key === 'ArrowRight') go(1);
+      });
+
+      // Swipe inside spread
+      let sx0=0, sy0=0, dragging=false;
+      spreadEl.addEventListener('pointerdown', (e)=>{
+        if(!isOpen) return;
+        dragging=true;
+        sx0=e.clientX; sy0=e.clientY;
+        try{ spreadEl.setPointerCapture(e.pointerId); }catch(_){}
+      });
+      spreadEl.addEventListener('pointerup', (e)=>{
+        if(!isOpen || !dragging) return;
+        dragging=false;
+        const dx = e.clientX - sx0;
+        const dy = e.clientY - sy0;
+        if(Math.abs(dx) > 46 && Math.abs(dx) > Math.abs(dy)*1.2){
+          if(dx<0) go(1); else go(-1);
+        }
+      });
+      spreadEl.addEventListener('pointercancel', ()=> dragging=false);
+
+      spreadEl.addEventListener('touchmove', (e)=>{ if(isOpen) e.preventDefault(); }, { passive:false });
+
+
+      // Disable CSS snap on iOS Safari (we use JS “доводчики” below)
+      if (isIOS || reduceMotion) main.classList.remove('snap');
+
+      function scrollToId(id){
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      }
+
+      dots.forEach(d => d.addEventListener('click', () => scrollToId(d.dataset.to)));
+
+      document.querySelectorAll('[data-scroll]').forEach(btn=>{
+        btn.addEventListener('click', () => {
+          const target = btn.getAttribute('data-scroll');
+          if(target && target.startsWith('#')) scrollToId(target.slice(1));
+        });
+      });
+
+      // Reveal on view
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting) e.target.classList.add('is-in');
+        });
+      }, { root: main, threshold: 0.18 });
+      revealEls.forEach(el => io.observe(el));
+
+      // Active dot by section
+      const so = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(!e.isIntersecting) return;
+          const id = e.target.id;
+          dots.forEach(d => d.setAttribute('aria-current', d.dataset.to === id ? 'true' : 'false'));
+        });
+      }, { root: main, threshold: 0.55 });
+      sections.forEach(s => so.observe(s));
+
+      // Progressive image: remove shimmer + fade-in once decoded
+      const imgs = Array.from(document.querySelectorAll('.media-card img'));
+      imgs.forEach(async (img) => {
+        const card = img.closest('.media-card');
+        if(!card) return;
+
+        const markLoaded = () => card.classList.add('is-loaded');
+
+        if (img.complete && img.naturalWidth > 0) {
+          try { await img.decode(); } catch(e){}
+          markLoaded();
+          return;
+        }
+
+        img.addEventListener('load', async () => {
+          try { await img.decode(); } catch(e){}
+          markLoaded();
+        }, { once:true });
+
+        img.addEventListener('error', () => { markLoaded(); }, { once:true });
+      });
+
+      // Snap-to-section “доводчики” (prevents half-cut content)
+      const SNAP_IDLE_MS = 130; // debounce after last scroll event
+      const SNAP_EPS_PX = 8;    // do nothing if already aligned
+      let snapTimer = null;
+      let isSnapping = false;
+
+      function nearestSection(){
+        const top = main.scrollTop;
+        const vh = main.clientHeight || window.innerHeight;
+        const probe = top + vh * 0.22; // reading bias
+
+        let best = sections[0];
+        let bestDist = Infinity;
+
+        for (const s of sections){
+          const y = s.offsetTop;
+          const dist = Math.abs(y - probe);
+          if (dist < bestDist){
+            bestDist = dist;
+            best = s;
+          }
+        }
+        return best;
+      }
+
+      function snapNow(){
+        if (isSnapping) return;
+        const s = nearestSection();
+        if (!s) return;
+
+        const targetTop = s.offsetTop;
+        const curTop = main.scrollTop;
+
+        if (Math.abs(curTop - targetTop) <= SNAP_EPS_PX) return;
+
+        isSnapping = true;
+        main.scrollTo({ top: targetTop, behavior: reduceMotion ? 'auto' : 'smooth' });
+
+        window.setTimeout(() => { isSnapping = false; }, reduceMotion ? 0 : 650);
+      }
+
+      function scheduleSnap(){
+        if (isSnapping) return;
+        if (snapTimer) window.clearTimeout(snapTimer);
+        snapTimer = window.setTimeout(snapNow, SNAP_IDLE_MS);
+      }
+
+      main.addEventListener('scroll', scheduleSnap, { passive:true });
+      main.addEventListener('wheel', scheduleSnap, { passive:true });
+      main.addEventListener('touchend', () => window.setTimeout(snapNow, 90), { passive:true });
+      main.addEventListener('keyup', (e) => {
+        const keys = ['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '];
+        if (keys.includes(e.key)) scheduleSnap();
+      });
+
+      // Prevent “horizontal jiggle” on iOS overscroll
+      main.addEventListener('scroll', ()=>{
+        if(main.scrollLeft !== 0) main.scrollLeft = 0;
+      }, {passive:true});
+    })();
+  </script>
 </body>
 </html>
