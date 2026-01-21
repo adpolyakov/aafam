@@ -610,64 +610,66 @@
 
 
     
-        /* Delicate hearts micro-animation */
-        .empty-placeholder .hearts{
-          transform-origin: 50% 55%;
-          filter: drop-shadow(0 10px 24px rgba(255,255,255,.08));
-          animation: heartsPulse 3.6s cubic-bezier(.2,.8,.2,1) infinite;
-        }
-        .empty-placeholder .hearts path{
-          stroke-dasharray: 260;
-          stroke-dashoffset: 18;
-          animation: heartsDraw 7.2s cubic-bezier(.2,.8,.2,1) infinite;
-        }
-        @keyframes heartsPulse{
-          0%, 55%, 100% { transform: translateZ(0) scale(1); opacity: .92; }
-          62% { transform: translateZ(0) scale(1.018); opacity: 1; }
-          70% { transform: translateZ(0) scale(1.006); opacity: .98; }
-        }
-        @keyframes heartsDraw{
-          0%, 35%   { stroke-dashoffset: 26; opacity: .86; }
-          55%       { stroke-dashoffset: 12; opacity: 1; }
-          75%       { stroke-dashoffset: 18; opacity: .96; }
-          100%      { stroke-dashoffset: 26; opacity: .86; }
-        }
+    .album-empty{
+      position:absolute;
+      inset: 0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap: 18px;
+      padding: clamp(18px, 2.2vw, 28px);
+      text-align:center;
+      color: rgba(255,255,255,.86);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+    }
+    .album-empty-text{
+      font-size: clamp(14px, 1.55vw, 18px);
+      line-height: 1.28;
+      letter-spacing: .15px;
+      max-width: 24ch;
+      opacity: .95;
+    }
+    .album-empty .hearts{
+      width: 96px;
+      height: 96px;
+      stroke: rgba(255,255,255,.95);
+      fill: none;
+      stroke-width: 2.2;
+      opacity: .92;
+      transform-origin: 50% 55%;
+      filter: drop-shadow(0 10px 24px rgba(255,255,255,.08));
+      animation: heartsPulse 3.6s cubic-bezier(.2,.8,.2,1) infinite;
+    }
+    .album-empty .hearts path{
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 320;
+      stroke-dashoffset: 20;
+      animation: heartsDraw 7.2s cubic-bezier(.2,.8,.2,1) infinite;
+    }
+    @keyframes heartsPulse{
+      0%, 55%, 100% { transform: translateZ(0) scale(1); opacity: .92; }
+      62% { transform: translateZ(0) scale(1.018); opacity: 1; }
+      70% { transform: translateZ(0) scale(1.006); opacity: .98; }
+    }
+    @keyframes heartsDraw{
+      0%, 35%   { stroke-dashoffset: 28; opacity: .86; }
+      55%       { stroke-dashoffset: 10; opacity: 1; }
+      75%       { stroke-dashoffset: 18; opacity: .96; }
+      100%      { stroke-dashoffset: 28; opacity: .86; }
+    }
 
 
     @media (prefers-reduced-motion: reduce){
-      .empty-placeholder .hearts,
-      .empty-placeholder .hearts path{ animation: none !important; }
+      .album-empty .hearts,
+      .album-empty .hearts path{ animation: none !important; }
 
       main{ scroll-behavior:auto; }
       .mouse::after{ animation:none; }
       .reveal{ transition:none; transform:none; opacity:1; }
     }
-  
-        .empty-placeholder{
-          width:100%;
-          height:100%;
-          border-radius:26px;
-          display:flex;
-          flex-direction:column;
-          align-items:center;
-          justify-content:center;
-          gap:18px;
-          color:rgba(255,255,255,.85);
-          text-align:center;
-          padding:32px;
-          background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
-          border:1px dashed rgba(255,255,255,.18);
-        }
-        .empty-placeholder svg{
-          width:84px;
-          height:84px;
-          stroke:white;
-          fill:none;
-          stroke-width:2.2;
-          opacity:.9;
-        }
-        </style>
-        
+  </style>
 </head>
 
 <body>
@@ -877,6 +879,13 @@
             <div class="photo-frame">
               <div class="photo-backdrop"></div>
               <img class="photo" alt="" />
+              <div class="album-empty" aria-hidden="true">
+                <div class="album-empty-text">Место для наших новых счастливых,<br>семейных фотокарточек</div>
+                <svg class="hearts" viewBox="0 0 120 70" aria-hidden="true">
+                  <path d="M34 14 C22 -2, 2 8, 12 28 C20 46, 38 56, 60 66 C82 56, 100 46, 108 28 C118 8, 98 -2, 86 14 C78 22, 72 30, 60 40 C48 30, 42 22, 34 14 Z" />
+                  <path d="M58 14 C46 -2, 26 8, 36 28 C44 46, 62 56, 84 66 C106 56, 124 46, 132 28 C142 8, 122 -2, 110 14 C102 22, 96 30, 84 40 C72 30, 66 22, 58 14 Z" transform="translate(-22,0)" />
+                </svg>
+              </div>
             </div>
           </div>
           <div class="spine" aria-hidden="true"></div>
@@ -987,16 +996,20 @@
         if(!page) return;
         const img = page.querySelector('img.photo');
         const bd  = page.querySelector('.photo-backdrop');
+        const empty = page.querySelector('.album-empty');
+if(!file){
+          const isLastRight = (side === 'right' && pairs[idx] && !pairs[idx][1]);
+          if(empty) empty.style.display = isLastRight ? 'flex' : 'none';
 
-        if(!file){
           img.removeAttribute('src');
           img.alt = '';
           img.classList.remove('is-loaded');
           bd.style.backgroundImage = '';
-          page.style.opacity = '0.25';
+          page.style.opacity = isLastRight ? '1' : '0.25';
           return;
         }
 
+        if(empty) empty.style.display = 'none';
         page.style.opacity = '1';
         img.classList.remove('is-loaded');
 
