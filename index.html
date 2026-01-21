@@ -614,7 +614,32 @@
       .mouse::after{ animation:none; }
       .reveal{ transition:none; transform:none; opacity:1; }
     }
-  </style>
+  
+        .empty-placeholder{
+          width:100%;
+          height:100%;
+          border-radius:26px;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          gap:18px;
+          color:rgba(255,255,255,.85);
+          text-align:center;
+          padding:32px;
+          background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+          border:1px dashed rgba(255,255,255,.18);
+        }
+        .empty-placeholder svg{
+          width:84px;
+          height:84px;
+          stroke:white;
+          fill:none;
+          stroke-width:2.2;
+          opacity:.9;
+        }
+        </style>
+        
 </head>
 
 <body>
