@@ -836,13 +836,14 @@
       filter: drop-shadow(0 18px 40px rgba(0,0,0,.45));
     }
 
-    /* Page 5: make the main content panel taller (closer to full screen like page 1) */
-    #s5 .panel{
+    /* Page 5: make the layout fill the screen like other pages (without pushing content upward) */
+    #s5 .grid{
       min-height: clamp(640px, 86dvh, 920px);
     }
-    @media (max-width: 520px){
-      #s5 .panel{
+    @media (max-width: 920px){
+      #s5 .grid{
         min-height: calc(100dvh - var(--topbarH) - var(--hintH) - 18px);
+        grid-template-rows: 1fr auto; /* media takes the extra height */
       }
     }
 
