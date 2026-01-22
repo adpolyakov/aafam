@@ -199,7 +199,14 @@
       display:block;
     }
 
-    /* Progressive image loading (perceived performance) */
+    
+    .media-card video{
+      width:100%;
+      height:100%;
+      object-fit: contain;
+      display:block;
+    }
+/* Progressive image loading (perceived performance) */
     .media-card::after{
       content:"";
       position:absolute;
@@ -435,7 +442,13 @@
         max-height: 100%;
         object-fit: contain;
       }
-      #s2 .album-cta{
+      
+    .media-card video{
+        flex: 1 1 auto;
+        max-height: 100%;
+        object-fit: contain;
+      }
+#s2 .album-cta{
         padding-top: 10px;
         padding-bottom: 2px;
         font-size: 12px;
@@ -835,8 +848,11 @@
 <div class="panel">
 <div class="grid">
 <div class="media">
-<div class="media-card reveal" data-reveal="">
-<img alt="Наши моменты" decoding="async" loading="lazy" src="img/03.jpg"/>
+<div class="media-card reveal is-loaded" data-reveal="">
+<video class="ring-video" autoplay muted loop playsinline preload="auto" aria-label="Видео кольца">
+  <source src="media/ring.mp4" type="video/mp4"/>
+  Ваш браузер не поддерживает видео.
+</video>
 </div>
 </div>
 <div class="content">
