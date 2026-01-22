@@ -836,16 +836,18 @@
       filter: drop-shadow(0 18px 40px rgba(0,0,0,.45));
     }
 
-    /* Page 5: make the layout fill the screen like other pages (without pushing content upward) */
+    
+    /* Page 5: keep the same top/bottom "air" as other pages (avoid full-bleed height) */
     #s5 .grid{
-      min-height: clamp(640px, 86dvh, 920px);
+      min-height: clamp(560px, 78dvh, 760px);
     }
     @media (max-width: 920px){
       #s5 .grid{
-        min-height: calc(100dvh - var(--topbarH) - var(--hintH) - 18px);
+        min-height: clamp(560px, 78dvh, 760px);
         grid-template-rows: 1fr auto; /* media takes the extra height */
       }
     }
+}
 
 </style>
 </head>
