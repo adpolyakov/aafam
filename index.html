@@ -1038,6 +1038,10 @@
 </div>
 </div>
 </div>
+<!-- Global scroll hint (shown on all sections except the last) -->
+<div aria-hidden="true" class="hint hint-fixed" id="scrollHint">
+<div class="mouse"></div>
+
 <script>
     (function(){
       const main = document.getElementById('main');
@@ -1585,9 +1589,6 @@ if(!file){
       }, {passive:true});
     })();
   </script>
-<!-- Global scroll hint (shown on all sections except the last) -->
-<div aria-hidden="true" class="hint hint-fixed" id="scrollHint">
-<div class="mouse"></div>
 <div>листай вниз</div>
 </div>
 </body>
