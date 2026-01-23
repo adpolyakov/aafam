@@ -1593,5 +1593,55 @@ if(!file){
   </script>
 <div>листай вниз</div>
 </div>
+
+<!-- Added: lightweight visit logger to Google Sheets (does not modify existing site logic) -->
+<script>
+(function() {
+  try {
+    var LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwIy9fSzc8mbaP-TpYIf2wDLie731laslfjyZM-wcyAurdwel5we_ln-gFnc_P7VCIMZw/exec';
+    var SESSION_KEY = 'visit_logged_v1';
+
+    if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem(SESSION_KEY)) return;
+    if (typeof sessionStorage !== 'undefined') sessionStorage.setItem(SESSION_KEY, '1');
+
+    var payload = {
+      page: (typeof location !== 'undefined' && location.href) ? location.href : '',
+      ref: (typeof document !== 'undefined' && document.referrer) ? document.referrer : '',
+      ua: (typeof navigator !== 'undefined' && navigator.userAgent) ? navigator.userAgent : '',
+      lang: (typeof navigator !== 'undefined' && navigator.language) ? navigator.language : '',
+      tz: (typeof Intl !== 'undefined' && Intl.DateTimeFormat) ? (Intl.DateTimeFormat().resolvedOptions().timeZone || '') : '',
+      screen: (typeof screen !== 'undefined') ? (String(screen.width) + 'x' + String(screen.height)) : '',
+      vid: (function() {
+        try {
+          if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+        } catch (e) {}
+        return String(Date.now()) + '_' + Math.random().toString(16).slice(2);
+      })()
+    };
+
+    // Prefer sendBeacon for reliability; fallback to fetch
+    try {
+      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+        var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+        var ok = navigator.sendBeacon(LOG_ENDPOINT, blob);
+        if (ok) return;
+      }
+    } catch (e) {}
+
+    try {
+      if (typeof fetch !== 'undefined') {
+        fetch(LOG_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          keepalive: true,
+          mode: 'no-cors'
+        }).catch(function(){});
+      }
+    } catch (e) {}
+  } catch (e) {}
+})();
+</script>
+
 </body>
 </html>
